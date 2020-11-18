@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: eureka-register
+server:
+  port: 8000
+eureka:
+  instance:
+    hostname: eureka-register
+    lease-renewal-interval-in-seconds: 3
+    lease-expiration-duration-in-seconds: 3
+  client:
+    #防止自己注册到服务发现中心 因为本项目就是一个服务发现 不需要自己注册到自己
+    register-with-eureka: false
+    #不需要从服务中心获取服务列表 因为服务发现不需要消费
+    fetch-registry: false
+    service-url:
+      #注册服务器的地址
+      defaultZone: http://127.0.0.1:${server.port}/eureka
+    #刷新缓存时间
+    registry-fetch-interval-seconds: 3

@@ -1,0 +1,72 @@
+server:
+  port: 8001
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true #开启网关通过ID访问
+      routes:
+      - id: attence-service
+        uri: lb://attence-service
+        predicates:
+          - Path=/api-attence/**
+      - id: parking-service
+        uri: lb://parking-service
+        predicates:
+          - Path=/api-parking/**
+      - id:  access-service
+        uri: lb://access-service
+        predicates:
+          - Path=/api-access/**
+      - id:  camera-service
+        uri: lb://camera-service
+        predicates:
+          - Path=/api-camera/**
+      - id:  persons-service
+        uri: lb://persons-service
+        predicates:
+          - Path=/api-persons/**
+      - id:  api-test
+        uri: lb://test-service
+        predicates:
+         - Path=/api-test/**
+      - id: auth-service
+        uri: lb://auth-service
+        predicates:
+         - Path=/api-auth/**
+      default-filters:
+        - StripPrefix=1
+        - RemoveRequestHeader=Origin
+        - name: Hystrix
+          args:
+            name: fallbackcmd
+            fallbackUri: forward:/defaultHystrixFallback
+
+
+
+hystrix.command.fallbackcmd.execution.isolation.thread.timeoutInMilliseconds: 30000
+
+
+
+eureka:
+  client:
+    service-url:
+     defaultZone: http://localhost:8000/eureka/
+    registry-fetch-interval-seconds: 3
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 3
+    lease-expiration-duration-in-seconds: 3
+
+
+jwt:
+  #不需要验证的接口（配置规则： /服务名/具体接口）
+  skipUrls: /api-test/test,
+    /api-auth/login,
+    /api-auth/download,
+    /api-auth/upload/img/,
+    /api-access/open/,
+    /api-parking/lj/

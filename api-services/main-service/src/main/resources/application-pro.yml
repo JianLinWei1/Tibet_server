@@ -1,0 +1,32 @@
+server:
+  port: 8002
+spring:
+  application:
+    name: auth-service
+  datasource:
+    name: te
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://mysql:3306/tibet_account?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
+      username: root
+      password: 2020jdream
+      initial-size: 1
+      max-active: 20
+      min-idle: 1
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+  resources:
+    static-locations: classpath:/upload/img/,file:/
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-register:8000/eureka
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  config: classpath:log.xml
