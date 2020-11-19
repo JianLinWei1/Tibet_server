@@ -4,8 +4,8 @@ package com.mj.mainservice.service.impl;
 
 import com.jian.common.util.ResultUtil;
 import com.mj.mainservice.entitys.attence.AttenceConfig;
-import com.mj.mainservice.resposity.AttenceConfigResposity;
-import com.mj.mainservice.service.AttenceConfigService;
+import com.mj.mainservice.resposity.attence.AttenceConfigResposity;
+import com.mj.mainservice.service.attence.AttenceConfigService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 

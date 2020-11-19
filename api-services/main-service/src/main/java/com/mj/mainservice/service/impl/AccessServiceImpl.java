@@ -9,15 +9,15 @@ import com.jian.common.entity.AntdTree;
 import com.jian.common.util.HttpUtil;
 import com.jian.common.util.ResultUtil;
 import com.jian.common.util.SysConfigUtil;
-import com.mj.mainservice.entitys.AccessPerson;
-import com.mj.mainservice.entitys.DeviceInfo;
-import com.mj.mainservice.entitys.PersonInfo;
+import com.mj.mainservice.entitys.access.AccessPerson;
+import com.mj.mainservice.entitys.access.DeviceInfo;
+import com.mj.mainservice.entitys.person.PersonInfo;
 import com.mj.mainservice.entitys.access.Translation;
-import com.mj.mainservice.resposity.AccessPersonResposity;
-import com.mj.mainservice.resposity.AccessRespository;
-import com.mj.mainservice.resposity.PersonRepository;
-import com.mj.mainservice.resposity.TranslationResposity;
-import com.mj.mainservice.service.AccessService;
+import com.mj.mainservice.resposity.access.AccessPersonResposity;
+import com.mj.mainservice.resposity.access.AccessRespository;
+import com.mj.mainservice.resposity.person.PersonRepository;
+import com.mj.mainservice.resposity.access.TranslationResposity;
+import com.mj.mainservice.service.access.AccessService;
 import com.mj.mainservice.vo.AccessPersonVo;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -130,8 +130,13 @@ public class AccessServiceImpl implements AccessService {
                     for (int i : accessPersonVo.getDoors()) {
                         doorIds += i + ",";
                     }
+                    String  pin ="";
+                    if(personInfo.getAccessId().length()>8)
+                        personInfo.getAccessId().substring(0, 8);
+                    else
+                        pin = personInfo.getAccessId();
                     String url = "http://" + SysConfigUtil.getIns().getProAccessServer() +
-                            "/setDeviceData?ip=" + deviceInfo.getIp() + "&CardNo=" + personInfo.getAccessId() + "&pin=" + personInfo.getAccessId().substring(0, 8) +
+                            "/setDeviceData?ip=" + deviceInfo.getIp() + "&CardNo=" + personInfo.getAccessId() + "&pin=" +  pin+
                             "&pw=" + personInfo.getAccessPw() + "&doorIds=" + doorIds.substring(0, doorIds.length() - 1);
                     ResultUtil ru = httpUtil.get(url);
                     log.info("门禁下发返回：{} , URL:{}", JSON.toJSONString(ru), url);
@@ -202,8 +207,14 @@ public class AccessServiceImpl implements AccessService {
             List<String> ms = new ArrayList<>();
             for (String id : ids) {
                 AccessPerson accessPerson = personResposity.findById(id).get();
+
+                String  pin ="";
+                if(accessPerson.getAccessId().length()>8)
+                    accessPerson.getAccessId().substring(0, 8);
+                else
+                    pin = accessPerson.getAccessId();
                 String url = "http://" + SysConfigUtil.getIns().getProAccessServer() + "/deleteDeviceData?ip=" + accessPerson.getIp() +
-                        "&CardNo=" + accessPerson.getAccessId() + "&pin=" + accessPerson.getAccessId().substring(0, 8) + "&pw=" + accessPerson.getAccessPw();
+                        "&CardNo=" + accessPerson.getAccessId() + "&pin=" + pin + "&pw=" + accessPerson.getAccessPw();
                 ResultUtil ru = httpUtil.get(url);
                 log.info("门禁下发返回：{} , URL:{}", JSON.toJSONString(ru), url);
                 if (ru.getCode() != 0) {

@@ -4,15 +4,15 @@ import com.alibaba.excel.EasyExcel;
 
 import com.jian.common.util.ResultUtil;
 
-import com.mj.mainservice.entitys.PersonInfo;
+import com.mj.mainservice.entitys.person.PersonInfo;
 import com.mj.mainservice.entitys.parking.ParkInfo;
 import com.mj.mainservice.entitys.parking.ParkingResult;
 import com.mj.mainservice.entitys.parking.ParkingUserInfo;
-import com.mj.mainservice.resposity.ParkingPersonResposity;
-import com.mj.mainservice.resposity.ParkingResposity;
-import com.mj.mainservice.resposity.ParkingResultResposity;
-import com.mj.mainservice.service.ParkingVoService;
-import com.mj.mainservice.service.PersonService;
+import com.mj.mainservice.resposity.parking.ParkingPersonResposity;
+import com.mj.mainservice.resposity.parking.ParkingResposity;
+import com.mj.mainservice.resposity.parking.ParkingResultResposity;
+import com.mj.mainservice.service.parking.ParkingVoService;
+import com.mj.mainservice.service.person.PersonService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.query.Criteria;

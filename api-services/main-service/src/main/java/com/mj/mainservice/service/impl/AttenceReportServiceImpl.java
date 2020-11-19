@@ -3,10 +3,10 @@ package com.mj.mainservice.service.impl;
 import com.jian.common.util.ResultUtil;
 import com.mj.mainservice.entitys.attence.AttenceConfig;
 import com.mj.mainservice.entitys.attence.AttenceReport;
-import com.mj.mainservice.resposity.AttenceConfigResposity;
+import com.mj.mainservice.resposity.attence.AttenceConfigResposity;
 
-import com.mj.mainservice.service.AttenceReportService;
-import com.mj.mainservice.service.TranslationService;
+import com.mj.mainservice.service.attence.AttenceReportService;
+import com.mj.mainservice.service.access.TranslationService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 

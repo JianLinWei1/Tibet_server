@@ -3,9 +3,9 @@ package com.mj.mainservice.service.impl;
 
 import com.jian.common.util.ResultUtil;
 
-import com.mj.mainservice.entitys.PersonInfo;
-import com.mj.mainservice.resposity.PersonRepository;
-import com.mj.mainservice.service.PersonService;
+import com.mj.mainservice.entitys.person.PersonInfo;
+import com.mj.mainservice.resposity.person.PersonRepository;
+import com.mj.mainservice.service.person.PersonService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;

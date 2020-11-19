@@ -1,14 +1,12 @@
 package com.mj.mainservice.service.impl;
 
 import com.jian.common.util.ResultUtil;
-import com.mj.mainservice.entitys.PersonInfo;
+import com.mj.mainservice.entitys.person.PersonInfo;
 import com.mj.mainservice.entitys.access.Translation;
 import com.mj.mainservice.entitys.attence.AttenceReport;
-import com.mj.mainservice.resposity.PersonRepository;
-import com.mj.mainservice.resposity.TranslationResposity;
-import com.mj.mainservice.service.PersonService;
-import com.mj.mainservice.service.TranslationService;
-import com.mj.mainservice.vo.AccessPersonVo;
+import com.mj.mainservice.resposity.access.TranslationResposity;
+import com.mj.mainservice.service.person.PersonService;
+import com.mj.mainservice.service.access.TranslationService;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;

@@ -10,14 +10,14 @@ import com.jian.common.entity.ElTree;
 import com.jian.common.util.JwtUtil;
 import com.jian.common.util.MD5Util;
 import com.jian.common.util.ResultUtil;
-import com.mj.mainservice.entitys.Permission;
-import com.mj.mainservice.entitys.SysAdmin;
-import com.mj.mainservice.entitys.SysAdminMenu;
-import com.mj.mainservice.entitys.SysMenu;
+import com.mj.mainservice.entitys.system.Permission;
+import com.mj.mainservice.entitys.system.SysAdmin;
+import com.mj.mainservice.entitys.system.SysAdminMenu;
+import com.mj.mainservice.entitys.system.SysMenu;
 import com.mj.mainservice.mapper.SysAdminMapper;
 import com.mj.mainservice.mapper.SysAdminMenuMapper;
 import com.mj.mainservice.mapper.SysMenuMapper;
-import com.mj.mainservice.service.ISysAdminService;
+import com.mj.mainservice.service.system.ISysAdminService;
 import com.mj.mainservice.vo.AntRouter;
 import com.mj.mainservice.vo.SysAdminVo;
 import lombok.extern.log4j.Log4j2;
@@ -315,7 +315,7 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
         try {
          SysAdmin sysAdmin =  sysAdminMapper.selectById(id);
             SysAdminVo sysAdminVo = new SysAdminVo();
-                    BeanUtils.copyProperties(sysAdmin, sysAdminVo );
+            BeanUtils.copyProperties(sysAdmin, sysAdminVo );
          QueryWrapper<SysAdminMenu>  queryWrapper = new QueryWrapper<>();
          queryWrapper.lambda().eq(SysAdminMenu::getAdminId, id );
         List<SysAdminMenu>  menuList = sysAdminMenuMapper.selectList(queryWrapper);

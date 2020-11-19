@@ -2,9 +2,9 @@ package com.mj.mainservice.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
-import com.mj.mainservice.entitys.SysMenu;
+import com.mj.mainservice.entitys.system.SysMenu;
 import com.mj.mainservice.mapper.SysMenuMapper;
-import com.mj.mainservice.service.ISysMenuService;
+import com.mj.mainservice.service.system.ISysMenuService;
 import org.springframework.stereotype.Service;
 
 /**

@@ -4,10 +4,10 @@ package com.mj.mainservice.service.impl;
 import com.jian.common.util.FileUtils;
 
 import com.mj.mainservice.entitys.parking.*;
-import com.mj.mainservice.resposity.ParkingPersonResposity;
-import com.mj.mainservice.resposity.ParkingResposity;
-import com.mj.mainservice.resposity.ParkingResultResposity;
-import com.mj.mainservice.service.UploadRecoedService;
+import com.mj.mainservice.resposity.parking.ParkingPersonResposity;
+import com.mj.mainservice.resposity.parking.ParkingResposity;
+import com.mj.mainservice.resposity.parking.ParkingResultResposity;
+import com.mj.mainservice.service.parking.UploadRecoedService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

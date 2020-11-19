@@ -2,7 +2,7 @@ package com.mj.mainservice.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.mj.mainservice.entitys.SysLog;
+import com.mj.mainservice.entitys.system.SysLog;
 
 
 /**

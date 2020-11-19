@@ -2,8 +2,8 @@ package com.mj.mainservice.aspect;
 
 
 import com.mj.mainservice.annotation.SysLogInter;
-import com.mj.mainservice.entitys.SysLog;
-import com.mj.mainservice.service.ISysLogService;
+import com.mj.mainservice.entitys.system.SysLog;
+import com.mj.mainservice.service.system.ISysLogService;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
