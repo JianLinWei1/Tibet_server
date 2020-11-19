@@ -170,10 +170,10 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
              SysAdmin sysAdmin = new SysAdmin();
              BeanUtils.copyProperties(sysAdminVo, sysAdmin);
             sysAdminMapper.insert(sysAdmin);
-            if(sysAdminVo.getId() != null &&  sysAdminVo.getRouterIds()!=null ){
+            if(sysAdmin.getId() != null &&  sysAdminVo.getRouterIds()!=null ){
                 sysAdminVo.getRouterIds().stream().forEach(sv ->{
                     SysAdminMenu  sysAdminMenu = new SysAdminMenu();
-                    sysAdminMenu.setAdminId(sysAdminVo.getId());
+                    sysAdminMenu.setAdminId(sysAdmin.getId());
                     sysAdminMenu.setMenuId(sv);
                     sysAdminMenuMapper.insert(sysAdminMenu);
                 });
@@ -362,4 +362,9 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
     }
 
 
+    @Override
+    public List<String> getChildUerIds(String userId) {
+
+        return null;
+    }
 }

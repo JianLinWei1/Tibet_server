@@ -40,6 +40,6 @@ public interface ISysAdminService extends IService<SysAdmin> {
 
     ResultUtil updateUser(SysAdminVo sysAdminVo);
 
-   // List<String>  getChildUerIds(String userId);
+    List<String>  getChildUerIds(String userId);
 
 }
