@@ -7,6 +7,8 @@ import com.jian.common.util.ResultUtil;
 import com.mj.mainservice.entitys.system.SysAdmin;
 import com.mj.mainservice.vo.SysAdminVo;
 
+import java.util.List;
+
 
 /**
  * <p>
@@ -37,5 +39,7 @@ public interface ISysAdminService extends IService<SysAdmin> {
     ResultUtil getUserById(String id);
 
     ResultUtil updateUser(SysAdminVo sysAdminVo);
+
+   // List<String>  getChildUerIds(String userId);
 
 }

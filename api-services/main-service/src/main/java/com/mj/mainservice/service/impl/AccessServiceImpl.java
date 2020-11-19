@@ -132,7 +132,7 @@ public class AccessServiceImpl implements AccessService {
                     }
                     String  pin ="";
                     if(personInfo.getAccessId().length()>8)
-                        personInfo.getAccessId().substring(0, 8);
+                        pin = personInfo.getAccessId().substring(0, 8);
                     else
                         pin = personInfo.getAccessId();
                     String url = "http://" + SysConfigUtil.getIns().getProAccessServer() +
@@ -210,7 +210,7 @@ public class AccessServiceImpl implements AccessService {
 
                 String  pin ="";
                 if(accessPerson.getAccessId().length()>8)
-                    accessPerson.getAccessId().substring(0, 8);
+                    pin = accessPerson.getAccessId().substring(0, 8);
                 else
                     pin = accessPerson.getAccessId();
                 String url = "http://" + SysConfigUtil.getIns().getProAccessServer() + "/deleteDeviceData?ip=" + accessPerson.getIp() +
