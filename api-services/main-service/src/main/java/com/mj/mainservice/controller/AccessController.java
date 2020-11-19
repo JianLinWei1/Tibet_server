@@ -2,12 +2,14 @@ package com.mj.mainservice.controller;
 
 
 
-import com.jian.common.entitys.AccessPerson;
-import com.jian.common.entitys.DeviceInfo;
-import com.jian.common.entitys.access.Translation;
 import com.jian.common.util.ResultUtil;
 import com.mj.mainservice.annotation.SysLogInter;
+import com.mj.mainservice.entitys.AccessPerson;
+import com.mj.mainservice.entitys.DeviceInfo;
+import com.mj.mainservice.entitys.PersonInfo;
+import com.mj.mainservice.entitys.access.Translation;
 import com.mj.mainservice.service.AccessService;
+import com.mj.mainservice.service.PersonService;
 import com.mj.mainservice.vo.AccessPersonVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,7 +30,8 @@ public class AccessController {
 //    @Qualifier("accessPersonFeignImpl")
 //    @Autowired
 //    private AccessPersonFeign personFeign;
-
+  @Autowired
+  private PersonService personService;
 
 
     @SysLogInter("搜索门禁控制器")
@@ -53,11 +56,11 @@ public class AccessController {
     }
 
     @PostMapping("/queryPersonsList")
-    public ResultUtil queryPersonsList(@RequestBody AccessPersonVo infoVo, String userId) {
+    public ResultUtil queryPersonsList(@RequestBody PersonInfo infoVo, String userId) {
         infoVo.setUserId(userId);
         infoVo.setPage(1);
         infoVo.setLimit(10);
-        return personFeign.queryPersonsList(infoVo);
+        return personService.queryPersonsList(infoVo);
     }
 
     @SysLogInter("下发人员")

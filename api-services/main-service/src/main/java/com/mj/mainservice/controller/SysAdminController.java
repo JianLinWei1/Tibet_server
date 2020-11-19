@@ -1,7 +1,8 @@
 package com.mj.mainservice.controller;
 
-import com.jian.authservice.service.ISysAdminService;
+
 import com.jian.common.util.ResultUtil;
+import com.mj.mainservice.service.ISysAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,11 +18,11 @@ public class SysAdminController {
 
 
 
-    @GetMapping("/getUserIdByName")
+    /*@GetMapping("/getUserIdByName")
     public ResultUtil getUserIdByName(String userName){
         return  sysAdminService.getUserIdByName(userName);
     }
-
+*/
     @GetMapping("/getUserById")
     public   ResultUtil getUserById(String id){
 

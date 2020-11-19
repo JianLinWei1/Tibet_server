@@ -1,8 +1,10 @@
 package com.mj.mainservice.controller;
 
-import com.jian.accessservice.service.AccessService;
-import com.jian.common.entitys.access.Translation;
+
+
 import com.jian.common.util.ResultUtil;
+import com.mj.mainservice.entitys.access.Translation;
+import com.mj.mainservice.service.AccessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

@@ -1,10 +1,12 @@
 package com.mj.mainservice.controller;
 
-import com.jian.authservice.annotation.SysLogInter;
-import com.jian.authservice.entity.SysLog;
-import com.jian.authservice.service.ISysLogService;
+
 import com.jian.common.entity.SysConfig;
+
 import com.jian.common.util.ResultUtil;
+import com.mj.mainservice.annotation.SysLogInter;
+import com.mj.mainservice.entitys.SysLog;
+import com.mj.mainservice.service.ISysLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

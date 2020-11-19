@@ -1,10 +1,12 @@
 package com.mj.mainservice.controller;
 
-import com.jian.common.entitys.parking.ParkInfo;
-import com.jian.common.entitys.parking.ParkingResponse;
-import com.jian.common.entitys.parking.PlateUpload;
+
 import com.jian.common.util.ResultUtil;
-import com.jian.parkingservice.service.UploadRecoedService;
+
+import com.mj.mainservice.entitys.parking.ParkInfo;
+import com.mj.mainservice.entitys.parking.ParkingResponse;
+import com.mj.mainservice.entitys.parking.PlateUpload;
+import com.mj.mainservice.service.UploadRecoedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +34,7 @@ public class ParkingDeviceController {
 
 
     @PostMapping("/plateUpload")
-    public  void plateUpload(@RequestBody  PlateUpload plateUpload){
+    public  void plateUpload(@RequestBody PlateUpload plateUpload){
 
        uploadRecoedService.plateUpload(plateUpload);
     }

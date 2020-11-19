@@ -2,7 +2,7 @@ server:
   port: 8002
 spring:
   application:
-    name: auth-service
+    name: main-service
   datasource:
     name: te
     type: com.alibaba.druid.pool.DruidDataSource
@@ -20,10 +20,28 @@ spring:
   resources:
     static-locations: classpath:/upload/img/,file:/
 
+
+
+  data:
+    mongodb:
+      host: mongodb
+      database: tibet
+      #username: 'ant'
+      #password: '123456'
+      port: 27017
+  devtools:
+    livereload:
+      enabled: true
+
 eureka:
   client:
     service-url:
       defaultZone: http://eureka-register:8000/eureka
+    registry-fetch-interval-seconds: 3
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 3
+    lease-expiration-duration-in-seconds: 3
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

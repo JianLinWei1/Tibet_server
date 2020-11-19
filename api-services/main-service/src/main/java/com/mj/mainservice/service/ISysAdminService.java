@@ -1,9 +1,11 @@
 package com.mj.mainservice.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jian.authservice.entity.SysAdmin;
-import com.jian.authservice.vo.SysAdminVo;
+
 import com.jian.common.util.ResultUtil;
+
+import com.mj.mainservice.entitys.SysAdmin;
+import com.mj.mainservice.vo.SysAdminVo;
 
 
 /**

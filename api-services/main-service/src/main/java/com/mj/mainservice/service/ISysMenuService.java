@@ -1,7 +1,7 @@
 package com.mj.mainservice.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jian.authservice.entity.SysMenu;
+import com.mj.mainservice.entitys.SysMenu;
 
 
 /**

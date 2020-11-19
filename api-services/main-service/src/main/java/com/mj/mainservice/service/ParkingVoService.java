@@ -1,9 +1,9 @@
 package com.mj.mainservice.service;
 
-import com.jian.common.entitys.parking.ParkInfo;
-import com.jian.common.entitys.parking.ParkingResult;
-import com.jian.common.entitys.parking.ParkingUserInfo;
 import com.jian.common.util.ResultUtil;
+import com.mj.mainservice.entitys.parking.ParkInfo;
+import com.mj.mainservice.entitys.parking.ParkingResult;
+import com.mj.mainservice.entitys.parking.ParkingUserInfo;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public interface ParkingVoService {
 
     ResultUtil  delParkInfo(List<String>  Ids);
 
-    ResultUtil  saveParkPersonInfo(ParkingUserInfo  parkingUserInfo);
+    ResultUtil  saveParkPersonInfo(ParkingUserInfo parkingUserInfo);
 
     ResultUtil  listParkingPerson(ParkingUserInfo parkingUserInfo);
 

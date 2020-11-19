@@ -1,11 +1,12 @@
 package com.mj.mainservice.controller;
 
 
-import com.jian.authservice.annotation.SysLogInter;
-import com.jian.authservice.entity.SysAdmin;
-import com.jian.authservice.service.ISysAdminService;
-import com.jian.authservice.vo.SysAdminVo;
 import com.jian.common.util.ResultUtil;
+import com.mj.mainservice.annotation.SysLogInter;
+
+import com.mj.mainservice.entitys.SysAdmin;
+import com.mj.mainservice.service.ISysAdminService;
+import com.mj.mainservice.vo.SysAdminVo;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

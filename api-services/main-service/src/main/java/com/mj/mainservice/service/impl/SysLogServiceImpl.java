@@ -4,12 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jian.authservice.entity.SysLog;
-import com.jian.authservice.mapper.SysLogMapper;
-import com.jian.authservice.service.ISysLogService;
+
 import com.jian.common.entity.SysConfig;
 import com.jian.common.util.ResultUtil;
 import com.jian.common.util.SysConfigUtil;
+import com.mj.mainservice.entitys.SysLog;
+import com.mj.mainservice.mapper.SysLogMapper;
+import com.mj.mainservice.service.ISysLogService;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,8 @@ import java.util.List;
  * Created by MrJan on 2020/11/3
  */
 
-@Service
 @Log4j2
+@Service
 public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> implements ISysLogService {
        @Resource
        private SysLogMapper sysLogMapper;

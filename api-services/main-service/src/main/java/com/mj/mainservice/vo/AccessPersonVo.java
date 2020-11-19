@@ -1,6 +1,7 @@
 package com.mj.mainservice.vo;
 
-import com.jian.common.entitys.AccessPerson;
+
+import com.mj.mainservice.entitys.AccessPerson;
 import lombok.Data;
 
 import java.util.List;

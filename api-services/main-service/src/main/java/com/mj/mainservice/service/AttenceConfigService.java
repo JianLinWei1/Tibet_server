@@ -1,7 +1,8 @@
 package com.mj.mainservice.service;
 
-import com.jian.common.entitys.attence.AttenceConfig;
+
 import com.jian.common.util.ResultUtil;
+import com.mj.mainservice.entitys.attence.AttenceConfig;
 
 /**
  * @auther JianLinWei

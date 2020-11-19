@@ -11,12 +11,14 @@ import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
 import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 /**
  * Created by MrJan on 2020/10/9 11:13
  */
 
 @Configuration
+@EnableMongoRepositories(basePackages = "com.mj.mainservice.resposity" ,repositoryBaseClass = MySimpleMongoRepository.class)
 public class MongoConfig {
     @Bean
     public MappingMongoConverter mappingMongoConverter(MongoDatabaseFactory factory, MongoMappingContext context, BeanFactory beanFactory) {

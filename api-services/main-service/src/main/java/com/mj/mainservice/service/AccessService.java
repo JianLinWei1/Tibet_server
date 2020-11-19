@@ -1,10 +1,11 @@
 package com.mj.mainservice.service;
 
-import com.jian.accessservice.vo.AccessPersonVo;
-import com.jian.common.entitys.AccessPerson;
-import com.jian.common.entitys.DeviceInfo;
-import com.jian.common.entitys.access.Translation;
+
 import com.jian.common.util.ResultUtil;
+import com.mj.mainservice.entitys.AccessPerson;
+import com.mj.mainservice.entitys.DeviceInfo;
+import com.mj.mainservice.entitys.access.Translation;
+import com.mj.mainservice.vo.AccessPersonVo;
 
 import java.util.List;
 

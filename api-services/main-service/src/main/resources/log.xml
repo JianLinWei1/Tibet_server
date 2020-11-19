@@ -31,6 +31,14 @@
         </encoder>
     </appender>
 
+    <appender name="CONSOLE2" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
+            <!-- 设置字符集 -->
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
     <!--2. 输出到文档-->
     <!-- 2.1 level为 DEBUG 日志，时间滚动输出  -->
     <appender name="DEBUG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -167,7 +175,9 @@
     <!--过滤掉spring和mybatis的一些无用的DEBUG信息-->
     <logger name="org.springframework" level="INFO"></logger>
     <logger name="org.mybatis" level="INFO"></logger>
-
+    <logger name="org.springframework.data.mongodb.core" level="DEBUG">
+        <appender-ref  ref="CONSOLE2"></appender-ref>
+    </logger>
 
     <!-- 4. 最终的策略 -->
     <!-- 4.1 开发环境:打印控制台-->

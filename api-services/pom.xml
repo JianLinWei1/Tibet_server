@@ -14,12 +14,7 @@
 
     <modules>
         <module>test-service</module>
-        <module>auth-service</module>
-        <module>persons-service</module>
-        <module>camera-service</module>
-        <module>access-service</module>
-        <module>parking-service</module>
-        <module>attence-service</module>
+
         <module>main-service</module>
     </modules>
 

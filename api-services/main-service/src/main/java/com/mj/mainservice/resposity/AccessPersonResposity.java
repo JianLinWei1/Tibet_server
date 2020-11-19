@@ -1,6 +1,7 @@
 package com.mj.mainservice.resposity;
 
-import com.jian.common.entitys.AccessPerson;
+
+import com.mj.mainservice.entitys.AccessPerson;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

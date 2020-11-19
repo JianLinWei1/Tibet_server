@@ -1,7 +1,8 @@
 package com.mj.mainservice.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.jian.authservice.entity.SysMenu;
+import com.mj.mainservice.entitys.SysMenu;
+
 
 /**
  * <p>

@@ -1,6 +1,7 @@
 package com.mj.mainservice.resposity;
 
-import com.jian.common.entitys.DeviceInfo;
+
+import com.mj.mainservice.entitys.DeviceInfo;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

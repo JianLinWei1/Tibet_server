@@ -1,13 +1,16 @@
 package com.mj.mainservice.controller;
 
-import com.jian.common.entitys.parking.ParkInfo;
-import com.jian.common.entitys.parking.ParkingResult;
-import com.jian.common.entitys.parking.ParkingUserInfo;
+
 import com.jian.common.util.ResultUtil;
-import com.jian.parkingservice.annotation.SysLogInter;
-import com.jian.parkingservice.service.ParkingAuthFeign;
-import com.jian.parkingservice.service.ParkingPersonFeign;
-import com.jian.parkingservice.service.ParkingVoService;
+
+import com.mj.mainservice.annotation.SysLogInter;
+import com.mj.mainservice.entitys.PersonInfo;
+import com.mj.mainservice.entitys.parking.ParkInfo;
+import com.mj.mainservice.entitys.parking.ParkingResult;
+import com.mj.mainservice.entitys.parking.ParkingUserInfo;
+import com.mj.mainservice.service.ISysAdminService;
+import com.mj.mainservice.service.ParkingVoService;
+import com.mj.mainservice.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,12 +26,16 @@ import java.util.List;
 @RestController
 public class ParkingVoController {
     @Autowired
-    private ParkingVoService  parkingVoService ;
+    private ParkingVoService parkingVoService ;
 
-    @Autowired
+  /*  @Autowired
     private ParkingAuthFeign parkingAuthFeign;
     @Autowired
-    private ParkingPersonFeign parkingPersonFeign;
+    private ParkingPersonFeign parkingPersonFeign;*/
+  @Autowired
+  private ISysAdminService sysAdminService;
+  @Autowired
+  private PersonService  personService;
 
     @SysLogInter("获取车辆列表")
     @PostMapping("/listParking")
@@ -38,7 +45,7 @@ public class ParkingVoController {
 
     @GetMapping("/getUserIdByName")
     public ResultUtil  getUserIdByName(String userName){
-        return parkingAuthFeign.getUserIdByName(userName);
+        return sysAdminService.getUserIdByName(userName);
     }
 
     @SysLogInter("添加车牌信息")
@@ -55,10 +62,10 @@ public class ParkingVoController {
 
 
     @PostMapping("/getPersonByName")
-    public  ResultUtil getPersonByName(@RequestBody  ParkingUserInfo info){
+    public  ResultUtil getPersonByName(@RequestBody PersonInfo info){
       info.setPage(1);
       info.setLimit(10);
-     return parkingPersonFeign.getPersonByName(info);
+     return personService.queryPersonsList(info);
     }
 
 

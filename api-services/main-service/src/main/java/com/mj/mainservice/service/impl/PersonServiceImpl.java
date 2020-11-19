@@ -1,8 +1,9 @@
 package com.mj.mainservice.service.impl;
 
-import com.jian.common.entitys.PersonInfo;
+
 import com.jian.common.util.ResultUtil;
 
+import com.mj.mainservice.entitys.PersonInfo;
 import com.mj.mainservice.resposity.PersonRepository;
 import com.mj.mainservice.service.PersonService;
 import lombok.extern.log4j.Log4j2;
@@ -134,6 +135,17 @@ public class PersonServiceImpl implements PersonService {
         } catch (Exception e) {
             log.error(e);
             return null;
+        }
+    }
+
+    @Override
+    public PersonInfo getPersonById(String id) {
+        try {
+         PersonInfo personInfo =   personRepository.findById(id).get();
+         return  personInfo;
+        }catch (Exception e){
+            log.error(e);
+            return  null;
         }
     }
 }

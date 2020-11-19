@@ -1,9 +1,10 @@
 package com.mj.mainservice.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jian.authservice.entity.SysLog;
+
 import com.jian.common.entity.SysConfig;
 import com.jian.common.util.ResultUtil;
+import com.mj.mainservice.entitys.SysLog;
 
 import java.util.List;
 

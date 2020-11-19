@@ -1,7 +1,8 @@
 package com.mj.mainservice.service;
 
-import com.jian.common.entitys.PersonInfo;
+
 import com.jian.common.util.ResultUtil;
+import com.mj.mainservice.entitys.PersonInfo;
 
 import java.util.List;
 
@@ -19,6 +20,8 @@ public interface PersonService {
 
 
     List<PersonInfo>   quryPersonListNoPage(PersonInfo personInfo);
+
+    PersonInfo getPersonById(String  id);
 
 
 }

@@ -1,9 +1,10 @@
 package com.mj.mainservice.controller;
 
-import com.jian.accessservice.service.AccessService;
-import com.jian.accessservice.service.TranslationService;
-import com.jian.common.entitys.attence.AttenceReport;
+
 import com.jian.common.util.ResultUtil;
+import com.mj.mainservice.entitys.attence.AttenceReport;
+import com.mj.mainservice.service.AccessService;
+import com.mj.mainservice.service.TranslationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,7 @@ public class AccessAttenceController {
     }
 
     @PostMapping("/getAttenceReport")
-    public  ResultUtil getAttenceReport(@RequestBody  AttenceReport report){
+    public  ResultUtil getAttenceReport(@RequestBody AttenceReport report){
         return  translationService.getAttenceReport(report);
     }
 }

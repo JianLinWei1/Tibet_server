@@ -1,11 +1,12 @@
 package com.mj.mainservice.service.impl;
 
-import com.jian.attenceservice.resposity.AttenceConfigResposity;
-import com.jian.attenceservice.service.AttenceAccessFeign;
-import com.jian.attenceservice.service.AttenceReportService;
-import com.jian.common.entitys.attence.AttenceConfig;
-import com.jian.common.entitys.attence.AttenceReport;
 import com.jian.common.util.ResultUtil;
+import com.mj.mainservice.entitys.attence.AttenceConfig;
+import com.mj.mainservice.entitys.attence.AttenceReport;
+import com.mj.mainservice.resposity.AttenceConfigResposity;
+
+import com.mj.mainservice.service.AttenceReportService;
+import com.mj.mainservice.service.TranslationService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
@@ -20,15 +21,17 @@ import javax.annotation.Resource;
 public class AttenceReportServiceImpl   implements AttenceReportService {
     @Resource
     private AttenceConfigResposity configResposity;
-    @Resource
-    private AttenceAccessFeign accessFeign;
+   /* @Resource
+    private AttenceAccessFeign accessFeign;*/
+   @Resource
+   private TranslationService translationService;
 
     @Override
-    public ResultUtil getAttenceReport(AttenceReport  attenceReport ) {
+    public ResultUtil getAttenceReport(AttenceReport attenceReport ) {
         try {
             AttenceConfig attenceConfig = configResposity.findById(attenceReport.getUserId()).get();
            attenceReport.setConfig(attenceConfig);
-            return  accessFeign.getAttenceReport(attenceReport);
+            return  translationService.getAttenceReport(attenceReport);
         }catch (Exception e){
             log.error(e);
             return  new ResultUtil(-1, e.getMessage());

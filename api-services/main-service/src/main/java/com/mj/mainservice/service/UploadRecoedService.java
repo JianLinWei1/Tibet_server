@@ -1,8 +1,9 @@
 package com.mj.mainservice.service;
 
-import com.jian.common.entitys.parking.ParkInfo;
-import com.jian.common.entitys.parking.ParkingResponse;
-import com.jian.common.entitys.parking.PlateUpload;
+
+import com.mj.mainservice.entitys.parking.ParkInfo;
+import com.mj.mainservice.entitys.parking.ParkingResponse;
+import com.mj.mainservice.entitys.parking.PlateUpload;
 
 public interface UploadRecoedService {
 
