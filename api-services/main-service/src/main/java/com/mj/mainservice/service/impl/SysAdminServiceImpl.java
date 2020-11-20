@@ -65,7 +65,8 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
                 SysAdmin sysAdmin1 = sysAdmins.get(0);
                 String pwd = md5Util.md5(sysAdmin.getPasswd(), "utf-8");
                 if (StringUtils.equals(pwd, sysAdmin1.getPasswd())) {
-                    String token = JwtUtil.getInstance().geneJsonWebToken(sysAdmin1.getUserName(), sysAdmin1.getId());
+                    String token = JwtUtil.getInstance().geneJsonWebToken(sysAdmin1.getUserName(), sysAdmin1.getId()
+                            ,getChildByUerIds(sysAdmin1.getId()));
                     JSONObject json = new JSONObject();
                     json.put("token", token);
                     ResultUtil resultUtil = new ResultUtil();
@@ -315,12 +316,14 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
         try {
          SysAdmin sysAdmin =  sysAdminMapper.selectById(id);
             SysAdminVo sysAdminVo = new SysAdminVo();
+            sysAdmin.setPasswd(null);
             BeanUtils.copyProperties(sysAdmin, sysAdminVo );
          QueryWrapper<SysAdminMenu>  queryWrapper = new QueryWrapper<>();
          queryWrapper.lambda().eq(SysAdminMenu::getAdminId, id );
         List<SysAdminMenu>  menuList = sysAdminMenuMapper.selectList(queryWrapper);
         List<String>  menuIds = new ArrayList<>();
         for(SysAdminMenu sm : menuList){
+
             menuIds.add(sm.getMenuId());
         }
         sysAdminVo.setRouterIds(menuIds);
@@ -341,6 +344,7 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
                 return new ResultUtil(-1 , "无法被编辑");
             SysAdmin sysAdmin =  new SysAdmin();
             BeanUtils.copyProperties(sysAdminVo, sysAdmin);
+            sysAdmin.setPasswd(md5Util.md5(sysAdmin.getPasswd(), "utf-8"));
             sysAdminMapper.updateById(sysAdmin);
             QueryWrapper<SysAdminMenu>  queryWrapper = new QueryWrapper<>();
             queryWrapper.lambda().eq(SysAdminMenu::getAdminId ,sysAdminVo.getId());
@@ -363,8 +367,28 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
 
 
     @Override
-    public List<String> getChildUerIds(String userId) {
+    public List<String> getChildByUerIds(String userId) {
+        try {
+           return  getChildIds(userId);
 
-        return null;
+        }catch (Exception e){
+            log.error(e);
+            return  null;
+        }
+
+    }
+
+
+    public  List<String> getChildIds(String userId){
+        QueryWrapper<SysAdmin> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(SysAdmin::getParentId, userId);
+        List<SysAdmin>  sysAdmins = sysAdminMapper.selectList(queryWrapper);
+        List<String> childIds = new ArrayList<>();
+        sysAdmins.stream().forEach(sysAdmin -> {
+            childIds.add(sysAdmin.getId());
+          List<String>  childIds2 =  getChildIds(sysAdmin.getId());
+           childIds.addAll(childIds2);
+        });
+        return  childIds;
     }
 }

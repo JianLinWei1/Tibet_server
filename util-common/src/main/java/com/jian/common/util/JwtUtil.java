@@ -9,10 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @auther JianLinWei
@@ -48,7 +45,7 @@ public class JwtUtil {
      * @param username ,merchantId
      * @return
      */
-    public String geneJsonWebToken(String username, String merchantId) throws Exception {
+    public String geneJsonWebToken(String username, String merchantId ,List<String> childs) throws Exception {
 
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(merchantId)) {
             return null;
@@ -56,9 +53,10 @@ public class JwtUtil {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, 60);
         Date expiresAt = calendar.getTime();
-        Map<String, String> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         map.put("username", username);
         map.put("userId", merchantId);
+        map.put("childs", childs);
         String token = JWT.create()
                 .withIssuer("auth0")
                 //.withClaim("username", username)

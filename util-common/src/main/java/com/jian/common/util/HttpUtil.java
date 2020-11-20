@@ -28,8 +28,8 @@ public class HttpUtil {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpGet hp = new HttpGet(url);
 
-        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(30 * 1000)
-                .setConnectionRequestTimeout(30 * 1000).setSocketTimeout(30 * 1000).setRedirectsEnabled(true)
+        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(60 * 1000)
+                .setConnectionRequestTimeout(60 * 1000).setSocketTimeout(60 * 1000).setRedirectsEnabled(true)
                 .build();
 
         hp.setConfig(requestConfig);

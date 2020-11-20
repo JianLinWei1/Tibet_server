@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.util.List;
+
 
 /**
  * Created by MrJan on 2020/10/29
@@ -20,4 +22,7 @@ public interface ParkingPersonResposity   extends MongoRepository<ParkingUserInf
 
 
      Page<ParkingUserInfo>   findAllByStatusIsNotAndActionIsAndSerialnoIs(boolean status , int action ,String serialno ,Pageable pageable);
+
+     List<ParkingUserInfo>    findAllByPersonIdEquals(String pid);
+
 }

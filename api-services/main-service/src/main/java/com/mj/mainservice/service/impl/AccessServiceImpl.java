@@ -139,6 +139,7 @@ public class AccessServiceImpl implements AccessService {
                             "/setDeviceData?ip=" + deviceInfo.getIp() + "&CardNo=" + personInfo.getAccessId() + "&pin=" +  pin+
                             "&pw=" + personInfo.getAccessPw() + "&doorIds=" + doorIds.substring(0, doorIds.length() - 1);
                     ResultUtil ru = httpUtil.get(url);
+
                     log.info("门禁下发返回：{} , URL:{}", JSON.toJSONString(ru), url);
                     if (ru.getCode() != 0) {
                         resultUtil.setCode(-1);
@@ -146,6 +147,7 @@ public class AccessServiceImpl implements AccessService {
                     } else {
                         /**下发成功 加入数据库**/
                         AccessPerson accessPerson = accessPersonVo;
+                        accessPerson.setId(null);
                         accessPerson.setPid((String) pid);
                         accessPerson.setAccessId(personInfo.getAccessId());
                         accessPerson.setAccessPw(personInfo.getAccessPw());

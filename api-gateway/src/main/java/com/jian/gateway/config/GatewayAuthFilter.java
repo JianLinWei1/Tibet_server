@@ -78,9 +78,10 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
 
         try {
             Map<String, String> map = (Map<String, String>) JwtUtil.getInstance().checkJWT(token);
-            MultiValueMap<String , String> valueMap = new LinkedMultiValueMap<>();
+            MultiValueMap<String , Object> valueMap = new LinkedMultiValueMap<>();
             valueMap.add("username" , map.get("username"));
             valueMap.add("userId", map.get("userId"));
+            valueMap.add("childs", map.get("childs"));
 
             URI uri = new URIBuilder(exchange.getRequest().getURI().toString()).addParameter("user_name" , map.get("username"))
                     .addParameter("userId" , map.get("userId")).build();

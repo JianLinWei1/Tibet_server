@@ -1,9 +1,14 @@
 package com.mj.mainservice.service.impl;
 
 
+import com.alibaba.fastjson.JSON;
 import com.jian.common.util.ResultUtil;
 
+import com.mj.mainservice.entitys.access.AccessPerson;
+import com.mj.mainservice.entitys.parking.ParkingUserInfo;
 import com.mj.mainservice.entitys.person.PersonInfo;
+import com.mj.mainservice.resposity.access.AccessPersonResposity;
+import com.mj.mainservice.resposity.parking.ParkingPersonResposity;
 import com.mj.mainservice.resposity.person.PersonRepository;
 import com.mj.mainservice.service.person.PersonService;
 import lombok.extern.log4j.Log4j2;
@@ -25,6 +30,10 @@ public class PersonServiceImpl implements PersonService {
 //    private MongoTemplate mongoTemplate;
     @Resource
     private PersonRepository personRepository;
+    @Resource
+    private AccessPersonResposity accessPersonResposity ;
+    @Resource
+    private ParkingPersonResposity parkingPersonResposity;
 
 
     @Override
@@ -102,9 +111,23 @@ public class PersonServiceImpl implements PersonService {
     @Transactional
     public ResultUtil delPerson(List<String> ids) {
         try{
+            List<String>  dels = new ArrayList<>();
             ids.stream().forEach(id ->{
+                List<AccessPerson> accessPerson = accessPersonResposity.findAllByPidEquals(id);
+                if(accessPerson.size() > 0){
+                    dels.add(id);
+                    return;
+                }
+                List<ParkingUserInfo>  parkingUserInfos = parkingPersonResposity.findAllByPersonIdEquals(id);
+                if(parkingUserInfos.size() > 0){
+                    dels.add(id);
+                    return;
+                }
                 personRepository.deleteById(id);
             });
+            if(dels.size() > 0)
+                return new ResultUtil(-2, "存在已下发人员，请先删除从门禁设备/车辆删除,人员ID:"+ JSON.toJSONString(dels));
+
             return  ResultUtil.ok();
         }catch (Exception e){
             log.error(e.getMessage());

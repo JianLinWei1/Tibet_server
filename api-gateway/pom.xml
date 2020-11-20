@@ -15,7 +15,9 @@
         <jian.version>1.0.1</jian.version>
         <swagger.version>2.10.5</swagger.version>
         <feign.version>1.4.7.RELEASE</feign.version>
-
+        <main.version>1.0.3</main.version>
+        <docker.repostory>registry.cn-beijing.aliyuncs.com</docker.repostory>
+        <docker.repostory.name>ljserver</docker.repostory.name>
     </properties>
 
     <dependencies>
@@ -103,9 +105,9 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <!-- 指定生成的镜像名 -->
-                    <imageName>${project.artifactId}:${project.version}</imageName>
-                    <!-- 指定标签 -->
+                    <serverId>docker-registry</serverId>
+                    <registryUrl>${docker.repostory}</registryUrl>
+                    <imageName>${docker.repostory}/${docker.repostory.name}/${project.artifactId}:${main.version}</imageName>
                     <imageTags>
                         <imageTag>${project.version}</imageTag>
                     </imageTags>
