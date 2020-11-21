@@ -10,6 +10,8 @@ import com.mj.mainservice.service.parking.UploadRecoedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * Created by MrJan on 2020/10/28
  */
@@ -34,7 +36,7 @@ public class ParkingDeviceController {
 
 
     @PostMapping("/plateUpload")
-    public  void plateUpload(@RequestBody PlateUpload plateUpload){
+    public  void plateUpload(@RequestBody PlateUpload plateUpload ){
 
        uploadRecoedService.plateUpload(plateUpload);
     }

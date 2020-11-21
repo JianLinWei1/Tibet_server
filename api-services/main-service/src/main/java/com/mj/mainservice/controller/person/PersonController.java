@@ -7,10 +7,12 @@ import com.jian.common.util.ResultUtil;
 import com.mj.mainservice.annotation.SysLogInter;
 import com.mj.mainservice.entitys.person.PersonInfo;
 import com.mj.mainservice.service.person.PersonService;
+import com.mj.mainservice.vo.person.PersonInfoVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -30,17 +32,17 @@ public class PersonController {
 
     @SysLogInter("获取人员列表")
     @PostMapping(value = "/queryPersonsList")
-    public ResultUtil queryPersonsList(@RequestBody PersonInfo info , String userId){
+    public ResultUtil queryPersonsList(@RequestBody PersonInfo info , String userId  , @RequestParam("childs") List<String> childs){
         if(StringUtils.isEmpty(info.getUserId()))
         info.setUserId(userId);
-        return personService.queryPersonsList(info);
+        return personService.queryPersonsList(info ,childs);
     }
 
     @SysLogInter("编辑人员")
     @PostMapping(value = "/editPerson")
-    public ResultUtil editPerson(@RequestBody PersonInfo info , String userId){
+    public ResultUtil editPerson(@RequestBody PersonInfoVo info , String userId){
 
-        info.setUserId(userId);
+        //info.setUserId(userId);
         return personService.editPerson(info);
     }
 

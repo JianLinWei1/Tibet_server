@@ -27,6 +27,8 @@ import javax.annotation.Resource;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -77,17 +79,21 @@ public class GatewayAuthFilter implements GlobalFilter, Ordered {
         }
 
         try {
-            Map<String, String> map = (Map<String, String>) JwtUtil.getInstance().checkJWT(token);
-            MultiValueMap<String , Object> valueMap = new LinkedMultiValueMap<>();
-            valueMap.add("username" , map.get("username"));
-            valueMap.add("userId", map.get("userId"));
-            valueMap.add("childs", map.get("childs"));
 
-            URI uri = new URIBuilder(exchange.getRequest().getURI().toString()).addParameter("user_name" , map.get("username"))
-                    .addParameter("userId" , map.get("userId")).build();
+            Map<String, Object> map = (Map<String, Object>) JwtUtil.getInstance().checkJWT(token);
+           StringBuilder stringBuilder =new StringBuilder();
+            List<String> cs = (List<String>) map.get("childs");
+            cs.stream().forEach(s -> {
+                stringBuilder.append(",");
+                stringBuilder.append(s);
+
+            });
+
+            URI uri = new URIBuilder(exchange.getRequest().getURI().toString()).addParameter("user_name" , (String) map.get("username"))
+                    .addParameter("userId" , (String) map.get("userId")).addParameter("childs" ,stringBuilder.toString().replaceFirst(",","")).build();
 
             ServerHttpRequest httpRequest = exchange.getRequest().mutate().uri(uri).build();
-            log.info(exchange.getRequest().getURI());
+            log.info(exchange.getRequest().getURI() );
 
            /* SysLog sysLog = new SysLog();
             sysLog.setIp(exchange.getRequest().getRemoteAddress().getHostString());

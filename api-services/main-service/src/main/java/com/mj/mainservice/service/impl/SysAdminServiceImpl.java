@@ -3,6 +3,7 @@ package com.mj.mainservice.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.jian.common.entity.AntdTree;
@@ -190,9 +191,9 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
 
     @Override
     @Transactional
-    public ResultUtil delUserByParentId(String parentId) {
+    public ResultUtil delUserByParentId(String parentId ,  String userId) {
         try {
-            if(StringUtils.equals(parentId  , "1"))
+            if(StringUtils.equals(parentId  , userId))
                 return new ResultUtil(-1 , "无法删除");
             QueryWrapper<SysAdmin>  sysAdminQueryWrapper = new QueryWrapper<>();
             sysAdminQueryWrapper.lambda().eq(SysAdmin::getParentId , parentId);
@@ -342,6 +343,8 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
         try {
             if(StringUtils.equals(sysAdminVo.getId()  , "1"))
                 return new ResultUtil(-1 , "无法被编辑");
+            if(StringUtils.equals(sysAdminVo.getId() ,sysAdminVo.getUserId()))
+                return new ResultUtil(-1 , "无法被编辑");
             SysAdmin sysAdmin =  new SysAdmin();
             BeanUtils.copyProperties(sysAdminVo, sysAdmin);
             sysAdmin.setPasswd(md5Util.md5(sysAdmin.getPasswd(), "utf-8"));
@@ -390,5 +393,23 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
            childIds.addAll(childIds2);
         });
         return  childIds;
+    }
+
+    @Override
+    @Transactional
+    public ResultUtil updatePw(String uerId, String oldpw, String newpw) {
+        try {
+           SysAdmin sysAdmin  = sysAdminMapper.selectById(uerId);
+           String oldPwMd5 = md5Util.md5(oldpw , "utf-8");
+           if(!StringUtils.equals(sysAdmin.getPasswd() , oldPwMd5))
+               return  new ResultUtil(-1 , "旧密码不符");
+           String newPwMd5 = md5Util.md5(newpw ,"utf-8");
+           sysAdmin.setPasswd(newPwMd5);
+           sysAdminMapper.updateById(sysAdmin);
+           return  ResultUtil.ok();
+        }catch (Exception e){
+            log.error(e);
+            return  new ResultUtil(-1  ,e.getMessage());
+        }
     }
 }

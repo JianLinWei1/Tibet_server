@@ -8,6 +8,7 @@ import com.mj.mainservice.entitys.system.SysAdmin;
 import com.mj.mainservice.service.system.ISysAdminService;
 import com.mj.mainservice.vo.SysAdminVo;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,15 +60,15 @@ public class AuthLoginController {
 
     @SysLogInter("编辑用户")
     @PostMapping(value = "/updateUser")
-    public ResultUtil updateUser(@RequestBody SysAdminVo sysAdminVo ){
-
+    public ResultUtil updateUser(@RequestBody SysAdminVo sysAdminVo  , String userId ){
+             sysAdminVo.setUserId(userId);
         return  sysAdminService.updateUser(sysAdminVo);
     }
 
     @SysLogInter("删除用户")
     @GetMapping(value = "/delUserByParentId")
-    public  ResultUtil delUserByParentId( String parentId){
-        return  sysAdminService.delUserByParentId(parentId);
+    public  ResultUtil delUserByParentId(String parentId , String  userId){
+        return  sysAdminService.delUserByParentId(parentId ,userId);
     }
 
     @GetMapping(value = "/getAddUserTree")

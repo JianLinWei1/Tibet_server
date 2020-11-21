@@ -16,7 +16,7 @@ public class Main {
         s.add("2");s.add("3");
 
          String s1 = s.toString();
-        System.out.println(Arrays.asList());
+        System.out.println(s1);
 
     }
 }

@@ -12,10 +12,7 @@ import com.mj.mainservice.service.system.ISysAdminService;
 import com.mj.mainservice.service.parking.ParkingVoService;
 import com.mj.mainservice.service.person.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -62,10 +59,10 @@ public class ParkingVoController {
 
 
     @PostMapping("/getPersonByName")
-    public  ResultUtil getPersonByName(@RequestBody PersonInfo info){
+    public  ResultUtil getPersonByName(@RequestBody PersonInfo info ,@RequestParam("childs") List<String>  childs){
       info.setPage(1);
       info.setLimit(10);
-     return personService.queryPersonsList(info);
+     return personService.queryPersonsList(info ,childs);
     }
 
 

@@ -51,4 +51,6 @@ public class SysAdminVo {
      */
     private String parentId;
     private List<String> routerIds;
+
+    private String userId;
 }

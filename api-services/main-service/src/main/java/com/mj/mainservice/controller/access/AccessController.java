@@ -55,11 +55,11 @@ public class AccessController {
     }
 
     @PostMapping("/queryPersonsList")
-    public ResultUtil queryPersonsList(@RequestBody PersonInfo infoVo, String userId) {
+    public ResultUtil queryPersonsList(@RequestBody PersonInfo infoVo, String userId  ,@RequestParam("childs") List<String>  childs) {
         infoVo.setUserId(userId);
         infoVo.setPage(1);
         infoVo.setLimit(10);
-        return personService.queryPersonsList(infoVo);
+        return personService.queryPersonsList(infoVo , childs);
     }
 
     @SysLogInter("下发人员")

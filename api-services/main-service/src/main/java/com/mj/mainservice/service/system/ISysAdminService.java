@@ -28,7 +28,7 @@ public interface ISysAdminService extends IService<SysAdmin> {
 
     ResultUtil addUser(SysAdminVo sysAdminvo);
 
-    ResultUtil  delUserByParentId(String parentId);
+    ResultUtil  delUserByParentId(String parentId , String userId);
 
     ResultUtil getAddUserTree(String userId);
 
@@ -41,5 +41,7 @@ public interface ISysAdminService extends IService<SysAdmin> {
     ResultUtil updateUser(SysAdminVo sysAdminVo);
 
     List<String>  getChildByUerIds(String userId);
+
+    ResultUtil updatePw(String uerId , String oldpw , String newpw);
 
 }

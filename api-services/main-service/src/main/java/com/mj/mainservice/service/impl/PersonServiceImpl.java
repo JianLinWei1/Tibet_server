@@ -11,8 +11,14 @@ import com.mj.mainservice.resposity.access.AccessPersonResposity;
 import com.mj.mainservice.resposity.parking.ParkingPersonResposity;
 import com.mj.mainservice.resposity.person.PersonRepository;
 import com.mj.mainservice.service.person.PersonService;
+import com.mj.mainservice.vo.person.PersonInfoVo;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.*;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +37,9 @@ public class PersonServiceImpl implements PersonService {
     @Resource
     private PersonRepository personRepository;
     @Resource
-    private AccessPersonResposity accessPersonResposity ;
+    private MongoTemplate mongoTemplate;
+    @Resource
+    private AccessPersonResposity accessPersonResposity;
     @Resource
     private ParkingPersonResposity parkingPersonResposity;
 
@@ -40,11 +48,11 @@ public class PersonServiceImpl implements PersonService {
     @Transactional
     public ResultUtil insertPerson(PersonInfo info) {
         try {
-            if(personRepository.findById(info.getId()).isPresent())
-                return new ResultUtil(-1,"该ID已存在");
+            if (personRepository.findById(info.getId()).isPresent())
+                return new ResultUtil(-1, "该ID已存在");
             PersonInfo personInfo1 = personRepository.findByAccessIdEquals(info.getAccessId());
-            if(personInfo1 != null)
-                return new ResultUtil(-1,"该门禁卡号已经被注册");
+            if (personInfo1 != null)
+                return new ResultUtil(-1, "该门禁卡号已经被注册");
             info.setCreateTime(LocalDateTime.now(ZoneId.systemDefault()));
             personRepository.insert(info);
             return ResultUtil.ok();
@@ -56,24 +64,30 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public ResultUtil queryPersonsList(PersonInfo info) {
+    public ResultUtil queryPersonsList(PersonInfo info, List<String> childs) {
         try {
             PageRequest pageRequest = PageRequest.of(info.getPage() - 1, info.getLimit(), Sort.by(Sort.Direction.DESC, "createTime"));
             List<PersonInfo> personInfos = new ArrayList<PersonInfo>();
             long total = 0;
 //            if (StringUtils.isNotEmpty(info.getId()) || StringUtils.isNotEmpty(info.getCarId()) ||
 //                    StringUtils.isNotEmpty(info.getName()) || StringUtils.isNotEmpty(info.getAccessId()) || info.getRole() != null) {
-                ExampleMatcher matcher = ExampleMatcher.matching()
-                        .withMatcher("id", ExampleMatcher.GenericPropertyMatchers.exact())
-                        .withMatcher("userId" , ExampleMatcher.GenericPropertyMatchers.exact())
-                        .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
-                        .withIgnorePaths("page", "limit","accessPw")
-                        .withNullHandler(ExampleMatcher.NullHandler.IGNORE);
-                Example<PersonInfo> example = Example.of(info, matcher);
+            ExampleMatcher matcher = ExampleMatcher.matching()
+                    .withMatcher("id", ExampleMatcher.GenericPropertyMatchers.exact())
+                    .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
+                    .withIgnorePaths("page", "limit", "accessPw")
+                    .withNullHandler(ExampleMatcher.NullHandler.IGNORE)
+                    .withIgnoreNullValues();
 
-                Page<PersonInfo> personInfos1 = personRepository.findAll(example, pageRequest);
-                personInfos = personInfos1.toList();
-                total = personInfos1.getTotalElements();
+            childs.add(info.getUserId());
+            Example<PersonInfo> example = Example.of(info, matcher);
+            Query query = new Query();
+            query.addCriteria(Criteria.where("userId").in(childs));
+
+
+            Page<PersonInfo> personInfos1 = personRepository.findAll(example, query, pageRequest);
+
+            personInfos = personInfos1.toList();
+            total = personInfos1.getTotalElements();
 //            } else {
 //                Page<PersonInfo> personInfos2 = personRepository.findAll(pageRequest);
 //                personInfos = personInfos2.toList();
@@ -96,13 +110,20 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     @Transactional
-    public ResultUtil editPerson(PersonInfo info) {
+    public ResultUtil editPerson(PersonInfoVo info) {
         try {
-          personRepository.save(info);
-          return ResultUtil.ok();
-        }catch (Exception e){
+            PersonInfo personInfo = new PersonInfo();
+            BeanUtils.copyProperties(info, personInfo);
+            if (StringUtils.isNotEmpty(info.getOid()))
+                personRepository.deleteById(info.getOid());
+
+            personRepository.save(personInfo);
+
+
+            return ResultUtil.ok();
+        } catch (Exception e) {
             log.error(e.getMessage());
-            return  new ResultUtil(-1 , e.getMessage());
+            return new ResultUtil(-1, e.getMessage());
         }
 
     }
@@ -110,50 +131,49 @@ public class PersonServiceImpl implements PersonService {
     @Override
     @Transactional
     public ResultUtil delPerson(List<String> ids) {
-        try{
-            List<String>  dels = new ArrayList<>();
-            ids.stream().forEach(id ->{
+        try {
+            List<String> dels = new ArrayList<>();
+            ids.stream().forEach(id -> {
                 List<AccessPerson> accessPerson = accessPersonResposity.findAllByPidEquals(id);
-                if(accessPerson.size() > 0){
+                if (accessPerson.size() > 0) {
                     dels.add(id);
                     return;
                 }
-                List<ParkingUserInfo>  parkingUserInfos = parkingPersonResposity.findAllByPersonIdEquals(id);
-                if(parkingUserInfos.size() > 0){
+                List<ParkingUserInfo> parkingUserInfos = parkingPersonResposity.findAllByPersonIdEquals(id);
+                if (parkingUserInfos.size() > 0) {
                     dels.add(id);
                     return;
                 }
                 personRepository.deleteById(id);
             });
-            if(dels.size() > 0)
-                return new ResultUtil(-2, "存在已下发人员，请先删除从门禁设备/车辆删除,人员ID:"+ JSON.toJSONString(dels));
+            if (dels.size() > 0)
+                return new ResultUtil(-2, "存在已下发人员，请先删除从门禁设备/车辆删除,人员ID:" + JSON.toJSONString(dels));
 
-            return  ResultUtil.ok();
-        }catch (Exception e){
+            return ResultUtil.ok();
+        } catch (Exception e) {
             log.error(e.getMessage());
-            return new ResultUtil(-1 , e.getMessage());
+            return new ResultUtil(-1, e.getMessage());
         }
     }
 
     @Override
-    public List<PersonInfo>  quryPersonListNoPage(PersonInfo personInfo) {
+    public List<PersonInfo> quryPersonListNoPage(PersonInfo personInfo) {
         try {
-
 
 
 //            if (StringUtils.isNotEmpty(info.getId()) || StringUtils.isNotEmpty(info.getCarId()) ||
 //                    StringUtils.isNotEmpty(info.getName()) || StringUtils.isNotEmpty(info.getAccessId()) || info.getRole() != null) {
             ExampleMatcher matcher = ExampleMatcher.matching()
                     .withMatcher("id", ExampleMatcher.GenericPropertyMatchers.exact())
-                    .withMatcher("userId" , ExampleMatcher.GenericPropertyMatchers.exact())
+                    .withMatcher("userId", ExampleMatcher.GenericPropertyMatchers.exact())
                     .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
-                    .withIgnorePaths("page", "limit","accessPw")
+                    .withIgnorePaths("page", "limit", "accessPw")
                     .withNullHandler(ExampleMatcher.NullHandler.IGNORE);
             Example<PersonInfo> example = Example.of(personInfo, matcher);
 
-            List<PersonInfo> personInfos   = personRepository.findAll(example);
+            List<PersonInfo> personInfos = personRepository.findAll(example);
 
-            return personInfos ;
+            return personInfos;
 
         } catch (Exception e) {
             log.error(e);
@@ -164,11 +184,11 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public PersonInfo getPersonById(String id) {
         try {
-         PersonInfo personInfo =   personRepository.findById(id).get();
-         return  personInfo;
-        }catch (Exception e){
+            PersonInfo personInfo = personRepository.findById(id).get();
+            return personInfo;
+        } catch (Exception e) {
             log.error(e);
-            return  null;
+            return null;
         }
     }
 }
