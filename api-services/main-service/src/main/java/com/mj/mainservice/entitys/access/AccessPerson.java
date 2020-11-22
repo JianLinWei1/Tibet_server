@@ -22,4 +22,5 @@ public class AccessPerson  extends PageHelper {
     private  String ip;
     private String userId;
     private List<Integer>  doors;
+    private String department;
 }

@@ -1,7 +1,13 @@
 package com.mj.mainservice.resposity.access;
 
 
+
 import com.mj.mainservice.entitys.access.AccessPerson;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,4 +23,6 @@ public interface AccessPersonResposity  extends MongoRepository<AccessPerson,Str
     AccessPerson findByAccessIdEquals(String pid);
 
     List<AccessPerson>  findAllByPidEquals(String pid);
+
+    Page<AccessPerson> findAll(Example<AccessPerson> example , Query query, Pageable pageable);
 }

@@ -1,10 +1,12 @@
 package com.mj.mainservice.service.impl;
 
 
+import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson.JSON;
 import com.jian.common.util.ResultUtil;
 
 import com.mj.mainservice.entitys.access.AccessPerson;
+import com.mj.mainservice.entitys.access.Translation;
 import com.mj.mainservice.entitys.parking.ParkingUserInfo;
 import com.mj.mainservice.entitys.person.PersonInfo;
 import com.mj.mainservice.resposity.access.AccessPersonResposity;
@@ -15,6 +17,7 @@ import com.mj.mainservice.vo.person.PersonInfoVo;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -23,6 +26,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -42,6 +48,8 @@ public class PersonServiceImpl implements PersonService {
     private AccessPersonResposity accessPersonResposity;
     @Resource
     private ParkingPersonResposity parkingPersonResposity;
+    @Value("${server.port}")
+    private String port;
 
 
     @Override
@@ -189,6 +197,26 @@ public class PersonServiceImpl implements PersonService {
         } catch (Exception e) {
             log.error(e);
             return null;
+        }
+    }
+
+
+    @Override
+    public ResultUtil exportPerson(List<PersonInfoVo> personInfoVo) {
+        try {
+            personInfoVo.stream().forEach(p->{
+                try {
+                    p.setPhotoUrl(new URL("http://localhost:"+port+"/"+p.getPhoto().replace("\\", "/")));
+                } catch (MalformedURLException e) {
+                    log.error(e);
+                }
+            });
+            String path = System.currentTimeMillis()+".xlsx";
+            EasyExcel.write("upload"+ File.separator +path , PersonInfoVo.class).sheet().doWrite(personInfoVo);
+            return new ResultUtil(0 ,path , "");
+        }catch (Exception e){
+            log.error(e);
+            return new ResultUtil(-1, e.getMessage());
         }
     }
 }

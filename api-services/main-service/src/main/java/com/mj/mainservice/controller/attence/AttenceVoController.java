@@ -8,11 +8,14 @@ import com.mj.mainservice.entitys.attence.AttenceReport;
 import com.mj.mainservice.service.access.AccessService;
 import com.mj.mainservice.service.attence.AttenceConfigService;
 import com.mj.mainservice.service.attence.AttenceReportService;
+import com.mj.mainservice.vo.attence.AttenceReportVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @auther JianLinWei
@@ -56,6 +59,13 @@ public class AttenceVoController {
     public ResultUtil getAttenceReport(@RequestBody AttenceReport report , String userId){
         report.setUserId(userId);
         return reportService.getAttenceReport(report);
+    }
+
+    @SysLogInter("导出报表")
+    @PostMapping("/exportAttenceReport")
+    public ResultUtil exportAttenceReport(@RequestBody List<AttenceReportVo> attenceReports){
+
+        return reportService.exportAttenceReport(attenceReports);
     }
 
 

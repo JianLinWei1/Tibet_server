@@ -44,7 +44,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
 
 
     @Override
-    public ResultUtil listParking(ParkInfo parkInfo) {
+    public ResultUtil listParking(ParkInfo parkInfo , List<String>  childs) {
         try {
             ExampleMatcher  matcher  = ExampleMatcher.matching()
                                        .withMatcher("ipaddr" , ExampleMatcher.GenericPropertyMatchers.exact())
@@ -54,7 +54,10 @@ public class ParkingVoServiceImpl implements ParkingVoService {
 
             Pageable  pageable = PageRequest.of(parkInfo.getPage(), parkInfo.getLimit());
             Example<ParkInfo>  example = Example.of(parkInfo ,matcher);
-           Page<ParkInfo>  page = parkingResposity.findAll(example , pageable);
+            childs.add(parkInfo.getUserId());
+            Query query = new Query();
+            query.addCriteria(Criteria.where("userId").in(childs));
+           Page<ParkInfo>  page = parkingResposity.findAll(example , query, pageable);
            ResultUtil resultUtil = new ResultUtil();
            resultUtil.setCode(0);
            resultUtil.setCount(page.getTotalElements());
@@ -121,7 +124,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
 
 
     @Override
-    public ResultUtil listParkingPerson(ParkingUserInfo parkingUserInfo) {
+    public ResultUtil listParkingPerson(ParkingUserInfo parkingUserInfo , List<String>  childs) {
         try {
 
             ExampleMatcher  matcher = ExampleMatcher.matching()
@@ -132,7 +135,9 @@ public class ParkingVoServiceImpl implements ParkingVoService {
             Example<ParkingUserInfo>  example = Example.of(parkingUserInfo ,matcher);
             Pageable pageable = PageRequest.of(parkingUserInfo.getPage() , parkingUserInfo.getLimit());
             Query query = new Query();
+            childs.add(parkingUserInfo.getUserId());
             query.addCriteria(Criteria.where("action").ne(1));
+            query.addCriteria(Criteria.where("userId").in(childs));
             Page<ParkingUserInfo>  page = parkingPersonResposity.findAll(example ,query, pageable);
             ResultUtil resultUtil = new ResultUtil();
             resultUtil.setCode(0);
@@ -164,13 +169,16 @@ public class ParkingVoServiceImpl implements ParkingVoService {
     }
 
     @Override
-    public ResultUtil listParkingResult(ParkingResult parkingResult) {
+    public ResultUtil listParkingResult(ParkingResult parkingResult , List<String>  childs) {
         try {
             ExampleMatcher matcher  = ExampleMatcher.matching().withMatcher("ipaddr" ,ExampleMatcher.GenericPropertyMatchers.exact())
                                                                .withMatcher("plateid",ExampleMatcher.GenericPropertyMatchers.contains())
                                                                 .withIgnorePaths("page" , "limit");
             Example<ParkingResult> example = Example.of(parkingResult , matcher);
+            Query query = new Query();
+            query.addCriteria(Criteria.where("userId").in(query));
             Page<ParkingResult> page = parkingResultResposity.findAll(example , PageRequest.of(parkingResult.getPage() , parkingResult.getLimit()));
+
             ResultUtil resultUtil = new ResultUtil();
             resultUtil.setCode(0);
             resultUtil.setCount(page.getTotalElements());

@@ -2,6 +2,7 @@ package com.mj.mainservice.controller.attence;
 
 
 import com.jian.common.util.ResultUtil;
+import com.mj.mainservice.annotation.SysLogInter;
 import com.mj.mainservice.entitys.attence.AttenceReport;
 import com.mj.mainservice.service.access.AccessService;
 import com.mj.mainservice.service.access.TranslationService;
@@ -25,6 +26,7 @@ public class AccessAttenceController {
 
       return accessService.getDeviceTree(userId);
     }
+
 
     @PostMapping("/getAttenceReport")
     public  ResultUtil getAttenceReport(@RequestBody AttenceReport report){

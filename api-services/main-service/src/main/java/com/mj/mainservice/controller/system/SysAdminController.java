@@ -6,6 +6,7 @@ import com.mj.mainservice.service.system.ISysAdminService;
 import com.mj.mainservice.vo.system.NewPw;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,7 +32,7 @@ public class SysAdminController {
         return sysAdminService.getUserById(id);
     }
 
-    @GetMapping("/updatePw")
+    @PostMapping("/updatePw")
     public  ResultUtil  updatePw(@RequestBody NewPw newPw  ,String userId){
 
         return  sysAdminService.updatePw(userId ,newPw.getOldPw() ,newPw.getNewPw());

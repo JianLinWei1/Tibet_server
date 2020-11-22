@@ -24,6 +24,9 @@ public class Translation  extends PageHelper {
     private String personId;
     @ExcelProperty("姓名")
     private String name;
+    @ExcelProperty("姓名")
+    private String department;
+
 
     @ExcelProperty(value = "刷卡时间" ,converter = LocalDateTimeConverter.class)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

@@ -1,9 +1,10 @@
-package com.mj.mainservice.entitys.attence;
+package com.mj.mainservice.vo.attence;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jian.common.util.LocalDateTimeConverter;
+import com.mj.mainservice.entitys.attence.AttenceConfig;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -13,10 +14,10 @@ import java.util.List;
 
 /**
  * @auther JianLinWei
- * @date 2020-11-15 15:28
+ * @date 2020-11-22 16:00
  */
 @Data
-public class AttenceReport {
+public class AttenceReportVo {
 
     @ExcelProperty("姓名")
     private  String name;
@@ -25,16 +26,20 @@ public class AttenceReport {
     private String personId;
 
 
-    @ExcelProperty(value = "日期范围" ,converter = LocalDateTimeConverter.class)
+
+
+    @ExcelIgnore
     @DateTimeFormat(pattern = "yyyy-MM-dd" )
     @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
-    private List<LocalDate>  times;
+    private List<LocalDate> times;
 
+    @ExcelIgnore
     private Integer con;
 
 
 
-    @ExcelProperty(value = "考勤时间" , converter = LocalDateTimeConverter.class)
+
+    @ExcelIgnore
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private List<LocalDateTime>  timeList;
@@ -53,6 +58,12 @@ public class AttenceReport {
 
     @ExcelIgnore
     private AttenceConfig config;
+
+    @ExcelProperty(value = "日期范围" )
+    private String times_str;
+
+    @ExcelProperty(value = "考勤时间" )
+    private String timeList_str;
 
 
 

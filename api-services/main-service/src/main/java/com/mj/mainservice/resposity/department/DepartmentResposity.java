@@ -1,20 +1,21 @@
-package com.mj.mainservice.resposity.access;
+package com.mj.mainservice.resposity.department;
 
 
-import com.mj.mainservice.entitys.access.DeviceInfo;
-
+import com.mj.mainservice.entitys.person.Department;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.repository.MongoRepository;
+
 import org.springframework.stereotype.Repository;
 
 /**
- * Created by MrJan on 2020/10/19 16:19
+ * @auther JianLinWei
+ * @date 2020-11-21 19:56
  */
-
 @Repository
-public interface AccessRespository  extends MongoRepository<DeviceInfo, String> {
-    Page<DeviceInfo> findAll(Example<DeviceInfo> example , Query query, Pageable pageable);
+public interface DepartmentResposity extends MongoRepository<Department , String> {
+
+    Page<Department>   findAll(Example<Department> example , Query query, Pageable pageable);
 }

@@ -24,5 +24,7 @@ public interface PersonService {
 
     PersonInfo getPersonById(String  id);
 
+    ResultUtil exportPerson(List<PersonInfoVo>  personInfoVo);
+
 
 }

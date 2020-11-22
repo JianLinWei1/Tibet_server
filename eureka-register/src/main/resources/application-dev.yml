@@ -6,8 +6,8 @@ server:
 eureka:
   instance:
     hostname: eureka-register
-    lease-renewal-interval-in-seconds: 5
-    lease-expiration-duration-in-seconds: 5
+    lease-renewal-interval-in-seconds: 3
+    lease-expiration-duration-in-seconds: 3
   client:
     #防止自己注册到服务发现中心 因为本项目就是一个服务发现 不需要自己注册到自己
     register-with-eureka: false
@@ -17,4 +17,4 @@ eureka:
       #注册服务器的地址
       defaultZone: http://127.0.0.1:${server.port}/eureka
     #刷新缓存时间
-    registry-fetch-interval-seconds: 5
+    registry-fetch-interval-seconds: 3

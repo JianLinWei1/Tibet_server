@@ -4,12 +4,13 @@ import com.jian.common.util.ResultUtil;
 import com.mj.mainservice.entitys.parking.ParkInfo;
 import com.mj.mainservice.entitys.parking.ParkingResult;
 import com.mj.mainservice.entitys.parking.ParkingUserInfo;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
 public interface ParkingVoService {
 
-    ResultUtil  listParking(ParkInfo parkInfo);
+    ResultUtil  listParking(ParkInfo parkInfo , List<String>  childs);
 
     ResultUtil saveParkInfo(ParkInfo parkInfo);
 
@@ -17,13 +18,13 @@ public interface ParkingVoService {
 
     ResultUtil  saveParkPersonInfo(ParkingUserInfo parkingUserInfo);
 
-    ResultUtil  listParkingPerson(ParkingUserInfo parkingUserInfo);
+    ResultUtil  listParkingPerson(ParkingUserInfo parkingUserInfo , List<String>  childs);
 
 
     ResultUtil delParkingPerson(List<String> ids);
 
 
-    ResultUtil listParkingResult(ParkingResult parkingResult);
+    ResultUtil listParkingResult(ParkingResult parkingResult ,List<String>  childs);
 
     ResultUtil delParkingResult(List<String>  ids);
 

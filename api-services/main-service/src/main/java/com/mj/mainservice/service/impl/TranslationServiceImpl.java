@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
@@ -94,7 +95,7 @@ public class TranslationServiceImpl implements TranslationService {
             attenceReport.setTimes(report.getTimes());
             //查询考勤的记录
             Date date1 = Date.from(report.getTimes().get(0).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
-            Date date2 = Date.from(report.getTimes().get(1).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+            Date date2 = Date.from(report.getTimes().get(1).atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant());
             List<Translation> translations = translationResposity.findAllByPersonIdAndSnInAndTimeBetween(p.getId(),
                     report.getConfig().getSns() ,date1  ,date2 );
             //迟到早退次数

@@ -36,8 +36,9 @@ public class ParkingVoController {
 
     @SysLogInter("获取车辆列表")
     @PostMapping("/listParking")
-    public ResultUtil listParking(@RequestBody ParkInfo parkInfo){
-        return  parkingVoService.listParking(parkInfo);
+    public ResultUtil listParking(@RequestBody ParkInfo parkInfo ,String userId,@RequestParam("childs") List<String>  childs){
+        parkInfo.setUserId(userId);
+        return  parkingVoService.listParking(parkInfo ,childs);
     }
 
     @GetMapping("/getUserIdByName")
@@ -59,9 +60,10 @@ public class ParkingVoController {
 
 
     @PostMapping("/getPersonByName")
-    public  ResultUtil getPersonByName(@RequestBody PersonInfo info ,@RequestParam("childs") List<String>  childs){
+    public  ResultUtil getPersonByName(@RequestBody PersonInfo info , String userId ,@RequestParam("childs") List<String>  childs){
       info.setPage(1);
       info.setLimit(10);
+      info.setUserId(userId);
      return personService.queryPersonsList(info ,childs);
     }
 
@@ -75,8 +77,9 @@ public class ParkingVoController {
 
     @SysLogInter("获取车辆人员信息列表")
     @PostMapping("/listParkingPerson")
-    public  ResultUtil listParkingPerson(@RequestBody ParkingUserInfo parkingUserInfo){
-           return  parkingVoService.listParkingPerson(parkingUserInfo);
+    public  ResultUtil listParkingPerson(@RequestBody ParkingUserInfo parkingUserInfo , String userId ,@RequestParam("childs") List<String>  childs){
+           parkingUserInfo.setUserId(userId);
+           return  parkingVoService.listParkingPerson(parkingUserInfo ,childs);
     }
 
 
@@ -88,8 +91,9 @@ public class ParkingVoController {
 
     @SysLogInter("获取车牌识别结果")
     @PostMapping("/listParkingResult")
-    public ResultUtil listParkingResult(@RequestBody ParkingResult parkingResult){
-        return  parkingVoService.listParkingResult(parkingResult);
+    public ResultUtil listParkingResult(@RequestBody ParkingResult parkingResult , String userId ,@RequestParam("childs") List<String>  childs){
+        parkingResult.setUserId(userId);
+        return  parkingVoService.listParkingResult(parkingResult ,childs);
     }
 
     @SysLogInter("删除车牌识别结果")

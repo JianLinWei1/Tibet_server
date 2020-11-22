@@ -8,10 +8,7 @@ import com.mj.mainservice.annotation.SysLogInter;
 import com.mj.mainservice.entitys.system.SysLog;
 import com.mj.mainservice.service.system.ISysLogService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,9 +46,9 @@ public class SystemController {
 
 
     @PostMapping("/getSysLogs")
-    public ResultUtil getSysLogs(@RequestBody SysLog sysLog){
-
-        return iSysLogService.getSysLogs(sysLog);
+    public ResultUtil getSysLogs(@RequestBody SysLog sysLog , String userId , @RequestParam("childs") List<String> childs){
+         sysLog.setUserId(userId);
+        return iSysLogService.getSysLogs(sysLog ,childs);
     }
 
     @SysLogInter("删除系统日志")

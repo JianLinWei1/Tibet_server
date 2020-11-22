@@ -1,5 +1,6 @@
 package com.mj.mainservice.entitys.person;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jian.common.util.PageHelper;
 import lombok.Data;
@@ -11,20 +12,27 @@ import java.time.LocalDateTime;
 @Data
 public class PersonInfo extends PageHelper {
 
+
     @Id
     private  String  id ;
 
+
     private String  name ;
+
 
     private String  idCard;
 
+
     private String  accessId;
+
 
     private int  accessPw;
 
     private String carId;
 
+
     private String phone ;
+
 
     private  String photo ;
 
@@ -48,4 +56,7 @@ public class PersonInfo extends PageHelper {
     private  Integer role;
 
     private  String userId;
+
+
+    private String department;
 }

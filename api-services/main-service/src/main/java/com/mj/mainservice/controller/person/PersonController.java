@@ -5,6 +5,7 @@ package com.mj.mainservice.controller.person;
 import com.jian.common.util.ResultUtil;
 
 import com.mj.mainservice.annotation.SysLogInter;
+import com.mj.mainservice.entitys.access.Translation;
 import com.mj.mainservice.entitys.person.PersonInfo;
 import com.mj.mainservice.service.person.PersonService;
 import com.mj.mainservice.vo.person.PersonInfoVo;
@@ -59,6 +60,16 @@ public class PersonController {
     public List<PersonInfo> quryPersonListNoPage(@RequestBody PersonInfo info ){
         return  personService.quryPersonListNoPage(info);
     }
+
+
+    @SysLogInter("导出人员")
+    @PostMapping("/exportPerson")
+    public ResultUtil exportPerson(@RequestBody List<PersonInfoVo> personInfoVos){
+
+        return personService.exportPerson(personInfoVos);
+    }
+
+
 
 
 

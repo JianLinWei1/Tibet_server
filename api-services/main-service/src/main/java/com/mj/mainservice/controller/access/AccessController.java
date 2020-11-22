@@ -49,9 +49,9 @@ public class AccessController {
 
     @SysLogInter("获取门禁控制器列表")
     @GetMapping("/listDevice")
-    public ResultUtil listDevice(int page, int limit, String userId) {
+    public ResultUtil listDevice(int page, int limit, String userId ,@RequestParam("childs") List<String> childs) {
 
-        return accessService.listDevice(page, limit, userId);
+        return accessService.listDevice(page, limit, userId ,childs);
     }
 
     @PostMapping("/queryPersonsList")
@@ -73,9 +73,9 @@ public class AccessController {
 
     @SysLogInter("获取发卡记录")
     @PostMapping("/listAccessPersons")
-    public ResultUtil listAccessPersons(@RequestBody AccessPerson accessPerson){
-
-        return accessService.listAccessPersons(accessPerson);
+    public ResultUtil listAccessPersons(@RequestBody AccessPerson accessPerson,String userId ,@RequestParam("childs") List<String>  childs){
+        accessPerson.setUserId(userId);
+        return accessService.listAccessPersons(accessPerson ,childs);
     }
 
     @SysLogInter("删除记录并从设备删除人员")
@@ -87,9 +87,9 @@ public class AccessController {
 
     @SysLogInter("刷卡记录")
     @PostMapping("/listRecords")
-    public ResultUtil listRecords(@RequestBody Translation translation){
-
-        return accessService.listRecords(translation);
+    public ResultUtil listRecords(@RequestBody Translation translation , String userId ,@RequestParam("childs") List<String>  childs){
+         translation.setUserId(userId);
+        return accessService.listRecords(translation ,childs);
     }
 
 
@@ -99,6 +99,7 @@ public class AccessController {
     }
 
 
+    @SysLogInter("导出刷卡记录")
     @PostMapping("/exportRecords")
     public ResultUtil exportRecords(@RequestBody List<Translation> translation){
 

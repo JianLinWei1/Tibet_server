@@ -20,21 +20,21 @@ public interface AccessService {
 
     ResultUtil addDevice(DeviceInfo info);
 
-    ResultUtil listDevice(int page , int limit , String userId);
+    ResultUtil listDevice(int page , int limit , String userId  ,List<String> childs);
 
     ResultUtil issuedPerson(AccessPersonVo accessPersonVo);
 
 
-    ResultUtil listAccessPersons(AccessPerson accessPerson );
+    ResultUtil listAccessPersons(AccessPerson accessPerson  ,List<String> childs);
 
 
     ResultUtil DelAccessPerson(List<String> ids);
 
 
-    ResultUtil upload(List<Translation>  translations);
+    ResultUtil upload(List<Translation>  translations );
 
 
-    ResultUtil listRecords(Translation translation);
+    ResultUtil listRecords(Translation translation ,List<String> childs);
 
     ResultUtil delRecords(List<String>  ids);
 

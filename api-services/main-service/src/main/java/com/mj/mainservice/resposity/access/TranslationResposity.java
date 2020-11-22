@@ -2,6 +2,10 @@ package com.mj.mainservice.resposity.access;
 
 
 import com.mj.mainservice.entitys.access.Translation;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Date;
@@ -15,4 +19,6 @@ public interface TranslationResposity  extends MongoRepository<Translation, Stri
 
 
     List<Translation>  findAllByPersonIdAndSnInAndTimeBetween(String personId , List<String> sn , Date date1 , Date date2);
+
+    Page<Translation>  findAll(Example<Translation> example , Query query, Pageable pageable);
 }

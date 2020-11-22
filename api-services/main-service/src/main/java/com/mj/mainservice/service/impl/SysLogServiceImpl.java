@@ -67,7 +67,7 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> impleme
     }
 
     @Override
-    public ResultUtil getSysLogs(SysLog sysLog) {
+    public ResultUtil getSysLogs(SysLog sysLog ,List<String>  childs) {
         try {
             QueryWrapper<SysLog>  queryWrapper = new QueryWrapper<>();
            if(StringUtils.isNotEmpty(sysLog.getUserName()))
@@ -75,6 +75,8 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> impleme
            queryWrapper.lambda().select(SysLog.class,i -> !i.getColumn().equals("page")
                    && !i.getColumn().equals("limit"));
            queryWrapper.lambda().orderByDesc(SysLog::getTime);
+           childs.add(sysLog.getUserId());
+           queryWrapper.lambda().in(SysLog::getUserId,childs);
             IPage<SysLog> page = new Page<>(sysLog.getPage() , sysLog.getLimit());
            sysLogMapper.selectPage(page,queryWrapper);
            ResultUtil resultUtil = new ResultUtil();

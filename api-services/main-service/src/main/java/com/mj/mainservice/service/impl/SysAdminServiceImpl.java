@@ -29,7 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -324,10 +326,17 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
         List<SysAdminMenu>  menuList = sysAdminMenuMapper.selectList(queryWrapper);
         List<String>  menuIds = new ArrayList<>();
         for(SysAdminMenu sm : menuList){
-
             menuIds.add(sm.getMenuId());
+
         }
-        sysAdminVo.setRouterIds(menuIds);
+            CopyOnWriteArrayList<String> cowList = new CopyOnWriteArrayList<String>(menuIds);
+            for(String s : cowList){
+                SysMenu sysMenu = sysMenuMapper.selectById(s);
+                if(menuIds.contains(sysMenu.getParentId())){
+                    cowList.remove(sysMenu.getParentId());
+                }
+            }
+        sysAdminVo.setRouterIds(cowList);
         return  ResultUtil.ok(sysAdminVo);
         }catch (Exception e){
             log.error(e);

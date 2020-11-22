@@ -19,7 +19,7 @@ spring:
      time-between-eviction-runs-millis: 60000
      min-evictable-idle-time-millis: 300000
   resources:
-    static-locations: classpath:/upload/img/,file:F:/1a_new_/new_workspace_eapil_java/Tibet_server/
+    static-locations: classpath:/upload/img/,file:D:/new_workspace_java/Tibet_server/
 
 
   data:
@@ -47,4 +47,6 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 logging:
+  level:
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
   config: classpath:log.xml

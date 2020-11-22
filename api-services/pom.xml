@@ -23,7 +23,7 @@
         <mybatis.version>3.3.2</mybatis.version>
         <docker.image.prefix>test-service</docker.image.prefix>
         <druid.version>1.1.24</druid.version>
-        <mongo.version>2.3.1.RELEASE</mongo.version>
+        <mongo.version>2.3.5.RELEASE</mongo.version>
         <feign.version>1.4.7.RELEASE</feign.version>
     </properties>
 <dependencyManagement>
