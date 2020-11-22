@@ -1,8 +1,11 @@
 package com.mj.mainservice.service.impl;
 
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.fastjson.JSON;
 
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jian.common.entity.AntdTree;
 
 
@@ -21,7 +24,9 @@ import com.mj.mainservice.service.access.AccessService;
 import com.mj.mainservice.vo.AccessPersonVo;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.*;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -50,6 +55,8 @@ public class AccessServiceImpl implements AccessService {
     private PersonRepository personRepository;
     @Resource
     private TranslationResposity translationResposity;
+    @Resource
+    private MongoTemplate mongoTemplate;
 
 
     @Override
@@ -75,6 +82,21 @@ public class AccessServiceImpl implements AccessService {
     public ResultUtil addDevice(DeviceInfo info) {
         try {
             DeviceInfo info1 = new DeviceInfo();
+
+            if(StringUtils.isEmpty(info.getSn())){
+                String url = "http://" + SysConfigUtil.getIns().getProAccessServer() + "/getDeviceDataByIp?ip="+info.getIp();
+                HttpUtil httpUtil = new HttpUtil();
+                ResultUtil res = httpUtil.get(url);
+                log.info(url+"获取设备参数返回：{}", JSON.toJSONString(res));
+                if(res.getCode() != 0)
+                    return res;
+                Object object = res.getData();
+               DeviceInfo  info2 = JSON.toJavaObject((JSON) JSON.toJSON(object), DeviceInfo.class);
+               info2.setIp(info.getIp());
+               info2.setName(info.getName());
+               info2.setUserId(info.getUserId());
+               BeanUtils.copyProperties(info2, info);
+            }
             info1.setSn(info.getSn());
             ExampleMatcher matcher = ExampleMatcher.matching()
                     .withMatcher("sn", ExampleMatcher.GenericPropertyMatchers.exact())
@@ -190,7 +212,7 @@ public class AccessServiceImpl implements AccessService {
                     .withMatcher("pid", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withMatcher("department", ExampleMatcher.GenericPropertyMatchers.contains())
-                    .withIgnorePaths("page", "limit", "accessPw");
+                    .withIgnorePaths("page", "limit", "accessPw","userId");
             Example<AccessPerson> example = Example.of(accessPerson, matcher);
             Query query = new Query();
             childs.add(accessPerson.getUserId());
@@ -277,11 +299,13 @@ public class AccessServiceImpl implements AccessService {
     public ResultUtil listRecords(Translation translation, List<String> childs) {
         try {
             ExampleMatcher matcher = ExampleMatcher.matching()
-                    .withIgnorePaths("page", "limit")
+                    .withIgnorePaths("page", "limit","userId")
                     .withMatcher("icCard", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withMatcher("dvName", ExampleMatcher.GenericPropertyMatchers.contains())
-                    .withMatcher("department", ExampleMatcher.GenericPropertyMatchers.contains());
+                    .withMatcher("department", ExampleMatcher.GenericPropertyMatchers.contains())
+                    .withNullHandler(ExampleMatcher.NullHandler.IGNORE)
+                    .withIgnoreNullValues();
 
             Example<Translation> example = Example.of(translation, matcher);
             childs.add(translation.getUserId());

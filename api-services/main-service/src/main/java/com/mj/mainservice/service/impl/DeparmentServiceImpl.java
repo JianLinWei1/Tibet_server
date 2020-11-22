@@ -51,7 +51,7 @@ public class DeparmentServiceImpl implements DepartmentService {
             ExampleMatcher matcher = ExampleMatcher.matching()
                     .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withMatcher("nickName", ExampleMatcher.GenericPropertyMatchers.contains())
-                    .withIgnorePaths("page", "limit", "accessPw")
+                    .withIgnorePaths("page", "limit", "accessPw","userId")
                     .withNullHandler(ExampleMatcher.NullHandler.IGNORE);
 
             Example<Department> example = Example.of(department ,matcher);

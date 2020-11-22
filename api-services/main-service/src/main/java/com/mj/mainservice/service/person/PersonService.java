@@ -20,7 +20,7 @@ public interface PersonService {
     ResultUtil delPerson(List<String>  ids);
 
 
-    List<PersonInfo>   quryPersonListNoPage(PersonInfo personInfo);
+    List<PersonInfo>   quryPersonListNoPage(PersonInfo personInfo );
 
     PersonInfo getPersonById(String  id);
 

@@ -81,8 +81,8 @@ public class PersonServiceImpl implements PersonService {
 //                    StringUtils.isNotEmpty(info.getName()) || StringUtils.isNotEmpty(info.getAccessId()) || info.getRole() != null) {
             ExampleMatcher matcher = ExampleMatcher.matching()
                     .withMatcher("id", ExampleMatcher.GenericPropertyMatchers.exact())
-                    .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
-                    .withIgnorePaths("page", "limit", "accessPw")
+                   // .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
+                    .withIgnorePaths("page", "limit", "accessPw","userId")
                     .withNullHandler(ExampleMatcher.NullHandler.IGNORE)
                     .withIgnoreNullValues();
 
@@ -165,7 +165,7 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public List<PersonInfo> quryPersonListNoPage(PersonInfo personInfo) {
+    public List<PersonInfo> quryPersonListNoPage(PersonInfo personInfo ) {
         try {
 
 
@@ -174,10 +174,12 @@ public class PersonServiceImpl implements PersonService {
             ExampleMatcher matcher = ExampleMatcher.matching()
                     .withMatcher("id", ExampleMatcher.GenericPropertyMatchers.exact())
                     .withMatcher("userId", ExampleMatcher.GenericPropertyMatchers.exact())
-                    .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
-                    .withIgnorePaths("page", "limit", "accessPw")
+                    //.withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
+                    .withIgnorePaths("page", "limit", "accessPw","userId")
                     .withNullHandler(ExampleMatcher.NullHandler.IGNORE);
             Example<PersonInfo> example = Example.of(personInfo, matcher);
+            Query query = new Query();
+            query.addCriteria(Criteria.byExample(example));
 
             List<PersonInfo> personInfos = personRepository.findAll(example);
 

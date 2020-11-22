@@ -50,7 +50,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
                                        .withMatcher("ipaddr" , ExampleMatcher.GenericPropertyMatchers.exact())
                                        .withMatcher("device_name" ,ExampleMatcher.GenericPropertyMatchers.contains())
                                        .withNullHandler(ExampleMatcher.NullHandler.IGNORE)
-                                       .withIgnorePaths("page","limit");
+                                       .withIgnorePaths("page","limit" ,"userId");
 
             Pageable  pageable = PageRequest.of(parkInfo.getPage(), parkInfo.getLimit());
             Example<ParkInfo>  example = Example.of(parkInfo ,matcher);
@@ -128,7 +128,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
         try {
 
             ExampleMatcher  matcher = ExampleMatcher.matching()
-                                      .withIgnorePaths("page","limit")
+                                      .withIgnorePaths("page","limit","userId")
                                       .withMatcher("name",ExampleMatcher.GenericPropertyMatchers.contains())
                                        .withMatcher("carId",ExampleMatcher.GenericPropertyMatchers.contains())
                                        ;
@@ -173,7 +173,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
         try {
             ExampleMatcher matcher  = ExampleMatcher.matching().withMatcher("ipaddr" ,ExampleMatcher.GenericPropertyMatchers.exact())
                                                                .withMatcher("plateid",ExampleMatcher.GenericPropertyMatchers.contains())
-                                                                .withIgnorePaths("page" , "limit");
+                                                                .withIgnorePaths("page" , "limit" ,"userId");
             Example<ParkingResult> example = Example.of(parkingResult , matcher);
             Query query = new Query();
             query.addCriteria(Criteria.where("userId").in(query));

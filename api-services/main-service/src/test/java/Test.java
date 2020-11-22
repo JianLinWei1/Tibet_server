@@ -33,18 +33,15 @@ public class Test {
        /* List<String>  strings = iSysAdminService.getChildByUerIds("526788978314186752");
         System.out.println(strings);
         System.out.println("输出"+strings.size());*/
-       List<Translation>  translations = new ArrayList<>();
-       Translation translation = new Translation();
-       translation.setUserId("1");
-       translation.setName("拉萨2");
-       translation.setDvName("701门禁");
-       translation.setSn("DGD9340019072202658");
-       translation.setPersonId("lasa2");
-       translation.setIcCard("3450074351");
-       translation.setTime(LocalDateTime.now());
-       translations.add(translation);
-       translationService.upload(translations);
+       Translation translation =new Translation();
+       translation.setPage(0);
+       translation.setLimit(10);
+       List<String>  strings = new ArrayList<>();
+          strings.add("1");
+          strings.add("526788978314186752");
+              int c = Math.toIntExact(translationService.listRecords(translation, strings).getCount());
 
+        System.out.println(c);
     }
 
 

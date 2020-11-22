@@ -31,8 +31,11 @@ public class MySimpleMongoRepository<T, ID extends Serializable> extends SimpleM
 
     public <S extends T> Page<S> findAll(final Example<S> example, final Query query, Pageable pageable) {
         Assert.notNull(example, "Sample must not be null!");
-        query.addCriteria((new Criteria()).alike(example)).with(pageable);
+        query.addCriteria(Criteria.byExample(example));
+        long coun =  mongoOperations.count(query, example.getProbeType(),entityInformation.getCollectionName());
+        query.with(pageable);
         List<S> list = this.mongoOperations.find(query, example.getProbeType(), this.entityInformation.getCollectionName());
-        return PageableExecutionUtils.getPage(list, pageable, () -> mongoOperations.count(query, example.getProbeType(),entityInformation.getCollectionName()));
+        return PageableExecutionUtils.getPage(list, pageable,
+                () -> coun);
     }
 }
