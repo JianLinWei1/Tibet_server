@@ -9,6 +9,7 @@ import com.mj.mainservice.resposity.parking.ParkingResposity;
 import com.mj.mainservice.resposity.parking.ParkingResultResposity;
 import com.mj.mainservice.service.parking.UploadRecoedService;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by MrJan on 2020/10/27
@@ -127,7 +129,11 @@ public class UploadRecordServiceImpl implements UploadRecoedService {
             parkingResult.setSerialno(plateUpload.getAlarmInfoPlate().getSerialno());
             parkingResult.setDeviceName(plateUpload.getAlarmInfoPlate().getDeviceName());
             parkingResult.setIpaddr(plateUpload.getAlarmInfoPlate().getIpaddr());
-            ParkInfo parkInfo = parkingResposity.findById(plateUpload.getAlarmInfoPlate().getSerialno()).get();
+            Optional<ParkInfo>  optional = parkingResposity.findById(plateUpload.getAlarmInfoPlate().getSerialno());
+            if(!optional.isPresent()){
+                log.error("当前不存在serilno:{},在服务器" ,plateUpload.getAlarmInfoPlate().getSerialno());
+            }
+            ParkInfo parkInfo = optional.get();
             parkingResult.setUserId(parkInfo.getUserId());
             parkingResult.setPlateid(plateUpload.getAlarmInfoPlate().getResult().getPlateResult().getPlateid());
             parkingResult.setLicense(plateUpload.getAlarmInfoPlate().getResult().getPlateResult().getLicense());
@@ -135,8 +141,12 @@ public class UploadRecordServiceImpl implements UploadRecoedService {
             parkingResult.setTime(LocalDateTime.ofInstant(Instant.ofEpochSecond(time) , ZoneId.systemDefault()));
             String base64 = plateUpload.getAlarmInfoPlate().getResult().getPlateResult().getImageFile();
             Base64.Decoder decoder = Base64.getDecoder();
-            String img = (String) FileUtils.getInstance().saveCarImg(decoder.decode(base64)).getData();
-            parkingResult.setImg(img);
+            if(StringUtils.isEmpty(base64)){
+                log.error("车辆图片为空");
+            }else{
+                String img = (String) FileUtils.getInstance().saveCarImg(decoder.decode(base64)).getData();
+                parkingResult.setImg(img);
+            }
             parkingResultResposity.save(parkingResult);
 
 

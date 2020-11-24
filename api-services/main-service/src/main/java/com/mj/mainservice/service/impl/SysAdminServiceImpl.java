@@ -240,7 +240,7 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
         try {
             if(StringUtils.equals(parentId  , userId))
                 return new ResultUtil(-1 , "无法删除");
-            if(personRepository.findByUserIdExists(parentId))
+            if(personRepository.existsByUserId(parentId))
                 return new ResultUtil(-1, "当前存在人员,删除失败");
 
             QueryWrapper<SysAdmin>  sysAdminQueryWrapper = new QueryWrapper<>();
@@ -257,7 +257,7 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
 
 
         }catch (Exception e){
-            log.error(e.getMessage());
+            log.error(e);
             return  new ResultUtil(-1 ,"删除失败");
         }
     }

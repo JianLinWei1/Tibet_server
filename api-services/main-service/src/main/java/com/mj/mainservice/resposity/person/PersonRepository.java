@@ -24,7 +24,7 @@ public interface PersonRepository extends MongoRepository<PersonInfo,String> {
 
     Page<PersonInfo>  findAll(Example<PersonInfo> example , Query query, Pageable pageable);
 
-    boolean  findByUserIdExists(String userId);
+    Boolean  existsByUserId(String userId);
 
     List<PersonInfo>  findAllByNameContainsAndUserIdIn(String name ,List<String> childs);
 }
