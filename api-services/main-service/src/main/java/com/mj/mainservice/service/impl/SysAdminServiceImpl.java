@@ -18,6 +18,8 @@ import com.mj.mainservice.entitys.system.SysMenu;
 import com.mj.mainservice.mapper.SysAdminMapper;
 import com.mj.mainservice.mapper.SysAdminMenuMapper;
 import com.mj.mainservice.mapper.SysMenuMapper;
+import com.mj.mainservice.resposity.access.AccessPersonResposity;
+import com.mj.mainservice.resposity.person.PersonRepository;
 import com.mj.mainservice.service.system.ISysAdminService;
 import com.mj.mainservice.vo.AntRouter;
 import com.mj.mainservice.vo.SysAdminVo;
@@ -52,6 +54,9 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
     private SysAdminMenuMapper sysAdminMenuMapper;
     @Resource
     private SysMenuMapper sysMenuMapper;
+    @Resource
+    private PersonRepository personRepository;
+
 
     private  final MD5Util md5Util = new MD5Util();
 
@@ -161,6 +166,43 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
        return  elTrees;
     }
 
+
+    @Override
+    public ResultUtil getAccountTree2(String userId) {
+        try {
+
+            SysAdmin sysAdmin =   sysAdminMapper.selectById(userId);
+            List<AntdTree> elTrees = new ArrayList<>();
+            AntdTree elTree  = new AntdTree();
+            elTree.setKey(sysAdmin.getId());
+            elTree.setValue(sysAdmin.getUserName());
+            elTree.setTitle(sysAdmin.getNickName());
+            elTree.setChildren(getChildrens2(sysAdmin));
+            elTrees.add(elTree);
+            return  ResultUtil.ok(elTrees);
+        }catch (Exception e){
+            log.error(e);
+            return new ResultUtil(-1, e.getMessage());
+        }
+    }
+
+    public  List<AntdTree>  getChildrens2(SysAdmin sysAdmin){
+        QueryWrapper<SysAdmin>  queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(SysAdmin::getParentId , sysAdmin.getId());
+        List<SysAdmin>  sysAdmins = sysAdminMapper.selectList(queryWrapper);
+        List<AntdTree>  elTrees = new ArrayList<>();
+        sysAdmins.stream().forEach(sysAdmin1 -> {
+            AntdTree  elTree  = new AntdTree();
+            elTree.setKey(sysAdmin1.getId());
+            elTree.setValue(sysAdmin1.getUserName());
+            elTree.setTitle(sysAdmin1.getNickName());
+            elTree.setChildren(getChildrens2(sysAdmin1));
+            elTrees.add(elTree);
+        });
+
+        return  elTrees;
+    }
+
     @Override
     @Transactional
     public ResultUtil addUser(SysAdminVo sysAdminVo) {
@@ -185,7 +227,8 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
 
             return  ResultUtil.ok();
         }catch (Exception e){
-            log.error(e.getMessage());
+
+            log.error(e);
             return new ResultUtil(-1, "error");
         }
     }
@@ -197,6 +240,9 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
         try {
             if(StringUtils.equals(parentId  , userId))
                 return new ResultUtil(-1 , "无法删除");
+            if(personRepository.findByUserIdExists(parentId))
+                return new ResultUtil(-1, "当前存在人员,删除失败");
+
             QueryWrapper<SysAdmin>  sysAdminQueryWrapper = new QueryWrapper<>();
             sysAdminQueryWrapper.lambda().eq(SysAdmin::getParentId , parentId);
             List<SysAdmin>  sysAdmins  = sysAdminMapper.selectList(sysAdminQueryWrapper);

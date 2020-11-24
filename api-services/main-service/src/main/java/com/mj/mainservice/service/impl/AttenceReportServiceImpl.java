@@ -18,6 +18,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @auther JianLinWei
@@ -36,7 +37,10 @@ public class AttenceReportServiceImpl   implements AttenceReportService {
     @Override
     public ResultUtil getAttenceReport(AttenceReport attenceReport ) {
         try {
-            AttenceConfig attenceConfig = configResposity.findById(attenceReport.getUserId()).get();
+           Optional<AttenceConfig> attenceConfig1 = configResposity.findById(attenceReport.getUserId());
+            if (!attenceConfig1.isPresent())
+                return new ResultUtil(-1, "该组织下未配置考勤时间,则无法生成报表");
+            AttenceConfig attenceConfig = attenceConfig1.get();
            attenceReport.setConfig(attenceConfig);
             return  translationService.getAttenceReport(attenceReport);
         }catch (Exception e){

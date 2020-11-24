@@ -98,14 +98,17 @@ public class AccessServiceImpl implements AccessService {
                BeanUtils.copyProperties(info2, info);
             }
             info1.setSn(info.getSn());
+
             ExampleMatcher matcher = ExampleMatcher.matching()
                     .withMatcher("sn", ExampleMatcher.GenericPropertyMatchers.exact())
                     .withNullHandler(ExampleMatcher.NullHandler.IGNORE)
                     .withStringMatcher(ExampleMatcher.StringMatcher.EXACT);
             Example<DeviceInfo> example = Example.of(info1, matcher);
             List<DeviceInfo> infos = accessRespository.findAll(example);
-            if (infos != null && infos.size() > 0)
-                info.setId(infos.get(0).getId());
+            if (infos != null && infos.size() > 0){
+               return new ResultUtil(-1 ,"该门禁已经被绑定");
+            }
+                //info.setId(infos.get(0).getId());
             accessRespository.save(info);
             return ResultUtil.ok();
         } catch (Exception e) {
@@ -115,20 +118,18 @@ public class AccessServiceImpl implements AccessService {
     }
 
     @Override
-    public ResultUtil listDevice(int page, int limit, String userId, List<String> childs) {
+    public ResultUtil listDevice(DeviceInfo info ) {
         try {
-            DeviceInfo info = new DeviceInfo();
-            //info.setUserId(userId);
-            ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreNullValues().withNullHandler(ExampleMatcher.NullHandler.IGNORE);
-            childs.add(userId);
+            ExampleMatcher matcher = ExampleMatcher.matching()
+                    .withIgnorePaths("page", "limit")
+                    .withMatcher("userId", ExampleMatcher.GenericPropertyMatchers.exact())
+                    .withNullHandler(ExampleMatcher.NullHandler.IGNORE)
+                    .withIgnoreNullValues();
             Example<DeviceInfo> example = Example.of(info, matcher);
-            Query query = new Query();
-            query.addCriteria(Criteria.where("userId").in(childs));
-
-            Page<DeviceInfo> page1 = accessRespository.findAll(example, query, PageRequest.of(page, limit));
+            Page<DeviceInfo> page1 = accessRespository.findAll(example,  PageRequest.of(info.getPage(), info.getLimit()));
             ResultUtil r = new ResultUtil();
             r.setCode(0);
-            r.setData(page1.toList());
+            r.setData(page1.getContent());
             r.setCount(page1.getTotalElements());
             return r;
 
@@ -203,7 +204,7 @@ public class AccessServiceImpl implements AccessService {
 
 
     @Override
-    public ResultUtil listAccessPersons(AccessPerson accessPerson, List<String> childs) {
+    public ResultUtil listAccessPersons(AccessPerson accessPerson) {
         try {
             ExampleMatcher matcher = ExampleMatcher.matching()
                     .withIgnoreNullValues()
@@ -212,12 +213,12 @@ public class AccessServiceImpl implements AccessService {
                     .withMatcher("pid", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withMatcher("department", ExampleMatcher.GenericPropertyMatchers.contains())
-                    .withIgnorePaths("page", "limit", "accessPw","userId");
+                    .withMatcher("userId", ExampleMatcher.GenericPropertyMatchers.exact())
+                    .withIgnorePaths("page", "limit", "accessPw")
+                    .withNullHandler(ExampleMatcher.NullHandler.IGNORE);
             Example<AccessPerson> example = Example.of(accessPerson, matcher);
-            Query query = new Query();
-            childs.add(accessPerson.getUserId());
-            query.addCriteria(Criteria.where("userId").in(childs));
-            Page<AccessPerson> personPage = personResposity.findAll(example, query, PageRequest.of(accessPerson.getPage(), accessPerson.getLimit()));
+
+            Page<AccessPerson> personPage = personResposity.findAll(example, PageRequest.of(accessPerson.getPage(), accessPerson.getLimit()));
             ResultUtil resultUtil = new ResultUtil();
             resultUtil.setCode(0);
             resultUtil.setData(personPage.toList());
@@ -296,23 +297,24 @@ public class AccessServiceImpl implements AccessService {
 
 
     @Override
-    public ResultUtil listRecords(Translation translation, List<String> childs) {
+    public ResultUtil listRecords(Translation translation) {
         try {
             ExampleMatcher matcher = ExampleMatcher.matching()
-                    .withIgnorePaths("page", "limit","userId")
+                    .withIgnorePaths("page", "limit")
                     .withMatcher("icCard", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withMatcher("dvName", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withMatcher("department", ExampleMatcher.GenericPropertyMatchers.contains())
+                    .withMatcher("userId", ExampleMatcher.GenericPropertyMatchers.exact())
                     .withNullHandler(ExampleMatcher.NullHandler.IGNORE)
                     .withIgnoreNullValues();
 
             Example<Translation> example = Example.of(translation, matcher);
-            childs.add(translation.getUserId());
+            /*childs.add(translation.getUserId());
             Query query = new Query();
-            query.addCriteria(Criteria.where("userId").in(childs));
+            query.addCriteria(Criteria.where("userId").in(childs));*/
 
-            Page<Translation> page = translationResposity.findAll(example, query, PageRequest.of(translation.getPage(), translation.getLimit(), Sort.by(Sort.Direction.DESC, "time")));
+            Page<Translation> page = translationResposity.findAll(example, PageRequest.of(translation.getPage(), translation.getLimit(), Sort.by(Sort.Direction.DESC, "time")));
 
             ResultUtil resultUtil = new ResultUtil();
             resultUtil.setCode(0);

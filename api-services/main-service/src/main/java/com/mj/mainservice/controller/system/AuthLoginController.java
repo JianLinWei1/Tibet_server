@@ -50,6 +50,13 @@ public class AuthLoginController {
         return  sysAdminService.getAccountTree(userId);
     }
 
+    @GetMapping(value = "/getAccountTree2")
+    public  ResultUtil getAccountTree2(String userId){
+
+        return  sysAdminService.getAccountTree2(userId);
+    }
+
+
     @SysLogInter("添加用户")
     @PostMapping(value = "/addUser")
     public ResultUtil addUser(@RequestBody SysAdminVo sysAdminVo ){

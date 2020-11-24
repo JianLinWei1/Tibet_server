@@ -32,6 +32,10 @@ public class AttenceReport {
 
     private Integer con;
 
+    @ExcelProperty("部门")
+    private String department;
+
+
 
 
     @ExcelProperty(value = "考勤时间" , converter = LocalDateTimeConverter.class)

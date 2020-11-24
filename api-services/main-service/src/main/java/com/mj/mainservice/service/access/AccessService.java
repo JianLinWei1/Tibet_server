@@ -20,12 +20,12 @@ public interface AccessService {
 
     ResultUtil addDevice(DeviceInfo info);
 
-    ResultUtil listDevice(int page , int limit , String userId  ,List<String> childs);
+    ResultUtil listDevice(DeviceInfo info );
 
     ResultUtil issuedPerson(AccessPersonVo accessPersonVo);
 
 
-    ResultUtil listAccessPersons(AccessPerson accessPerson  ,List<String> childs);
+    ResultUtil listAccessPersons(AccessPerson accessPerson );
 
 
     ResultUtil DelAccessPerson(List<String> ids);
@@ -34,7 +34,7 @@ public interface AccessService {
     ResultUtil upload(List<Translation>  translations );
 
 
-    ResultUtil listRecords(Translation translation ,List<String> childs);
+    ResultUtil listRecords(Translation translation );
 
     ResultUtil delRecords(List<String>  ids);
 

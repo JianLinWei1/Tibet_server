@@ -20,6 +20,8 @@ public class PersonInfo extends PageHelper {
     private String  name ;
 
 
+
+
     private String  idCard;
 
 

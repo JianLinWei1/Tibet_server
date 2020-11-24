@@ -9,6 +9,7 @@ import com.mj.mainservice.service.access.AccessService;
 import com.mj.mainservice.service.attence.AttenceConfigService;
 import com.mj.mainservice.service.attence.AttenceReportService;
 import com.mj.mainservice.vo.attence.AttenceReportVo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,7 +48,7 @@ public class AttenceVoController {
     }
 
 
-    @SysLogInter("获取考勤配置")
+    /*@SysLogInter("获取考勤配置")*/
     @GetMapping("/getConfig")
     public  ResultUtil getConfig(String userId){
         return  attenceConfigService.getConfig(userId);
@@ -57,6 +58,7 @@ public class AttenceVoController {
     @SysLogInter("生成报表")
     @PostMapping("/getAttenceReport")
     public ResultUtil getAttenceReport(@RequestBody AttenceReport report , String userId){
+        if(StringUtils.isEmpty(report.getUserId()))
         report.setUserId(userId);
         return reportService.getAttenceReport(report);
     }

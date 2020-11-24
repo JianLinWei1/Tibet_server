@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ParkingVoService {
 
-    ResultUtil  listParking(ParkInfo parkInfo , List<String>  childs);
+    ResultUtil  listParking(ParkInfo parkInfo );
 
     ResultUtil saveParkInfo(ParkInfo parkInfo);
 
@@ -18,13 +18,13 @@ public interface ParkingVoService {
 
     ResultUtil  saveParkPersonInfo(ParkingUserInfo parkingUserInfo);
 
-    ResultUtil  listParkingPerson(ParkingUserInfo parkingUserInfo , List<String>  childs);
+    ResultUtil  listParkingPerson(ParkingUserInfo parkingUserInfo);
 
 
     ResultUtil delParkingPerson(List<String> ids);
 
 
-    ResultUtil listParkingResult(ParkingResult parkingResult ,List<String>  childs);
+    ResultUtil listParkingResult(ParkingResult parkingResult );
 
     ResultUtil delParkingResult(List<String>  ids);
 

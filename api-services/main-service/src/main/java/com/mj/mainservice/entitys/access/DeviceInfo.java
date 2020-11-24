@@ -1,5 +1,6 @@
 package com.mj.mainservice.entitys.access;
 
+import com.jian.common.util.PageHelper;
 import lombok.Data;
 
 
@@ -8,7 +9,7 @@ import lombok.Data;
  */
 
 @Data
-public class DeviceInfo {
+public class DeviceInfo  extends PageHelper {
     private String id;
 
     private String name;

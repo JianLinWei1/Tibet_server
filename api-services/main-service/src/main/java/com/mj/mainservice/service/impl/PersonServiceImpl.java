@@ -72,7 +72,7 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public ResultUtil queryPersonsList(PersonInfo info, List<String> childs) {
+    public ResultUtil queryPersonsList(PersonInfo info) {
         try {
             PageRequest pageRequest = PageRequest.of(info.getPage() - 1, info.getLimit(), Sort.by(Sort.Direction.DESC, "createTime"));
             List<PersonInfo> personInfos = new ArrayList<PersonInfo>();
@@ -81,18 +81,19 @@ public class PersonServiceImpl implements PersonService {
 //                    StringUtils.isNotEmpty(info.getName()) || StringUtils.isNotEmpty(info.getAccessId()) || info.getRole() != null) {
             ExampleMatcher matcher = ExampleMatcher.matching()
                     .withMatcher("id", ExampleMatcher.GenericPropertyMatchers.exact())
-                   // .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
-                    .withIgnorePaths("page", "limit", "accessPw","userId")
+                   .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
+                    .withMatcher("accessId", ExampleMatcher.GenericPropertyMatchers.contains())
+                    .withMatcher("idCard", ExampleMatcher.GenericPropertyMatchers.contains())
+                    .withMatcher("department", ExampleMatcher.GenericPropertyMatchers.contains())
+                    .withMatcher("userId", ExampleMatcher.GenericPropertyMatchers.exact())
+                    .withIgnorePaths("page", "limit", "accessPw")
                     .withNullHandler(ExampleMatcher.NullHandler.IGNORE)
                     .withIgnoreNullValues();
 
-            childs.add(info.getUserId());
+
             Example<PersonInfo> example = Example.of(info, matcher);
-            Query query = new Query();
-            query.addCriteria(Criteria.where("userId").in(childs));
 
-
-            Page<PersonInfo> personInfos1 = personRepository.findAll(example, query, pageRequest);
+            Page<PersonInfo> personInfos1 = personRepository.findAll(example, pageRequest);
 
             personInfos = personInfos1.toList();
             total = personInfos1.getTotalElements();
@@ -114,6 +115,25 @@ public class PersonServiceImpl implements PersonService {
             return new ResultUtil(-1, e.getMessage());
         }
 
+    }
+
+    @Override
+    public ResultUtil queryPersonsListByName(PersonInfo info, List<String> childs) {
+        try {
+            childs.add(info.getUserId());
+            List<PersonInfo> personInfos1 = personRepository.findAllByNameContainsAndUserIdIn(info.getName() ,childs);
+
+
+            ResultUtil resultUtil = new ResultUtil();
+            resultUtil.setCode(0);
+
+            resultUtil.setData(personInfos1);
+            return resultUtil;
+
+        } catch (Exception e) {
+            log.error(e);
+            return new ResultUtil(-1, e.getMessage());
+        }
     }
 
     @Override
@@ -175,7 +195,7 @@ public class PersonServiceImpl implements PersonService {
                     .withMatcher("id", ExampleMatcher.GenericPropertyMatchers.exact())
                     .withMatcher("userId", ExampleMatcher.GenericPropertyMatchers.exact())
                     //.withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
-                    .withIgnorePaths("page", "limit", "accessPw","userId")
+                    .withIgnorePaths("page", "limit", "accessPw")
                     .withNullHandler(ExampleMatcher.NullHandler.IGNORE);
             Example<PersonInfo> example = Example.of(personInfo, matcher);
             Query query = new Query();

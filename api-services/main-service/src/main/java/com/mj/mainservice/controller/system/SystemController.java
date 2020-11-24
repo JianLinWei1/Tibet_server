@@ -7,6 +7,7 @@ import com.jian.common.util.ResultUtil;
 import com.mj.mainservice.annotation.SysLogInter;
 import com.mj.mainservice.entitys.system.SysLog;
 import com.mj.mainservice.service.system.ISysLogService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +31,7 @@ public class SystemController {
         return iSysLogService.addSysConfig(sysConfig);
     }
 
-    @SysLogInter("获取系统配置")
+   /* @SysLogInter("获取系统配置")*/
     @GetMapping("/getSysConfig")
     public  ResultUtil getSysConfig(){
         return iSysLogService.getSysConfig();
@@ -46,9 +47,10 @@ public class SystemController {
 
 
     @PostMapping("/getSysLogs")
-    public ResultUtil getSysLogs(@RequestBody SysLog sysLog , String userId , @RequestParam("childs") List<String> childs){
+    public ResultUtil getSysLogs(@RequestBody SysLog sysLog , String userId ){
+        if(StringUtils.isEmpty(sysLog.getUserId()))
          sysLog.setUserId(userId);
-        return iSysLogService.getSysLogs(sysLog ,childs);
+        return iSysLogService.getSysLogs(sysLog);
     }
 
     @SysLogInter("删除系统日志")

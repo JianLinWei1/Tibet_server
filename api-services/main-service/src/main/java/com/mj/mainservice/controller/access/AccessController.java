@@ -11,6 +11,7 @@ import com.mj.mainservice.entitys.access.Translation;
 import com.mj.mainservice.service.access.AccessService;
 import com.mj.mainservice.service.person.PersonService;
 import com.mj.mainservice.vo.AccessPersonVo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,19 +48,18 @@ public class AccessController {
     }
 
 
-    @SysLogInter("获取门禁控制器列表")
-    @GetMapping("/listDevice")
-    public ResultUtil listDevice(int page, int limit, String userId ,@RequestParam("childs") List<String> childs) {
-
-        return accessService.listDevice(page, limit, userId ,childs);
+   /* @SysLogInter("获取门禁控制器列表")*/
+    @PostMapping("/listDevice")
+    public ResultUtil listDevice(@RequestBody DeviceInfo info, String userId ) {
+     if(StringUtils.isEmpty(info.getUserId()))
+         info.setUserId(userId);
+        return accessService.listDevice(info);
     }
 
     @PostMapping("/queryPersonsList")
-    public ResultUtil queryPersonsList(@RequestBody PersonInfo infoVo, String userId  ,@RequestParam("childs") List<String>  childs) {
+    public ResultUtil queryPersonsList(@RequestBody PersonInfo infoVo, String userId ,@RequestParam("childs") List<String>  childs) {
         infoVo.setUserId(userId);
-        infoVo.setPage(1);
-        infoVo.setLimit(10);
-        return personService.queryPersonsList(infoVo , childs);
+        return personService.queryPersonsListByName(infoVo ,childs);
     }
 
     @SysLogInter("下发人员")
@@ -71,11 +71,12 @@ public class AccessController {
         return accessService.issuedPerson(personVo);
     }
 
-    @SysLogInter("获取发卡记录")
+    /*@SysLogInter("获取发卡记录")*/
     @PostMapping("/listAccessPersons")
-    public ResultUtil listAccessPersons(@RequestBody AccessPerson accessPerson,String userId ,@RequestParam("childs") List<String>  childs){
+    public ResultUtil listAccessPersons(@RequestBody AccessPerson accessPerson,String userId ){
+        if(StringUtils.isEmpty(accessPerson.getUserId()))
         accessPerson.setUserId(userId);
-        return accessService.listAccessPersons(accessPerson ,childs);
+        return accessService.listAccessPersons(accessPerson);
     }
 
     @SysLogInter("删除记录并从设备删除人员")
@@ -87,9 +88,10 @@ public class AccessController {
 
     @SysLogInter("刷卡记录")
     @PostMapping("/listRecords")
-    public ResultUtil listRecords(@RequestBody Translation translation , String userId ,@RequestParam("childs") List<String>  childs){
+    public ResultUtil listRecords(@RequestBody Translation translation , String userId ){
+        if(StringUtils.isEmpty(translation.getUserId()))
          translation.setUserId(userId);
-        return accessService.listRecords(translation ,childs);
+        return accessService.listRecords(translation);
     }
 
 

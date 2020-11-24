@@ -9,10 +9,13 @@ import java.util.List;
 
 public interface PersonService {
 
+
     ResultUtil  insertPerson(PersonInfo info );
 
 
-    ResultUtil  queryPersonsList(PersonInfo info  , List<String> childs ) ;
+    ResultUtil  queryPersonsList(PersonInfo info  ) ;
+
+    ResultUtil  queryPersonsListByName(PersonInfo info  ,List<String> childs ) ;
 
     ResultUtil  editPerson(PersonInfoVo info);
 

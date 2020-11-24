@@ -15,7 +15,7 @@
         <jian.version>1.0.1</jian.version>
         <swagger.version>2.10.5</swagger.version>
         <feign.version>1.4.7.RELEASE</feign.version>
-        <main.version>1.0.3</main.version>
+        <main.version>1.0.4</main.version>
         <docker.repostory>registry.cn-beijing.aliyuncs.com</docker.repostory>
         <docker.repostory.name>ljserver</docker.repostory.name>
     </properties>

@@ -39,7 +39,7 @@ public class Test {
        List<String>  strings = new ArrayList<>();
           strings.add("1");
           strings.add("526788978314186752");
-              int c = Math.toIntExact(translationService.listRecords(translation, strings).getCount());
+              int c = Math.toIntExact(translationService.listRecords(translation).getCount());
 
         System.out.println(c);
     }

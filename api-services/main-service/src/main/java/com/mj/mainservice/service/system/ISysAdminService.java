@@ -26,6 +26,8 @@ public interface ISysAdminService extends IService<SysAdmin> {
 
     ResultUtil getAccountTree(String userId);
 
+    ResultUtil getAccountTree2(String userId);
+
     ResultUtil addUser(SysAdminVo sysAdminvo);
 
     ResultUtil  delUserByParentId(String parentId , String userId);

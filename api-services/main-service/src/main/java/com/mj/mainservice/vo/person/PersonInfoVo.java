@@ -27,6 +27,9 @@ public class PersonInfoVo {
     @ExcelProperty("姓名")
     private String  name ;
 
+    @ExcelProperty("部门")
+    private String  department ;
+
     @ExcelProperty("身份证")
     private String  idCard;
 

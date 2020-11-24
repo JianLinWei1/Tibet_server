@@ -55,6 +55,7 @@ public class DeparmentServiceImpl implements DepartmentService {
                     .withNullHandler(ExampleMatcher.NullHandler.IGNORE);
 
             Example<Department> example = Example.of(department ,matcher);
+            childs.add(department.getUserId());
             Query query = new Query();
             query.addCriteria(Criteria.where("userId").in(childs));
 

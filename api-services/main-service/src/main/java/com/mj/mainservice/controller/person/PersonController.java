@@ -31,12 +31,12 @@ public class PersonController {
     }
 
 
-    @SysLogInter("获取人员列表")
+    /*@SysLogInter("获取人员列表")*/
     @PostMapping(value = "/queryPersonsList")
-    public ResultUtil queryPersonsList(@RequestBody PersonInfo info , String userId  , @RequestParam("childs") List<String> childs){
+    public ResultUtil queryPersonsList(@RequestBody PersonInfo info , String userId  ){
         if(StringUtils.isEmpty(info.getUserId()))
         info.setUserId(userId);
-        return personService.queryPersonsList(info ,childs);
+        return personService.queryPersonsList(info);
     }
 
     @SysLogInter("编辑人员")

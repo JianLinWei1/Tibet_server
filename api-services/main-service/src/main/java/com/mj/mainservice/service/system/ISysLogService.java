@@ -27,7 +27,7 @@ public interface ISysLogService extends IService<SysLog> {
 
     ResultUtil  addSysLog(SysLog sysLog);
 
-    ResultUtil getSysLogs(SysLog sysLog ,List<String>  childs);
+    ResultUtil getSysLogs(SysLog sysLog );
 
     ResultUtil delSyslog(List<String> ids);
 
