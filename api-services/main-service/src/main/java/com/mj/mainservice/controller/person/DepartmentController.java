@@ -3,6 +3,7 @@ package com.mj.mainservice.controller.person;
 import com.jian.common.util.ResultUtil;
 import com.mj.mainservice.entitys.person.Department;
 import com.mj.mainservice.service.person.DepartmentService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,9 +26,10 @@ public class DepartmentController {
     }
 
     @PostMapping("/getList")
-    public ResultUtil getList(@RequestBody Department department , String userId , @RequestParam("childs")List<String> childs){
+    public ResultUtil getList(@RequestBody Department department , String userId ){
+        if(StringUtils.isEmpty(department.getUserId()))
         department.setUserId(userId);
-        return  departmentService.getList(department, childs);
+        return  departmentService.getList(department);
     }
 
     @PostMapping("/del")

@@ -120,6 +120,8 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public ResultUtil queryPersonsListByName(PersonInfo info, List<String> childs) {
         try {
+            if(StringUtils.isEmpty(info.getName()))
+                return  ResultUtil.ok();
             childs.add(info.getUserId());
             List<PersonInfo> personInfos1 = personRepository.findAllByNameContainsAndUserIdIn(info.getName() ,childs);
 

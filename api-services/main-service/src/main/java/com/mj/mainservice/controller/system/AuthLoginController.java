@@ -43,7 +43,7 @@ public class AuthLoginController {
     }
 
 
-    @SysLogInter("获取用户列表")
+   /* @SysLogInter("获取用户列表")*/
     @GetMapping(value = "/getAccountTree")
     public  ResultUtil getAccountTree(String userId){
 

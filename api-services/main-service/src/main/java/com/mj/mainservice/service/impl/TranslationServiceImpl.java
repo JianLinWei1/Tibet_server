@@ -1,5 +1,6 @@
 package com.mj.mainservice.service.impl;
 
+import com.jian.common.util.LocalDateUtil;
 import com.jian.common.util.ResultUtil;
 import com.mj.mainservice.entitys.person.PersonInfo;
 import com.mj.mainservice.entitys.access.Translation;
@@ -114,6 +115,21 @@ public class TranslationServiceImpl implements TranslationService {
             //迟到早退次数
             AtomicInteger lateCount = new AtomicInteger();
             AtomicInteger earlyCount = new AtomicInteger();
+            AtomicInteger absentCount = new AtomicInteger();
+
+            //计算旷工 取时间段每个时间 除去周六周日 没有数据就是旷工
+
+            List<LocalDate> dates = LocalDateUtil.getBetweenDate(report.getTimes().get(0), report.getTimes().get(1));
+            dates.stream().forEach(d -> {
+                Date date4 = Date.from(d.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+                 Date dat5  = Date.from(d.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant());
+                List<Translation> translations3 = translationResposity.findAllByPersonIdAndSnInAndTimeBetween(p.getId(),
+                        report.getConfig().getSns(), date4 ,dat5);
+                if (translations3.size() <= 0)
+                    absentCount.getAndIncrement();
+            });
+
+
             List<LocalDateTime> localDateTimes = new ArrayList<>();
 
             //上午下午记录中各取第一次 和 最后一次
@@ -128,7 +144,7 @@ public class TranslationServiceImpl implements TranslationService {
                 if (translations1.get(translations1.size() - 1).getTime().toLocalTime().isBefore(report.getConfig().getAmClockOut()))
                     earlyCount.getAndIncrement();
             }
-            if(translations2.size() >0){
+            if (translations2.size() > 0) {
                 localDateTimes.add(translations2.get(0).getTime());
                 if (translations2.get(0).getTime().toLocalTime().isAfter(report.getConfig().getPmClockIn()))
                     lateCount.getAndIncrement();
@@ -156,6 +172,7 @@ public class TranslationServiceImpl implements TranslationService {
             attenceReport.setLateCount(lateCount.get());
             attenceReport.setEarlyCount(earlyCount.get());
             attenceReport.setTimeList(localDateTimes);
+            attenceReport.setAbsentCount(absentCount.get());
             attenceReports.add(attenceReport);
         });
 

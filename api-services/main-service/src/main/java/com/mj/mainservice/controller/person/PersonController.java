@@ -55,7 +55,7 @@ public class PersonController {
     }
 
 
-    @SysLogInter("获取人员")
+   /* @SysLogInter("获取人员")*/
     @PostMapping(value = "/quryPersonListNoPage")
     public List<PersonInfo> quryPersonListNoPage(@RequestBody PersonInfo info ){
         return  personService.quryPersonListNoPage(info);

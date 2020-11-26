@@ -51,6 +51,10 @@ public class AttenceReport {
     private  Integer earlyCount;
 
 
+    @ExcelProperty("旷工次数")
+    private  Integer absentCount;
+
+
     @ExcelIgnore
     private String userId;
 

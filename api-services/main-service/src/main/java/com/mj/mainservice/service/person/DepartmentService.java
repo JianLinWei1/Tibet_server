@@ -12,7 +12,7 @@ import java.util.List;
 public interface DepartmentService {
     ResultUtil save(Department department);
 
-    ResultUtil getList(Department department , List<String> childs);
+    ResultUtil getList(Department department);
 
     ResultUtil del(List<String> ids);
 }

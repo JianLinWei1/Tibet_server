@@ -25,4 +25,8 @@ public interface TranslationResposity  extends MongoRepository<Translation, Stri
     Page<Translation>  findAll(Example<Translation> example , Query query, Pageable pageable);
 
     Page<Translation>  findAllByUserIdIn( List<String> childs,Example<Translation> example , Pageable pageable);
+
+    List<Translation>  findAllByPersonIdAndSnInAndTimeContains(String personId , List<String> sn , Date d);
+
+
 }

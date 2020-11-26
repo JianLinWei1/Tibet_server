@@ -37,6 +37,8 @@ public class DeparmentServiceImpl implements DepartmentService {
         try {
             SysAdmin sysAdmin = sysAdminMapper.selectById(department.getUserId());
             department.setNickName(sysAdmin.getNickName());
+            if(departmentResposity.findByNameEqualsAndUserIdEquals(department.getName() ,department.getUserId()) != null)
+                return new ResultUtil(-1 ,"已存在部门");
             departmentResposity.save(department);
             return ResultUtil.ok();
         } catch (Exception e) {
@@ -46,20 +48,20 @@ public class DeparmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public ResultUtil getList(Department department, List<String> childs) {
+    public ResultUtil getList(Department department) {
         try {
             ExampleMatcher matcher = ExampleMatcher.matching()
                     .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withMatcher("nickName", ExampleMatcher.GenericPropertyMatchers.contains())
-                    .withIgnorePaths("page", "limit", "accessPw","userId")
+                    .withIgnorePaths("page", "limit", "accessPw")
                     .withNullHandler(ExampleMatcher.NullHandler.IGNORE);
 
             Example<Department> example = Example.of(department ,matcher);
-            childs.add(department.getUserId());
+          /*  childs.add(department.getUserId());
             Query query = new Query();
-            query.addCriteria(Criteria.where("userId").in(childs));
+            query.addCriteria(Criteria.where("userId").in(childs));*/
 
-            Page<Department>  page = departmentResposity.findAll(example, query, PageRequest.of(department.getPage(), department.getLimit()));
+            Page<Department>  page = departmentResposity.findAll(example,  PageRequest.of(department.getPage(), department.getLimit()));
             ResultUtil resultUtil = new ResultUtil();
             resultUtil.setData(page.getContent());
             resultUtil.setCount(page.getTotalElements());

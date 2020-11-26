@@ -18,4 +18,6 @@ import org.springframework.stereotype.Repository;
 public interface DepartmentResposity extends MongoRepository<Department , String> {
 
     Page<Department>   findAll(Example<Department> example , Query query, Pageable pageable);
+
+    Department  findByNameEqualsAndUserIdEquals(String name , String userId);
 }

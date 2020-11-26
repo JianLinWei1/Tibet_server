@@ -246,13 +246,16 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
             QueryWrapper<SysAdmin>  sysAdminQueryWrapper = new QueryWrapper<>();
             sysAdminQueryWrapper.lambda().eq(SysAdmin::getParentId , parentId);
             List<SysAdmin>  sysAdmins  = sysAdminMapper.selectList(sysAdminQueryWrapper);
-            List<String>  ids  = new ArrayList<>();
-            if(ids!= null)
-            sysAdmins.stream().forEach(sa  ->{
-                    ids.add(sa.getId());
-            });
-            ids.add(parentId);
-            sysAdminMapper.deleteBatchIds(ids);
+            //List<String>  ids  = new ArrayList<>();
+
+            for(SysAdmin s : sysAdmins) {
+                   // ids.add(sa.getId());
+                if(personRepository.existsByUserId(s.getId()))
+                    return new ResultUtil(-1, s.getNickName()+"删除子账号失败,当前存在人员,删除失败");
+                sysAdminMapper.deleteById(s.getId());
+            };
+            //ids.add(parentId);
+            sysAdminMapper.deleteById(parentId);
             return  ResultUtil.ok();
 
 
@@ -322,9 +325,12 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
             List<String> menuIds = sysAdminMenus.stream().map(SysAdminMenu::getMenuId).collect(Collectors.toList());
             log.info("获取的菜单ID:{}   ::: {}  ::: uerID：：{}" , JSON.toJSONString(menuIds) ,
                     JSON.toJSONString(sysAdminMenus),userId);
+            if(menuIds == null || menuIds.size() <=0)
+                return  new ResultUtil(-1 ,"当前用户未拥有菜单,登录失败");
             QueryWrapper<SysMenu> queryWrapper1 = new QueryWrapper<>();
             queryWrapper1.lambda().in(SysMenu::getId , menuIds);
             queryWrapper1.lambda().isNotNull(SysMenu::getPermission);
+
 
             List<SysMenu> sysMenus = sysMenuMapper.selectList(queryWrapper1);
            List<Permission> permissions = getPermission(sysMenus);
