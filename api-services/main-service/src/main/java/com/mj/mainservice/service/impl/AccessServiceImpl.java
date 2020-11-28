@@ -239,14 +239,18 @@ public class AccessServiceImpl implements AccessService {
             List<String> ms = new ArrayList<>();
             for (String id : ids) {
                 AccessPerson accessPerson = personResposity.findById(id).get();
-
+                String doorIds = "";
+                for (int i : accessPerson.getDoors()) {
+                    doorIds += i + ",";
+                }
                 String pin = "";
                 if (accessPerson.getAccessId().length() > 8)
                     pin = accessPerson.getAccessId().substring(0, 8);
                 else
                     pin = accessPerson.getAccessId();
                 String url = "http://" + SysConfigUtil.getIns().getProAccessServer() + "/deleteDeviceData?ip=" + accessPerson.getIp() +
-                        "&CardNo=" + accessPerson.getAccessId() + "&pin=" + pin + "&pw=" + accessPerson.getAccessPw();
+                        "&CardNo=" + accessPerson.getAccessId() + "&pin=" + pin + "&pw=" + accessPerson.getAccessPw()
+                        +"&doorIds=" + doorIds.substring(0, doorIds.length() - 1);
                 ResultUtil ru = httpUtil.get(url);
                 log.info("门禁下发返回：{} , URL:{}", JSON.toJSONString(ru), url);
                 if (ru.getCode() != 0) {
