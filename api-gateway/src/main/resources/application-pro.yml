@@ -23,7 +23,7 @@ spring:
 
 
 
-hystrix.command.fallbackcmd.execution.isolation.thread.timeoutInMilliseconds: 30000
+hystrix.command.fallbackcmd.execution.isolation.thread.timeoutInMilliseconds: 3000000
 
 
 
