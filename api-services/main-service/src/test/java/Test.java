@@ -1,6 +1,8 @@
 import com.alibaba.fastjson.JSON;
 import com.mj.mainservice.MainApplication;
+import com.mj.mainservice.entitys.access.DeviceInfo;
 import com.mj.mainservice.entitys.access.Translation;
+import com.mj.mainservice.resposity.access.AccessRespository;
 import com.mj.mainservice.service.access.AccessService;
 import com.mj.mainservice.service.access.TranslationService;
 import com.mj.mainservice.service.system.ISysAdminService;
@@ -26,6 +28,8 @@ public class Test {
     private ISysAdminService iSysAdminService;
     @Autowired
     private AccessService translationService;
+    @Autowired
+    private AccessRespository accessRespository;
 
 
     @org.junit.Test
@@ -42,6 +46,11 @@ public class Test {
               int c = Math.toIntExact(translationService.listRecords(translation).getCount());
 
         System.out.println(c);
+        DeviceInfo deviceInfo = new DeviceInfo();
+        deviceInfo.setUserId("1");
+        deviceInfo.setName("trest");
+        deviceInfo.setSn("tttttt");
+        accessRespository.save(deviceInfo);
     }
 
 

@@ -23,9 +23,9 @@ public class LocalDateUtil {
      */
     public static List<LocalDate> getBetweenDate(LocalDate start, LocalDate end) {
         List<LocalDate> list = new ArrayList<>();
-
         long distance = ChronoUnit.DAYS.between(start, end);
         if (distance < 1) {
+            list.add(start);
             return list;
         }
         Stream.iterate(start, d -> {
