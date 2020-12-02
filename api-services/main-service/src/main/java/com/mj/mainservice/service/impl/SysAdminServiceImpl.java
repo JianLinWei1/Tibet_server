@@ -386,14 +386,15 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
                 menuIds.add(sm.getMenuId());
 
             }
-            CopyOnWriteArrayList<String> cowList = new CopyOnWriteArrayList<String>(menuIds);
+           /* 适配Tree UI 去掉父ID 会造成右边菜单渲染失败
+           CopyOnWriteArrayList<String> cowList = new CopyOnWriteArrayList<String>(menuIds);
             for (String s : cowList) {
                 SysMenu sysMenu = sysMenuMapper.selectById(s);
                 if (menuIds.contains(sysMenu.getParentId())) {
                     cowList.remove(sysMenu.getParentId());
                 }
-            }
-            sysAdminVo.setRouterIds(cowList);
+            }*/
+            sysAdminVo.setRouterIds(menuIds);
             return ResultUtil.ok(sysAdminVo);
         } catch (Exception e) {
             log.error(e);
