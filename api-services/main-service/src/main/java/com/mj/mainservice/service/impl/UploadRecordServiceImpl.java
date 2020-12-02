@@ -71,19 +71,22 @@ public class UploadRecordServiceImpl implements UploadRecoedService {
 
         WhiteListOperate operate=  new WhiteListOperate();
         operate.setOperate_type(0);
-        Page<ParkingUserInfo>  page = parkingPersonResposity.findAllByStatusIsNotAndActionIsAndSerialnoIs(true , 0,serialno , PageRequest.of(0 ,5));
+        Page<ParkingUserInfo>  page = parkingPersonResposity.findAllByStatusIsNotAndActionIsAndSerialnoIs(true , 0,serialno , PageRequest.of(0 ,1));
         List<ParkingUserInfo> infos = page.getContent();
         List<WhiteListData> whiteListData1 = new ArrayList<>();
         infos.stream().forEach(info ->{
-            WhiteListData whiteListData = new WhiteListData();
-            whiteListData.setPlate(info.getCarId());
-            whiteListData.setEnable(info.getEnable());
-            whiteListData.setNeed_alarm(info.getNeed_alarm());
-            whiteListData.setEnable_time(info.getEnable_time());
-            whiteListData.setOverdue_time(info.getOverdue_time());
-            whiteListData1.add(whiteListData);
-            info.setStatus(true);
-            parkingPersonResposity.save(info);
+            info.getCarId().stream().forEach(car ->{
+                WhiteListData whiteListData = new WhiteListData();
+                whiteListData.setPlate(car);
+                whiteListData.setEnable(info.getEnable());
+                whiteListData.setNeed_alarm(info.getNeed_alarm());
+                whiteListData.setEnable_time(info.getEnable_time());
+                whiteListData.setOverdue_time(info.getOverdue_time());
+                whiteListData1.add(whiteListData);
+                info.setStatus(true);
+                parkingPersonResposity.save(info);
+            });
+
         });
 
         operate.setWhite_list_data(whiteListData1);
@@ -98,19 +101,22 @@ public class UploadRecordServiceImpl implements UploadRecoedService {
     public ParkingResponse getDelWihteList(String serialno) {
         WhiteListOperate operate=  new WhiteListOperate();
         operate.setOperate_type(1);
-        Page<ParkingUserInfo>  page = parkingPersonResposity.findAllByStatusIsNotAndActionIsAndSerialnoIs(true , 1,serialno , PageRequest.of(0 ,5));
+        Page<ParkingUserInfo>  page = parkingPersonResposity.findAllByStatusIsNotAndActionIsAndSerialnoIs(true , 1,serialno , PageRequest.of(0 ,1));
         List<ParkingUserInfo> infos = page.getContent();
         List<WhiteListData> whiteListData1 = new ArrayList<>();
         infos.stream().forEach(info ->{
-            WhiteListData whiteListData = new WhiteListData();
-            whiteListData.setPlate(info.getCarId());
-            whiteListData.setEnable(info.getEnable());
-            whiteListData.setNeed_alarm(info.getNeed_alarm());
-            whiteListData.setEnable_time(info.getEnable_time());
-            whiteListData.setOverdue_time(info.getOverdue_time());
-            whiteListData1.add(whiteListData);
-            info.setStatus(true);
-            parkingPersonResposity.save(info);
+            info.getCarId().stream().forEach(car ->{
+                WhiteListData whiteListData = new WhiteListData();
+                whiteListData.setPlate(car);
+                whiteListData.setEnable(info.getEnable());
+                whiteListData.setNeed_alarm(info.getNeed_alarm());
+                whiteListData.setEnable_time(info.getEnable_time());
+                whiteListData.setOverdue_time(info.getOverdue_time());
+                whiteListData1.add(whiteListData);
+                info.setStatus(true);
+                parkingPersonResposity.save(info);
+            });
+
         });
 
         operate.setWhite_list_data(whiteListData1);

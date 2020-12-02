@@ -4,10 +4,12 @@ import com.alibaba.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jian.common.util.PageHelper;
 import lombok.Data;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class PersonInfo extends PageHelper {
@@ -30,7 +32,7 @@ public class PersonInfo extends PageHelper {
 
     private int  accessPw;
 
-    private String carId;
+    private List<String> carId;
 
 
     private String phone ;

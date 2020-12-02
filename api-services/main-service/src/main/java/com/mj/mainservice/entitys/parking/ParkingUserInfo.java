@@ -27,7 +27,9 @@ public class ParkingUserInfo   extends PageHelper {
 
     private String name ;
 
-    private  String carId;
+    private  List<String> carId;
+
+    private String department;
 
     private  String userId;
 

@@ -104,26 +104,38 @@ public class ParkingVoServiceImpl implements ParkingVoService {
     @Transactional
     public ResultUtil saveParkPersonInfo(ParkingUserInfo parkingUserInfo) {
         try {
-            parkingUserInfo.getPersonIds().stream().forEach(id -> {
-                ParkingUserInfo parkingUserInfo1 = new ParkingUserInfo();
-                parkingUserInfo.setId(null);
-                parkingUserInfo1 = parkingUserInfo;
-                PersonInfo personInfo = personService.getPersonById(id);
-                parkingUserInfo1.setAction(0);
-                parkingUserInfo1.setCarId(personInfo.getCarId());
-                parkingUserInfo1.setPersonId(id);
-                parkingUserInfo1.setName(personInfo.getName());
-                parkingUserInfo1.setPersonIds(null);
-                parkingUserInfo1.setStatus(false);
-                parkingPersonResposity.save(parkingUserInfo1);
-                log.info(personInfo.getName());
+            if (parkingUserInfo.getPersonIds() != null && parkingUserInfo.getPersonIds().size() > 0) {
+                parkingUserInfo.getPersonIds().stream().forEach(id -> {
+                    ParkingUserInfo parkingUserInfo1 = new ParkingUserInfo();
+                    parkingUserInfo.setId(null);
+                    parkingUserInfo1 = parkingUserInfo;
+                    PersonInfo personInfo = personService.getPersonById(id);
+                    parkingUserInfo1.setAction(0);
+                   /* if(parkingUserInfo.getCarId() != null)
+                        personInfo.setCarId(parkingUserInfo.getCarId());*/
+                    parkingUserInfo1.setCarId(personInfo.getCarId());
+                    parkingUserInfo1.setPersonId(id);
+                    parkingUserInfo1.setName(personInfo.getName());
+                    parkingUserInfo1.setPersonIds(null);
+                    parkingUserInfo1.setStatus(false);
+                    parkingUserInfo1.setDepartment(personInfo.getDepartment());
+                    parkingPersonResposity.save(parkingUserInfo1);
+                    log.info(personInfo.getName());
 
-            });
+                });
+            } else {
+                parkingUserInfo.setStatus(false);
+                parkingPersonResposity.save(parkingUserInfo);
+            }
+
+
             return ResultUtil.ok();
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             log.error(e);
             return new ResultUtil(-1, e.getMessage());
         }
+
     }
 
 
@@ -137,11 +149,11 @@ public class ParkingVoServiceImpl implements ParkingVoService {
                     .withMatcher("carId", ExampleMatcher.GenericPropertyMatchers.contains());
             Example<ParkingUserInfo> example = Example.of(parkingUserInfo, matcher);
             Pageable pageable = PageRequest.of(parkingUserInfo.getPage(), parkingUserInfo.getLimit());
-//            Query query = new Query();
-//            childs.add(parkingUserInfo.getUserId());
-//            query.addCriteria(Criteria.where("action").ne(1));
-//            query.addCriteria(Criteria.where("userId").in(childs));
-            Page<ParkingUserInfo> page = parkingPersonResposity.findAll(example,  pageable);
+            Query query = new Query();
+            //childs.add(parkingUserInfo.getUserId());
+            query.addCriteria(Criteria.where("action").ne(1));
+            //query.addCriteria(Criteria.where("userId").in(childs));
+            Page<ParkingUserInfo> page = parkingPersonResposity.findAll(example, query, pageable);
             ResultUtil resultUtil = new ResultUtil();
             resultUtil.setCode(0);
             resultUtil.setData(page.getContent());

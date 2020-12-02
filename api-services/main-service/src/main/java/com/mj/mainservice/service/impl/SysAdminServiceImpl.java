@@ -58,7 +58,7 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
     private PersonRepository personRepository;
 
 
-    private  final MD5Util md5Util = new MD5Util();
+    private final MD5Util md5Util = new MD5Util();
 
     @Override
     public ResultUtil login(SysAdmin sysAdmin) {
@@ -74,7 +74,7 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
                 String pwd = md5Util.md5(sysAdmin.getPasswd(), "utf-8");
                 if (StringUtils.equals(pwd, sysAdmin1.getPasswd())) {
                     String token = JwtUtil.getInstance().geneJsonWebToken(sysAdmin1.getUserName(), sysAdmin1.getId()
-                            ,getChildByUerIds(sysAdmin1.getId()));
+                            , getChildByUerIds(sysAdmin1.getId()));
                     JSONObject json = new JSONObject();
                     json.put("token", token);
                     ResultUtil resultUtil = new ResultUtil();
@@ -99,23 +99,29 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
 
     @Override
     public ResultUtil getRouter(String userId) {
-        //根据用户ID 生成Router
-        QueryWrapper<SysAdminMenu> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(SysAdminMenu::getAdminId, userId);
-        queryWrapper.lambda().orderByAsc(SysAdminMenu::getMenuId);
-        List<SysAdminMenu> sysAdminMenus = sysAdminMenuMapper.selectList(queryWrapper);
-        List<String> menuIds = sysAdminMenus.stream().map(SysAdminMenu::getMenuId).collect(Collectors.toList());
+        try {
+//根据用户ID 生成Router
+            QueryWrapper<SysAdminMenu> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(SysAdminMenu::getAdminId, userId);
+            queryWrapper.lambda().orderByAsc(SysAdminMenu::getMenuId);
+            List<SysAdminMenu> sysAdminMenus = sysAdminMenuMapper.selectList(queryWrapper);
+            List<String> menuIds = sysAdminMenus.stream().map(SysAdminMenu::getMenuId).collect(Collectors.toList());
 
-        List<SysMenu> sysMenus = sysMenuMapper.selectBatchIds(menuIds);
+            List<SysMenu> sysMenus = sysMenuMapper.selectBatchIds(menuIds);
 
-        List<AntRouter> antRouters = getRouters(sysMenus, "0");
-        AntRouter antRouter = new AntRouter();
-        antRouter.setRouter("root");
-        antRouter.setChildren(antRouters);
-        List<AntRouter> antRouters1 = new ArrayList<>();
-        antRouters1.add(antRouter);
+            List<AntRouter> antRouters = getRouters(sysMenus, "0");
+            AntRouter antRouter = new AntRouter();
+            antRouter.setRouter("root");
+            antRouter.setChildren(antRouters);
+            List<AntRouter> antRouters1 = new ArrayList<>();
+            antRouters1.add(antRouter);
 
-        return ResultUtil.ok(antRouters1);
+            return ResultUtil.ok(antRouters1);
+        } catch (Exception e) {
+            log.error(e);
+            return new ResultUtil(-1, e.getMessage());
+        }
+
     }
 
 
@@ -138,32 +144,32 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
 
     @Override
     public ResultUtil getAccountTree(String userId) {
-      SysAdmin sysAdmin =   sysAdminMapper.selectById(userId);
-      List<ElTree> elTrees = new ArrayList<>();
-      ElTree elTree  = new ElTree();
-      elTree.setId(sysAdmin.getId());
-      elTree.setLabel(sysAdmin.getNickName() +"(账号："+sysAdmin.getUserName()+")");
-      elTree.setChildren(getChildrens(sysAdmin));
-      elTrees.add(elTree);
+        SysAdmin sysAdmin = sysAdminMapper.selectById(userId);
+        List<ElTree> elTrees = new ArrayList<>();
+        ElTree elTree = new ElTree();
+        elTree.setId(sysAdmin.getId());
+        elTree.setLabel(sysAdmin.getNickName() + "(账号：" + sysAdmin.getUserName() + ")");
+        elTree.setChildren(getChildrens(sysAdmin));
+        elTrees.add(elTree);
 
         return ResultUtil.ok(elTrees);
     }
 
 
-    public  List<ElTree>  getChildrens(SysAdmin sysAdmin){
-       QueryWrapper<SysAdmin>  queryWrapper = new QueryWrapper<>();
-       queryWrapper.lambda().eq(SysAdmin::getParentId , sysAdmin.getId());
-       List<SysAdmin>  sysAdmins = sysAdminMapper.selectList(queryWrapper);
-       List<ElTree>  elTrees = new ArrayList<>();
-       sysAdmins.stream().forEach(sysAdmin1 -> {
-           ElTree  elTree  = new ElTree();
-           elTree.setId(sysAdmin1.getId());
-           elTree.setLabel(sysAdmin1.getNickName() +"(账号：" +sysAdmin1.getUserName()+")");
-           elTree.setChildren(getChildrens(sysAdmin1));
-           elTrees.add(elTree);
-       });
+    public List<ElTree> getChildrens(SysAdmin sysAdmin) {
+        QueryWrapper<SysAdmin> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(SysAdmin::getParentId, sysAdmin.getId());
+        List<SysAdmin> sysAdmins = sysAdminMapper.selectList(queryWrapper);
+        List<ElTree> elTrees = new ArrayList<>();
+        sysAdmins.stream().forEach(sysAdmin1 -> {
+            ElTree elTree = new ElTree();
+            elTree.setId(sysAdmin1.getId());
+            elTree.setLabel(sysAdmin1.getNickName() + "(账号：" + sysAdmin1.getUserName() + ")");
+            elTree.setChildren(getChildrens(sysAdmin1));
+            elTrees.add(elTree);
+        });
 
-       return  elTrees;
+        return elTrees;
     }
 
 
@@ -171,28 +177,28 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
     public ResultUtil getAccountTree2(String userId) {
         try {
 
-            SysAdmin sysAdmin =   sysAdminMapper.selectById(userId);
+            SysAdmin sysAdmin = sysAdminMapper.selectById(userId);
             List<AntdTree> elTrees = new ArrayList<>();
-            AntdTree elTree  = new AntdTree();
+            AntdTree elTree = new AntdTree();
             elTree.setKey(sysAdmin.getId());
             elTree.setValue(sysAdmin.getUserName());
             elTree.setTitle(sysAdmin.getNickName());
             elTree.setChildren(getChildrens2(sysAdmin));
             elTrees.add(elTree);
-            return  ResultUtil.ok(elTrees);
-        }catch (Exception e){
+            return ResultUtil.ok(elTrees);
+        } catch (Exception e) {
             log.error(e);
             return new ResultUtil(-1, e.getMessage());
         }
     }
 
-    public  List<AntdTree>  getChildrens2(SysAdmin sysAdmin){
-        QueryWrapper<SysAdmin>  queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(SysAdmin::getParentId , sysAdmin.getId());
-        List<SysAdmin>  sysAdmins = sysAdminMapper.selectList(queryWrapper);
-        List<AntdTree>  elTrees = new ArrayList<>();
+    public List<AntdTree> getChildrens2(SysAdmin sysAdmin) {
+        QueryWrapper<SysAdmin> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(SysAdmin::getParentId, sysAdmin.getId());
+        List<SysAdmin> sysAdmins = sysAdminMapper.selectList(queryWrapper);
+        List<AntdTree> elTrees = new ArrayList<>();
         sysAdmins.stream().forEach(sysAdmin1 -> {
-            AntdTree  elTree  = new AntdTree();
+            AntdTree elTree = new AntdTree();
             elTree.setKey(sysAdmin1.getId());
             elTree.setValue(sysAdmin1.getUserName());
             elTree.setTitle(sysAdmin1.getNickName());
@@ -200,33 +206,33 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
             elTrees.add(elTree);
         });
 
-        return  elTrees;
+        return elTrees;
     }
 
     @Override
     @Transactional
     public ResultUtil addUser(SysAdminVo sysAdminVo) {
         try {
-            QueryWrapper<SysAdmin>  sysAdminQueryWrapper = new QueryWrapper<>();
-            sysAdminQueryWrapper.lambda().eq(SysAdmin::getUserName,  sysAdminVo.getUserName());
+            QueryWrapper<SysAdmin> sysAdminQueryWrapper = new QueryWrapper<>();
+            sysAdminQueryWrapper.lambda().eq(SysAdmin::getUserName, sysAdminVo.getUserName());
             int length = sysAdminMapper.selectCount(sysAdminQueryWrapper);
-            if(length >= 1)
-                return  new ResultUtil(-2 , "该账号已存在");
-             sysAdminVo.setPasswd( md5Util.md5(sysAdminVo.getPasswd(), "utf-8"));
-             SysAdmin sysAdmin = new SysAdmin();
-             BeanUtils.copyProperties(sysAdminVo, sysAdmin);
+            if (length >= 1)
+                return new ResultUtil(-2, "该账号已存在");
+            sysAdminVo.setPasswd(md5Util.md5(sysAdminVo.getPasswd(), "utf-8"));
+            SysAdmin sysAdmin = new SysAdmin();
+            BeanUtils.copyProperties(sysAdminVo, sysAdmin);
             sysAdminMapper.insert(sysAdmin);
-            if(sysAdmin.getId() != null &&  sysAdminVo.getRouterIds()!=null ){
-                sysAdminVo.getRouterIds().stream().forEach(sv ->{
-                    SysAdminMenu  sysAdminMenu = new SysAdminMenu();
+            if (sysAdmin.getId() != null && sysAdminVo.getRouterIds() != null) {
+                sysAdminVo.getRouterIds().stream().forEach(sv -> {
+                    SysAdminMenu sysAdminMenu = new SysAdminMenu();
                     sysAdminMenu.setAdminId(sysAdmin.getId());
                     sysAdminMenu.setMenuId(sv);
                     sysAdminMenuMapper.insert(sysAdminMenu);
                 });
             }
 
-            return  ResultUtil.ok();
-        }catch (Exception e){
+            return ResultUtil.ok();
+        } catch (Exception e) {
 
             log.error(e);
             return new ResultUtil(-1, "error");
@@ -236,32 +242,33 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
 
     @Override
     @Transactional
-    public ResultUtil delUserByParentId(String parentId ,  String userId) {
+    public ResultUtil delUserByParentId(String parentId, String userId) {
         try {
-            if(StringUtils.equals(parentId  , userId))
-                return new ResultUtil(-1 , "无法删除");
-            if(personRepository.existsByUserId(parentId))
+            if (StringUtils.equals(parentId, userId))
+                return new ResultUtil(-1, "无法删除");
+            if (personRepository.existsByUserId(parentId))
                 return new ResultUtil(-1, "当前存在人员,删除失败");
 
-            QueryWrapper<SysAdmin>  sysAdminQueryWrapper = new QueryWrapper<>();
-            sysAdminQueryWrapper.lambda().eq(SysAdmin::getParentId , parentId);
-            List<SysAdmin>  sysAdmins  = sysAdminMapper.selectList(sysAdminQueryWrapper);
+            QueryWrapper<SysAdmin> sysAdminQueryWrapper = new QueryWrapper<>();
+            sysAdminQueryWrapper.lambda().eq(SysAdmin::getParentId, parentId);
+            List<SysAdmin> sysAdmins = sysAdminMapper.selectList(sysAdminQueryWrapper);
             //List<String>  ids  = new ArrayList<>();
 
-            for(SysAdmin s : sysAdmins) {
-                   // ids.add(sa.getId());
-                if(personRepository.existsByUserId(s.getId()))
-                    return new ResultUtil(-1, s.getNickName()+"删除子账号失败,当前存在人员,删除失败");
+            for (SysAdmin s : sysAdmins) {
+                // ids.add(sa.getId());
+                if (personRepository.existsByUserId(s.getId()))
+                    return new ResultUtil(-1, s.getNickName() + "删除子账号失败,当前存在人员,删除失败");
                 sysAdminMapper.deleteById(s.getId());
-            };
+            }
+            ;
             //ids.add(parentId);
             sysAdminMapper.deleteById(parentId);
-            return  ResultUtil.ok();
+            return ResultUtil.ok();
 
 
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e);
-            return  new ResultUtil(-1 ,"删除失败");
+            return new ResultUtil(-1, "删除失败");
         }
     }
 
@@ -277,9 +284,9 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
             List<AntdTree> antdTrees = getUserTree(sysMenus, "0");
 
             return new ResultUtil(0, antdTrees, "");
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
-            return  new ResultUtil(-1, "获取失败");
+            return new ResultUtil(-1, "获取失败");
         }
     }
 
@@ -302,16 +309,16 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
     @Override
     public ResultUtil getUserIdByName(String userName) {
         try {
-            QueryWrapper<SysAdmin>  queryWrapper = new QueryWrapper<>();
-            queryWrapper.lambda().like(SysAdmin::getUserName , userName);
+            QueryWrapper<SysAdmin> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().like(SysAdmin::getUserName, userName);
             List<SysAdmin> sysAdmin = sysAdminMapper.selectList(queryWrapper);
-            if(sysAdmin != null)
-                return new ResultUtil(0 ,sysAdmin ,"");
+            if (sysAdmin != null)
+                return new ResultUtil(0, sysAdmin, "");
             return null;
 
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e);
-            return new ResultUtil(-1 , e.getMessage());
+            return new ResultUtil(-1, e.getMessage());
         }
     }
 
@@ -323,76 +330,74 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
             queryWrapper.lambda().orderByAsc(SysAdminMenu::getMenuId);
             List<SysAdminMenu> sysAdminMenus = sysAdminMenuMapper.selectList(queryWrapper);
             List<String> menuIds = sysAdminMenus.stream().map(SysAdminMenu::getMenuId).collect(Collectors.toList());
-            log.info("获取的菜单ID:{}   ::: {}  ::: uerID：：{}" , JSON.toJSONString(menuIds) ,
-                    JSON.toJSONString(sysAdminMenus),userId);
-            if(menuIds == null || menuIds.size() <=0)
-                return  new ResultUtil(-1 ,"当前用户未拥有菜单,登录失败");
+            log.info("获取的菜单ID:{}   ::: {}  ::: uerID：：{}", JSON.toJSONString(menuIds),
+                    JSON.toJSONString(sysAdminMenus), userId);
+            if (menuIds == null || menuIds.size() <= 0)
+                return new ResultUtil(-1, "当前用户未拥有菜单,登录失败");
             QueryWrapper<SysMenu> queryWrapper1 = new QueryWrapper<>();
-            queryWrapper1.lambda().in(SysMenu::getId , menuIds);
+            queryWrapper1.lambda().in(SysMenu::getId, menuIds);
             queryWrapper1.lambda().isNotNull(SysMenu::getPermission);
 
 
             List<SysMenu> sysMenus = sysMenuMapper.selectList(queryWrapper1);
-           List<Permission> permissions = getPermission(sysMenus);
+            List<Permission> permissions = getPermission(sysMenus);
 
             return ResultUtil.ok(permissions);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e);
-            return new ResultUtil(-1,e.getMessage());
+            return new ResultUtil(-1, e.getMessage());
         }
     }
 
-    public List<Permission>  getPermission(List<SysMenu> sysMenus){
-        List<Permission>  permissions = new ArrayList<>();
-           sysMenus.stream().forEach((sysMenu -> {
-               List<Permission>  permissions1 = permissions.stream().filter(permission -> StringUtils.equals(permission.getId() , sysMenu.getParentId())).collect(Collectors.toList());
-               if(permissions1.size() >0)
-                   return;
-             Permission permission = new Permission();
-             permission.setId(sysMenu.getParentId());
-             List<String>  strings = new ArrayList<>();
-             List<SysMenu>  sysMenus1 = sysMenus.stream().filter(sysMenu1 -> StringUtils.equals(sysMenu1.getParentId() ,sysMenu.getParentId())).collect(Collectors.toList());
-             sysMenus1.stream().forEach(sysMenu1 -> {
-                 strings.add(sysMenu1.getPermission());
-             });
+    public List<Permission> getPermission(List<SysMenu> sysMenus) {
+        List<Permission> permissions = new ArrayList<>();
+        sysMenus.stream().forEach((sysMenu -> {
+            List<Permission> permissions1 = permissions.stream().filter(permission -> StringUtils.equals(permission.getId(), sysMenu.getParentId())).collect(Collectors.toList());
+            if (permissions1.size() > 0)
+                return;
+            Permission permission = new Permission();
+            permission.setId(sysMenu.getParentId());
+            List<String> strings = new ArrayList<>();
+            List<SysMenu> sysMenus1 = sysMenus.stream().filter(sysMenu1 -> StringUtils.equals(sysMenu1.getParentId(), sysMenu.getParentId())).collect(Collectors.toList());
+            sysMenus1.stream().forEach(sysMenu1 -> {
+                strings.add(sysMenu1.getPermission());
+            });
 
-             permission.setOperation(strings);
-             permissions.add(permission);
-           }));
+            permission.setOperation(strings);
+            permissions.add(permission);
+        }));
 
-           return permissions;
+        return permissions;
     }
-
-
 
 
     @Override
     public ResultUtil getUserById(String id) {
         try {
-         SysAdmin sysAdmin =  sysAdminMapper.selectById(id);
+            SysAdmin sysAdmin = sysAdminMapper.selectById(id);
             SysAdminVo sysAdminVo = new SysAdminVo();
             sysAdmin.setPasswd(null);
-            BeanUtils.copyProperties(sysAdmin, sysAdminVo );
-         QueryWrapper<SysAdminMenu>  queryWrapper = new QueryWrapper<>();
-         queryWrapper.lambda().eq(SysAdminMenu::getAdminId, id );
-        List<SysAdminMenu>  menuList = sysAdminMenuMapper.selectList(queryWrapper);
-        List<String>  menuIds = new ArrayList<>();
-        for(SysAdminMenu sm : menuList){
-            menuIds.add(sm.getMenuId());
+            BeanUtils.copyProperties(sysAdmin, sysAdminVo);
+            QueryWrapper<SysAdminMenu> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(SysAdminMenu::getAdminId, id);
+            List<SysAdminMenu> menuList = sysAdminMenuMapper.selectList(queryWrapper);
+            List<String> menuIds = new ArrayList<>();
+            for (SysAdminMenu sm : menuList) {
+                menuIds.add(sm.getMenuId());
 
-        }
+            }
             CopyOnWriteArrayList<String> cowList = new CopyOnWriteArrayList<String>(menuIds);
-            for(String s : cowList){
+            for (String s : cowList) {
                 SysMenu sysMenu = sysMenuMapper.selectById(s);
-                if(menuIds.contains(sysMenu.getParentId())){
+                if (menuIds.contains(sysMenu.getParentId())) {
                     cowList.remove(sysMenu.getParentId());
                 }
             }
-        sysAdminVo.setRouterIds(cowList);
-        return  ResultUtil.ok(sysAdminVo);
-        }catch (Exception e){
+            sysAdminVo.setRouterIds(cowList);
+            return ResultUtil.ok(sysAdminVo);
+        } catch (Exception e) {
             log.error(e);
-            return  new ResultUtil(-1, e.getMessage());
+            return new ResultUtil(-1, e.getMessage());
         }
 
     }
@@ -402,30 +407,30 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
     @Transactional
     public ResultUtil updateUser(SysAdminVo sysAdminVo) {
         try {
-            if(StringUtils.equals(sysAdminVo.getId()  , "1"))
-                return new ResultUtil(-1 , "无法被编辑");
-            if(StringUtils.equals(sysAdminVo.getId() ,sysAdminVo.getUserId()))
-                return new ResultUtil(-1 , "无法被编辑");
-            SysAdmin sysAdmin =  new SysAdmin();
+            if (StringUtils.equals(sysAdminVo.getId(), "1"))
+                return new ResultUtil(-1, "无法被编辑");
+            if (StringUtils.equals(sysAdminVo.getId(), sysAdminVo.getUserId()))
+                return new ResultUtil(-1, "无法被编辑");
+            SysAdmin sysAdmin = new SysAdmin();
             BeanUtils.copyProperties(sysAdminVo, sysAdmin);
             sysAdmin.setPasswd(md5Util.md5(sysAdmin.getPasswd(), "utf-8"));
             sysAdminMapper.updateById(sysAdmin);
-            QueryWrapper<SysAdminMenu>  queryWrapper = new QueryWrapper<>();
-            queryWrapper.lambda().eq(SysAdminMenu::getAdminId ,sysAdminVo.getId());
+            QueryWrapper<SysAdminMenu> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(SysAdminMenu::getAdminId, sysAdminVo.getId());
             sysAdminMenuMapper.delete(queryWrapper);
 
-            sysAdminVo.getRouterIds().stream().forEach(r->{
+            sysAdminVo.getRouterIds().stream().forEach(r -> {
                 SysAdminMenu sysAdminMenu = new SysAdminMenu();
                 sysAdminMenu.setAdminId(sysAdminVo.getId());
                 sysAdminMenu.setMenuId(r);
                 sysAdminMenuMapper.insert(sysAdminMenu);
             });
 
-            return  ResultUtil.ok();
+            return ResultUtil.ok();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e);
-            return  new ResultUtil(-1, e.getMessage());
+            return new ResultUtil(-1, e.getMessage());
         }
     }
 
@@ -433,44 +438,44 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
     @Override
     public List<String> getChildByUerIds(String userId) {
         try {
-           return  getChildIds(userId);
+            return getChildIds(userId);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e);
-            return  null;
+            return null;
         }
 
     }
 
 
-    public  List<String> getChildIds(String userId){
+    public List<String> getChildIds(String userId) {
         QueryWrapper<SysAdmin> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(SysAdmin::getParentId, userId);
-        List<SysAdmin>  sysAdmins = sysAdminMapper.selectList(queryWrapper);
+        List<SysAdmin> sysAdmins = sysAdminMapper.selectList(queryWrapper);
         List<String> childIds = new ArrayList<>();
         sysAdmins.stream().forEach(sysAdmin -> {
             childIds.add(sysAdmin.getId());
-          List<String>  childIds2 =  getChildIds(sysAdmin.getId());
-           childIds.addAll(childIds2);
+            List<String> childIds2 = getChildIds(sysAdmin.getId());
+            childIds.addAll(childIds2);
         });
-        return  childIds;
+        return childIds;
     }
 
     @Override
     @Transactional
     public ResultUtil updatePw(String uerId, String oldpw, String newpw) {
         try {
-           SysAdmin sysAdmin  = sysAdminMapper.selectById(uerId);
-           String oldPwMd5 = md5Util.md5(oldpw , "utf-8");
-           if(!StringUtils.equals(sysAdmin.getPasswd() , oldPwMd5))
-               return  new ResultUtil(-1 , "旧密码不符");
-           String newPwMd5 = md5Util.md5(newpw ,"utf-8");
-           sysAdmin.setPasswd(newPwMd5);
-           sysAdminMapper.updateById(sysAdmin);
-           return  ResultUtil.ok();
-        }catch (Exception e){
+            SysAdmin sysAdmin = sysAdminMapper.selectById(uerId);
+            String oldPwMd5 = md5Util.md5(oldpw, "utf-8");
+            if (!StringUtils.equals(sysAdmin.getPasswd(), oldPwMd5))
+                return new ResultUtil(-1, "旧密码不符");
+            String newPwMd5 = md5Util.md5(newpw, "utf-8");
+            sysAdmin.setPasswd(newPwMd5);
+            sysAdminMapper.updateById(sysAdmin);
+            return ResultUtil.ok();
+        } catch (Exception e) {
             log.error(e);
-            return  new ResultUtil(-1  ,e.getMessage());
+            return new ResultUtil(-1, e.getMessage());
         }
     }
 }

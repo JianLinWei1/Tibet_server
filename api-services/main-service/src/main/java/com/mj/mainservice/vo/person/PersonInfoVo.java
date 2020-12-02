@@ -11,6 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Created by MrJan on 2020/11/20
@@ -40,7 +41,9 @@ public class PersonInfoVo {
     private int  accessPw;
 
     @ExcelProperty("车牌号")
-    private String carId;
+    private String carIds;
+    @ExcelIgnore
+    private List<String> carId;
 
     @ExcelProperty("电话号码")
     private String phone ;

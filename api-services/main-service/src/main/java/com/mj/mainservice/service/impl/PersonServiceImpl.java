@@ -81,7 +81,7 @@ public class PersonServiceImpl implements PersonService {
 //                    StringUtils.isNotEmpty(info.getName()) || StringUtils.isNotEmpty(info.getAccessId()) || info.getRole() != null) {
             ExampleMatcher matcher = ExampleMatcher.matching()
                     .withMatcher("id", ExampleMatcher.GenericPropertyMatchers.exact())
-                   .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
+                    .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withMatcher("accessId", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withMatcher("idCard", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withMatcher("department", ExampleMatcher.GenericPropertyMatchers.contains())
@@ -120,10 +120,10 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public ResultUtil queryPersonsListByName(PersonInfo info, List<String> childs) {
         try {
-            if(StringUtils.isEmpty(info.getName()))
-                return  ResultUtil.ok();
+            if (StringUtils.isEmpty(info.getName()))
+                return ResultUtil.ok();
             childs.add(info.getUserId());
-            List<PersonInfo> personInfos1 = personRepository.findAllByNameContainsAndUserIdIn(info.getName() ,childs);
+            List<PersonInfo> personInfos1 = personRepository.findAllByNameContainsAndUserIdIn(info.getName(), childs);
 
 
             ResultUtil resultUtil = new ResultUtil();
@@ -187,7 +187,7 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public List<PersonInfo> quryPersonListNoPage(PersonInfo personInfo ) {
+    public List<PersonInfo> quryPersonListNoPage(PersonInfo personInfo) {
         try {
 
 
@@ -228,17 +228,26 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public ResultUtil exportPerson(List<PersonInfoVo> personInfoVo) {
         try {
-            personInfoVo.stream().forEach(p->{
+
+            personInfoVo.stream().forEach(p -> {
                 try {
-                    p.setPhotoUrl(new URL("http://localhost:"+port+"/"+p.getPhoto().replace("\\", "/")));
-                } catch (MalformedURLException e) {
+                    p.setPhotoUrl(new URL("http://localhost:" + port + "/" + p.getPhoto().replace("\\", "/")));
+                } catch (Exception e) {
                     log.error(e);
                 }
+                StringBuilder carIds = new StringBuilder();
+                if (p.getCarId() != null && p.getCarId().size() > 0)
+                    p.getCarId().stream().forEach(c -> {
+                        carIds.append(c);
+                        carIds.append(";");
+                    });
+                p.setCarIds(carIds.toString());
             });
-            String path = System.currentTimeMillis()+".xlsx";
-            EasyExcel.write("upload"+ File.separator +path , PersonInfoVo.class).sheet().doWrite(personInfoVo);
-            return new ResultUtil(0 ,path , "");
-        }catch (Exception e){
+
+            String path = System.currentTimeMillis() + ".xlsx";
+            EasyExcel.write("upload" + File.separator + path, PersonInfoVo.class).sheet().doWrite(personInfoVo);
+            return new ResultUtil(0, path, "");
+        } catch (Exception e) {
             log.error(e);
             return new ResultUtil(-1, e.getMessage());
         }

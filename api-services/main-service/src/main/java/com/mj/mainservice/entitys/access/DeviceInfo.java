@@ -3,6 +3,10 @@ package com.mj.mainservice.entitys.access;
 import com.jian.common.util.PageHelper;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 
 /**
  * Created by MrJan on 2020/10/15 17:22
@@ -21,4 +25,7 @@ public class DeviceInfo  extends PageHelper {
     private  String ver;
     private  String ip;
     private  String userId;
+    private List<Doors> doors = Arrays.asList(new Doors(1,"") ,new Doors(2,"") ,
+            new Doors(3,"") ,new Doors(4,""));//初始化四个门
+
 }
