@@ -1,5 +1,8 @@
+import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson.JSON;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,13 +13,10 @@ import java.util.List;
  */
 public class Main {
 
-    public static void main(String[] args) {
-        List<String> s = new ArrayList<>();
-        s.add("1");
-        s.add("2");s.add("3");
-
-         String s1 = s.toString();
-        System.out.println(s1);
+    public static void main(String[] args) throws IOException {
+        File file1 = FileUtil.newFile("upload"+File.separator+""+System.currentTimeMillis()+".csv");
+        if(!file1.exists())
+            file1.createNewFile();
 
     }
 }

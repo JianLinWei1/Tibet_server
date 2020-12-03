@@ -1,6 +1,7 @@
 package com.mj.mainservice.service.impl;
 
 
+import com.alibaba.fastjson.JSON;
 import com.jian.common.util.FileUtils;
 
 import com.mj.mainservice.entitys.parking.*;
@@ -130,7 +131,7 @@ public class UploadRecordServiceImpl implements UploadRecoedService {
     @Override
     public void plateUpload(PlateUpload plateUpload) {
         try {
-            log.info("车辆推送：{}{}", plateUpload.getAlarmInfoPlate().getSerialno(),plateUpload.getAlarmInfoPlate().getDeviceName());
+            log.info("车辆推送：{}", JSON.toJSONString(plateUpload));
             ParkingResult  parkingResult = new ParkingResult();
             parkingResult.setSerialno(plateUpload.getAlarmInfoPlate().getSerialno());
             parkingResult.setDeviceName(plateUpload.getAlarmInfoPlate().getDeviceName());

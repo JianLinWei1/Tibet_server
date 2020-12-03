@@ -61,7 +61,7 @@ public class DeparmentServiceImpl implements DepartmentService {
             Query query = new Query();
             query.addCriteria(Criteria.where("userId").in(childs));*/
 
-            Page<Department>  page = departmentResposity.findAll(example,  PageRequest.of(department.getPage(), department.getLimit()));
+            Page<Department>  page = departmentResposity.findAll(example,  PageRequest.of(department.getPage()-1, department.getLimit()));
             ResultUtil resultUtil = new ResultUtil();
             resultUtil.setData(page.getContent());
             resultUtil.setCount(page.getTotalElements());

@@ -1,6 +1,12 @@
 package com.mj.mainservice.service.impl;
 
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.io.resource.ResourceUtil;
+import cn.hutool.core.text.csv.CsvReader;
+import cn.hutool.core.text.csv.CsvRow;
+import cn.hutool.core.text.csv.CsvUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson.JSON;
 import com.jian.common.util.ResultUtil;
@@ -8,13 +14,18 @@ import com.jian.common.util.ResultUtil;
 import com.mj.mainservice.entitys.access.AccessPerson;
 import com.mj.mainservice.entitys.access.Translation;
 import com.mj.mainservice.entitys.parking.ParkingUserInfo;
+import com.mj.mainservice.entitys.person.Department;
 import com.mj.mainservice.entitys.person.PersonInfo;
+import com.mj.mainservice.mapper.SysAdminMapper;
 import com.mj.mainservice.resposity.access.AccessPersonResposity;
+import com.mj.mainservice.resposity.department.DepartmentResposity;
 import com.mj.mainservice.resposity.parking.ParkingPersonResposity;
 import com.mj.mainservice.resposity.person.PersonRepository;
 import com.mj.mainservice.service.person.PersonService;
+import com.mj.mainservice.vo.person.ImportPersonVo;
 import com.mj.mainservice.vo.person.PersonInfoVo;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,9 +35,11 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -48,6 +61,10 @@ public class PersonServiceImpl implements PersonService {
     private AccessPersonResposity accessPersonResposity;
     @Resource
     private ParkingPersonResposity parkingPersonResposity;
+    @Resource
+    private DepartmentResposity departmentResposity;
+    @Resource
+    private SysAdminMapper adminMapper;
     @Value("${server.port}")
     private String port;
 
@@ -245,11 +262,52 @@ public class PersonServiceImpl implements PersonService {
             });
 
             String path = System.currentTimeMillis() + ".xlsx";
-            EasyExcel.write("upload" + File.separator + path, PersonInfoVo.class).sheet().doWrite(personInfoVo);
+            EasyExcel.write("upload" + File.separator + path, PersonInfoVo.class).sheet("sheet").doWrite(personInfoVo);
             return new ResultUtil(0, path, "");
         } catch (Exception e) {
             log.error(e);
             return new ResultUtil(-1, e.getMessage());
+        }
+    }
+
+    @Override
+    public ResultUtil importPerson(MultipartFile file ,String userId) {
+        try {
+            File file1 = FileUtil.newFile("upload"+File.separator+""+System.currentTimeMillis()+".csv");
+            if(!file1.exists())
+                file1.createNewFile();
+
+            CsvReader reader = CsvUtil.getReader();
+            FileUtils.copyInputStreamToFile(file.getInputStream(), file1);
+
+            List<CsvRow> rows = reader.read(file1).getRows();
+            rows.remove(0);
+            //List<ImportPersonVo>  personVos = reader.read(ResourceUtil.getUtf8Reader(file1.getAbsolutePath()), ImportPersonVo.class);
+            rows.stream().forEach(c ->{
+             List<String>  strings =   c.getRawList();
+              PersonInfo personInfo = new PersonInfo();
+              personInfo.setName(strings.get(0));
+              personInfo.setId(strings.get(1));
+              personInfo.setDepartment(strings.get(2));
+              personInfo.setCreateTime(LocalDateTime.now());
+
+             Department department = departmentResposity.findByNameEqualsAndUserIdEquals(personInfo.getDepartment(), userId);
+             if(department == null){
+                 department = new Department();
+                 department.setNickName(adminMapper.selectById(userId).getNickName());
+                 department.setName(personInfo.getDepartment());
+                 department.setUserId(userId);
+                 departmentResposity.save(department);
+             }
+             personInfo.setUserId(userId);
+             personRepository.save(personInfo);
+
+
+          });
+          return  ResultUtil.ok();
+        }catch (Exception e){
+            log.error(e);
+            return  new ResultUtil(-1, e.getMessage());
         }
     }
 }

@@ -11,10 +11,12 @@ import com.mj.mainservice.entitys.access.Translation;
 import com.mj.mainservice.service.access.AccessService;
 import com.mj.mainservice.service.person.PersonService;
 import com.mj.mainservice.vo.AccessPersonVo;
+import com.mj.mainservice.vo.access.TranslationVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -45,6 +47,13 @@ public class AccessController {
     public ResultUtil addDevice(@RequestBody DeviceInfo info, String userId) {
         info.setUserId(userId);
         return accessService.addDevice(info);
+    }
+
+    @SysLogInter("编辑门禁控制器")
+    @PostMapping("/editDevice")
+    public ResultUtil editDevice(@RequestBody DeviceInfo info, String userId) {
+        info.setUserId(userId);
+        return accessService.editDevice(info);
     }
 
 
@@ -86,9 +95,9 @@ public class AccessController {
         return accessService.DelAccessPerson(ids);
     }
 
-    @SysLogInter("刷卡记录")
+
     @PostMapping("/listRecords")
-    public ResultUtil listRecords(@RequestBody Translation translation , String userId ){
+    public ResultUtil listRecords(@RequestBody TranslationVo translation , String userId ){
         if(StringUtils.isEmpty(translation.getUserId()))
          translation.setUserId(userId);
         return accessService.listRecords(translation);

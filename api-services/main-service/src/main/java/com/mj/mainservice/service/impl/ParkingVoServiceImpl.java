@@ -56,7 +56,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
                     .withNullHandler(ExampleMatcher.NullHandler.IGNORE)
                     .withIgnorePaths("page", "limit");
 
-            Pageable pageable = PageRequest.of(parkInfo.getPage(), parkInfo.getLimit());
+            Pageable pageable = PageRequest.of(parkInfo.getPage()-1, parkInfo.getLimit());
             Example<ParkInfo> example = Example.of(parkInfo, matcher);
 //            childs.add(parkInfo.getUserId());
 //            Query query = new Query();
@@ -148,7 +148,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
                     .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withMatcher("carId", ExampleMatcher.GenericPropertyMatchers.contains());
             Example<ParkingUserInfo> example = Example.of(parkingUserInfo, matcher);
-            Pageable pageable = PageRequest.of(parkingUserInfo.getPage(), parkingUserInfo.getLimit());
+            Pageable pageable = PageRequest.of(parkingUserInfo.getPage()-1, parkingUserInfo.getLimit());
             Query query = new Query();
             //childs.add(parkingUserInfo.getUserId());
             query.addCriteria(Criteria.where("action").ne(1));
@@ -190,7 +190,8 @@ public class ParkingVoServiceImpl implements ParkingVoService {
                     .withMatcher("plateid", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withIgnorePaths("page", "limit");
             Example<ParkingResult> example = Example.of(parkingResult, matcher);
-            Page<ParkingResult> page = parkingResultResposity.findAll(example, PageRequest.of(parkingResult.getPage(), parkingResult.getLimit()));
+            Page<ParkingResult> page = parkingResultResposity.findAll(example, PageRequest.of(parkingResult.getPage()-1,
+                    parkingResult.getLimit() , Sort.by(Sort.Direction.DESC, "time")));
 
             ResultUtil resultUtil = new ResultUtil();
             resultUtil.setCode(0);
@@ -222,7 +223,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
     public ResultUtil exportRecords(List<ParkingResult> results) {
         try {
             String path = System.currentTimeMillis() + ".xlsx";
-            EasyExcel.write("upload" + File.separator + path, ParkingResult.class).sheet().doWrite(results);
+            EasyExcel.write("upload" + File.separator + path, ParkingResult.class).sheet("sheet").doWrite(results);
             return new ResultUtil(0, path, "");
         } catch (Exception e) {
             log.error(e);

@@ -6,6 +6,7 @@ import com.mj.mainservice.entitys.access.AccessPerson;
 import com.mj.mainservice.entitys.access.DeviceInfo;
 import com.mj.mainservice.entitys.access.Translation;
 import com.mj.mainservice.vo.AccessPersonVo;
+import com.mj.mainservice.vo.access.TranslationVo;
 
 import java.util.List;
 
@@ -19,6 +20,8 @@ public interface AccessService {
 
 
     ResultUtil addDevice(DeviceInfo info);
+
+    ResultUtil  editDevice(DeviceInfo info);
 
     ResultUtil listDevice(DeviceInfo info );
 
@@ -34,7 +37,7 @@ public interface AccessService {
     ResultUtil upload(List<Translation>  translations );
 
 
-    ResultUtil listRecords(Translation translation );
+    ResultUtil listRecords(TranslationVo translation );
 
     ResultUtil delRecords(List<String>  ids);
 

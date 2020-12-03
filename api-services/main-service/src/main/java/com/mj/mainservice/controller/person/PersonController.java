@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -68,6 +69,14 @@ public class PersonController {
 
         return personService.exportPerson(personInfoVos);
     }
+
+    @SysLogInter("导入人员")
+    @PostMapping("/importPerson")
+    public ResultUtil importPerson(MultipartFile file , String userId){
+
+        return personService.importPerson(file , userId);
+    }
+
 
 
 
