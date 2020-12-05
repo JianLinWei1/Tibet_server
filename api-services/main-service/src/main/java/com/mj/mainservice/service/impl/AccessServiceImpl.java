@@ -5,6 +5,7 @@ import com.alibaba.excel.EasyExcel;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.extension.api.R;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jian.common.entity.AntdTree;
 
@@ -23,6 +24,7 @@ import com.mj.mainservice.resposity.person.PersonRepository;
 import com.mj.mainservice.resposity.access.TranslationResposity;
 import com.mj.mainservice.service.access.AccessService;
 import com.mj.mainservice.vo.AccessPersonVo;
+import com.mj.mainservice.vo.access.BatchIssueVo;
 import com.mj.mainservice.vo.access.TranslationVo;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -433,6 +435,122 @@ public class AccessServiceImpl implements AccessService {
         } catch (Exception e) {
             log.error(e);
             return new ResultUtil(-1, e.getMessage());
+        }
+    }
+
+    @Override
+    public ResultUtil getDeviceTreeDoor(String userId) {
+        try {
+            DeviceInfo deviceInfo = new DeviceInfo();
+            deviceInfo.setUserId(userId);
+            ExampleMatcher matcher = ExampleMatcher.matching()
+                    .withMatcher("userId", ExampleMatcher.GenericPropertyMatchers.exact())
+                    .withIgnorePaths("doors");
+            Example<DeviceInfo> example = Example.of(deviceInfo, matcher);
+            List<DeviceInfo> deviceInfos = accessRespository.findAll(example);
+            List<AntdTree> antdTrees = new ArrayList<>();
+            deviceInfos.stream().forEach(dv -> {
+                AntdTree antdTree = new AntdTree();
+                antdTree.setKey(dv.getId());
+                antdTree.setValue(dv.getIp());
+                antdTree.setTitle(dv.getName());
+                List<AntdTree> child = new ArrayList<>();
+                dv.getDoors().stream().forEach(d->{
+                    AntdTree antdTree1 = new AntdTree();
+                    antdTree1.setKey(dv.getId()+"-"+d.getId());
+                    antdTree1.setTitle(d.getName());
+                    child.add(antdTree1);
+                });
+
+                antdTree.setChildren(child);
+                antdTrees.add(antdTree);
+            });
+
+          /*  AntdTree antdTree = new AntdTree();
+            antdTree.setKey("0");
+            antdTree.setTitle("选择门禁设备");
+            List<AntdTree> child = new ArrayList<>();
+            deviceInfos.stream().forEach(dv -> {
+                dv.getDoors().stream().forEach(d->{
+                    AntdTree antdTree1 = new AntdTree();
+                    antdTree1.setKey(dv.getId()+"-"+d.getId());
+                    antdTree1.setTitle(dv.getName()+"-"+d.getName());
+                    child.add(antdTree1);
+                });
+            });*/
+          /*  antdTree.setChildren(child);
+            List<Object> objects = new ArrayList<>();
+            objects.add(antdTree);*/
+            ResultUtil resultUtil = new ResultUtil();
+            resultUtil.setCode(0);
+            resultUtil.setData(antdTrees);
+            return resultUtil;
+        }catch (Exception e){
+            log.error(e);
+            return  new ResultUtil(-1 ,e.getMessage());
+        }
+    }
+
+    @Override
+    public ResultUtil batchIssue(BatchIssueVo issueVo) {
+        try {
+            HttpUtil httpUtil = new HttpUtil();
+            ResultUtil resultUtil = new ResultUtil();
+            //查出人员设备信息
+            PersonInfo personInfo = personRepository.findById(issueVo.getPid()).get();
+            String[]  doorId = issueVo.getAdvId().split("-");
+            DeviceInfo deviceInfo = new DeviceInfo();
+            List<Doors> doorNums = new ArrayList<>();
+            if(doorId.length >0)
+                 deviceInfo = accessRespository.findById(doorId[0]).get();
+                    AccessPerson accessPerson1 = accessPersonResposity.findByPidEqualsAndAdvIdEqualsAndDoorsNumContains((String) personInfo.getId(), deviceInfo.getId() ,
+                            doorNums);
+                    if(accessPerson1!=null)
+                        return ResultUtil.ok();
+                    // return new ResultUtil(-1 ,"存在同一个人下发到了相同门："+accessPerson1.getName()+",请重新选择");
+
+                    String doorIds = "";
+                    for (Doors i : doorNums) {
+                        doorIds += i.getId() + ",";
+                    }
+                    String pin = "";
+                    if (personInfo.getAccessId().length() > 8)
+                        pin = personInfo.getAccessId().substring(0, 8);
+                    else
+                        pin = personInfo.getAccessId();
+                    String url = "http://" + SysConfigUtil.getIns().getProAccessServer() +
+                            "/setDeviceData?ip=" + deviceInfo.getIp() + "&CardNo=" + personInfo.getAccessId() + "&pin=" + pin +
+                            "&pw=" + personInfo.getAccessPw() + "&doorIds=" + doorIds.substring(0, doorIds.length() - 1);
+                    ResultUtil ru = httpUtil.get(url);
+                    //ResultUtil ru = ResultUtil.ok();
+                    log.info("门禁下发返回：{} , URL:{}", JSON.toJSONString(ru), url);
+
+                    if (ru.getCode() != 0) {
+                        resultUtil.setCode(-1);
+                    } else {
+                        /**下发成功 加入数据库**/
+                        AccessPerson accessPerson = new AccessPerson();
+
+                        accessPerson.setPid((String) personInfo.getId());
+                        accessPerson.setAccessId(personInfo.getAccessId());
+                        accessPerson.setAccessPw(personInfo.getAccessPw());
+                        accessPerson.setName(personInfo.getName());
+                        accessPerson.setIp(deviceInfo.getIp());
+                        accessPerson.setDepartment(personInfo.getDepartment());
+                        accessPersonResposity.save(accessPerson);
+                        resultUtil.setCode(0);
+                    }
+
+            if (resultUtil.getCode() != null &&resultUtil.getCode() != 0 ) {
+
+                return resultUtil;
+            }
+
+
+            return ResultUtil.ok();
+        }catch (Exception e){
+            log.error(e);
+            return  new ResultUtil(-1,e.getMessage());
         }
     }
 }

@@ -9,9 +9,9 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
      driver-class-name: com.mysql.cj.jdbc.Driver
-     url: jdbc:mysql://localhost:3306/tibet_account?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
+     url: jdbc:mysql://140.246.202.47:3306/tibet_account?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
      username: root
-     password: 2020jdream
+     password: Lingjun_123
 
   resources:
     static-locations: classpath:/upload/img/,file:D:/new_workspace_java/Tibet_server/

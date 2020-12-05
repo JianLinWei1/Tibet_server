@@ -320,28 +320,40 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public ResultUtil getPersonTree(String userId) {
         try {
-           PersonInfo personInfo = new PersonInfo();
-           personInfo.setUserId(userId);
-           ExampleMatcher  matcher = ExampleMatcher.matching().withIgnorePaths("page","limit" ,"accessPw")
-                   .withMatcher("userId", ExampleMatcher.GenericPropertyMatchers.exact());
-           Example<PersonInfo>  example = Example.of(personInfo);
-           List<PersonInfo> list = personRepository.findAll(example);
-           List<AntdTree>  all =  new ArrayList<>();
-            AntdTree antdTree = new AntdTree();
-            antdTree.setKey("0");
-            antdTree.setTitle("人员");
-            List<AntdTree> child = new ArrayList<>();
-            list.stream().forEach(p -> {
-                AntdTree antdTree1 = new AntdTree();
-                antdTree1.setKey(p.getId());
-                antdTree1.setTitle(p.getName());
-                child.add(antdTree1);
+           Department department = new Department();
+           department.setUserId(userId);
+            ExampleMatcher  matcher = ExampleMatcher.matching().withIgnorePaths("page","limit" ,"accessPw")
+                    .withMatcher("userId", ExampleMatcher.GenericPropertyMatchers.exact());
+            Example<Department>  example = Example.of(department);
+           List<Department> departments = departmentResposity.findAll(example);
+
+            List<AntdTree> departmemnTree = new ArrayList<>();
+            departments.stream().forEach(d -> {
+                 AntdTree deTree= new AntdTree();
+                 deTree.setKey(d.getId());
+                 deTree.setTitle(d.getName());
+
+                PersonInfo personInfo = new PersonInfo();
+                personInfo.setDepartment(d.getName());
+                ExampleMatcher  matcher2 = ExampleMatcher.matching().withIgnorePaths("page","limit" ,"accessPw")
+                        .withMatcher("department", ExampleMatcher.GenericPropertyMatchers.exact());
+                Example<PersonInfo>  example2 = Example.of(personInfo);
+                List<PersonInfo> list = personRepository.findAll(example2);
+                List<AntdTree>  persons = new ArrayList<>();
+                list.stream().forEach(p->{
+                    AntdTree antdTree1 = new AntdTree();
+                    antdTree1.setKey(p.getId());
+                    antdTree1.setTitle(p.getName());
+                    persons.add(antdTree1);
+                });
+                deTree.setChildren(persons);
+                departmemnTree.add(deTree);
+
             });
-            antdTree.setChildren(child);
-            all.addAll(child);
+
             ResultUtil r = new ResultUtil();
             r.setCode(0);
-            r.setData(all);
+            r.setData(departmemnTree);
             return  r;
         }catch (Exception e){
             log.error(e);

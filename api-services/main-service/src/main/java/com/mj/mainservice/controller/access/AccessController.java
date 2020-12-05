@@ -11,6 +11,7 @@ import com.mj.mainservice.entitys.access.Translation;
 import com.mj.mainservice.service.access.AccessService;
 import com.mj.mainservice.service.person.PersonService;
 import com.mj.mainservice.vo.AccessPersonVo;
+import com.mj.mainservice.vo.access.BatchIssueVo;
 import com.mj.mainservice.vo.access.TranslationVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,6 +125,23 @@ public class AccessController {
         return  accessService.delDevice(ids);
 
     }
+
+    @GetMapping("/getDeviceTreeDoor")
+    public  ResultUtil getDeviceTreeDoor(String pid ,String  userId){
+        if(StringUtils.isNotEmpty(pid))
+            userId = pid;
+        return  accessService.getDeviceTreeDoor(userId);
+    }
+
+    @PostMapping("/batchIssue")
+    public  ResultUtil batchIssue(@RequestBody BatchIssueVo issueVo){
+
+        return accessService.batchIssue(issueVo);
+    }
+
+
+
+
 
 
 
