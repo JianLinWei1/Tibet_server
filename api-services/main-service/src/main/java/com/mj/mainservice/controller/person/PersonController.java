@@ -11,10 +11,7 @@ import com.mj.mainservice.service.person.PersonService;
 import com.mj.mainservice.vo.person.PersonInfoVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -75,6 +72,14 @@ public class PersonController {
     public ResultUtil importPerson(MultipartFile file , String userId){
 
         return personService.importPerson(file , userId);
+    }
+
+
+    @GetMapping("/getPersonTree")
+    public  ResultUtil getPersonTree(String pid ,String  userId){
+        if(StringUtils.isNotEmpty(pid))
+            userId = pid;
+        return  personService.getPersonTree(userId);
     }
 
 

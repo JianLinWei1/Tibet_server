@@ -32,5 +32,7 @@ public interface PersonService {
 
     ResultUtil importPerson(MultipartFile file ,String userId);
 
+    ResultUtil getPersonTree(String userId);
+
 
 }

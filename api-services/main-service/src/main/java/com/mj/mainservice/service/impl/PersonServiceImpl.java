@@ -9,6 +9,7 @@ import cn.hutool.core.text.csv.CsvRow;
 import cn.hutool.core.text.csv.CsvUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson.JSON;
+import com.jian.common.entity.AntdTree;
 import com.jian.common.util.ResultUtil;
 
 import com.mj.mainservice.entitys.access.AccessPerson;
@@ -46,6 +47,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -248,7 +250,8 @@ public class PersonServiceImpl implements PersonService {
 
             personInfoVo.stream().forEach(p -> {
                 try {
-                    p.setPhotoUrl(new URL("http://localhost:" + port + "/" + p.getPhoto().replace("\\", "/")));
+                    if (p.getPhoto() != null)
+                        p.setPhotoUrl(new URL("http://localhost:" + port + "/" + p.getPhoto().replace("\\", "/")));
                 } catch (Exception e) {
                     log.error(e);
                 }
@@ -271,10 +274,10 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public ResultUtil importPerson(MultipartFile file ,String userId) {
+    public ResultUtil importPerson(MultipartFile file, String userId) {
         try {
-            File file1 = FileUtil.newFile("upload"+File.separator+""+System.currentTimeMillis()+".csv");
-            if(!file1.exists())
+            File file1 = FileUtil.newFile("upload" + File.separator + "" + System.currentTimeMillis() + ".csv");
+            if (!file1.exists())
                 file1.createNewFile();
 
             CsvReader reader = CsvUtil.getReader();
@@ -283,28 +286,63 @@ public class PersonServiceImpl implements PersonService {
             List<CsvRow> rows = reader.read(file1).getRows();
             rows.remove(0);
             //List<ImportPersonVo>  personVos = reader.read(ResourceUtil.getUtf8Reader(file1.getAbsolutePath()), ImportPersonVo.class);
-            rows.stream().forEach(c ->{
-             List<String>  strings =   c.getRawList();
-              PersonInfo personInfo = new PersonInfo();
-              personInfo.setName(strings.get(0));
-              personInfo.setId(strings.get(1));
-              personInfo.setDepartment(strings.get(2));
-              personInfo.setCreateTime(LocalDateTime.now());
+            rows.stream().forEach(c -> {
+                List<String> strings = c.getRawList();
+                PersonInfo personInfo = new PersonInfo();
+                personInfo.setName(strings.get(0));
+                personInfo.setId(strings.get(1));
+                personInfo.setDepartment(strings.get(2));
+                personInfo.setCreateTime(LocalDateTime.now());
+                Optional<PersonInfo> optional = personRepository.findById(personInfo.getId());
+                if (optional.isPresent())
+                    return;
 
-             Department department = departmentResposity.findByNameEqualsAndUserIdEquals(personInfo.getDepartment(), userId);
-             if(department == null){
-                 department = new Department();
-                 department.setNickName(adminMapper.selectById(userId).getNickName());
-                 department.setName(personInfo.getDepartment());
-                 department.setUserId(userId);
-                 departmentResposity.save(department);
-             }
-             personInfo.setUserId(userId);
-             personRepository.save(personInfo);
+                Department department = departmentResposity.findByNameEqualsAndUserIdEquals(personInfo.getDepartment(), userId);
+                if (department == null) {
+                    department = new Department();
+                    department.setNickName(adminMapper.selectById(userId).getNickName());
+                    department.setName(personInfo.getDepartment());
+                    department.setUserId(userId);
+                    departmentResposity.save(department);
+                }
+                personInfo.setUserId(userId);
+                personRepository.save(personInfo);
 
 
-          });
-          return  ResultUtil.ok();
+            });
+            return ResultUtil.ok();
+        } catch (Exception e) {
+            log.error(e);
+            return new ResultUtil(-1, e.getMessage());
+        }
+    }
+
+    @Override
+    public ResultUtil getPersonTree(String userId) {
+        try {
+           PersonInfo personInfo = new PersonInfo();
+           personInfo.setUserId(userId);
+           ExampleMatcher  matcher = ExampleMatcher.matching().withIgnorePaths("page","limit" ,"accessPw")
+                   .withMatcher("userId", ExampleMatcher.GenericPropertyMatchers.exact());
+           Example<PersonInfo>  example = Example.of(personInfo);
+           List<PersonInfo> list = personRepository.findAll(example);
+           List<AntdTree>  all =  new ArrayList<>();
+            AntdTree antdTree = new AntdTree();
+            antdTree.setKey("0");
+            antdTree.setTitle("人员");
+            List<AntdTree> child = new ArrayList<>();
+            list.stream().forEach(p -> {
+                AntdTree antdTree1 = new AntdTree();
+                antdTree1.setKey(p.getId());
+                antdTree1.setTitle(p.getName());
+                child.add(antdTree1);
+            });
+            antdTree.setChildren(child);
+            all.addAll(child);
+            ResultUtil r = new ResultUtil();
+            r.setCode(0);
+            r.setData(all);
+            return  r;
         }catch (Exception e){
             log.error(e);
             return  new ResultUtil(-1, e.getMessage());
