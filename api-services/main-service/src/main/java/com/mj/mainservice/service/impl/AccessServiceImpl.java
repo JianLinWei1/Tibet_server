@@ -23,8 +23,10 @@ import com.mj.mainservice.resposity.access.AccessRespository;
 import com.mj.mainservice.resposity.person.PersonRepository;
 import com.mj.mainservice.resposity.access.TranslationResposity;
 import com.mj.mainservice.service.access.AccessService;
+import com.mj.mainservice.util.AccessUtil;
 import com.mj.mainservice.vo.AccessPersonVo;
 import com.mj.mainservice.vo.access.BatchIssueVo;
+import com.mj.mainservice.vo.access.BatchPersonInfo;
 import com.mj.mainservice.vo.access.TranslationVo;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -36,13 +38,12 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import javax.annotation.Resource;
 import java.io.File;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by MrJan on 2020/10/16 10:29
@@ -496,50 +497,74 @@ public class AccessServiceImpl implements AccessService {
         try {
             HttpUtil httpUtil = new HttpUtil();
             ResultUtil resultUtil = new ResultUtil();
-            //查出人员设备信息
-            PersonInfo personInfo = personRepository.findById(issueVo.getPid()).get();
-            String[]  doorId = issueVo.getAdvId().split("-");
-            DeviceInfo deviceInfo = new DeviceInfo();
-            List<Doors> doorNums = new ArrayList<>();
-            if(doorId.length >0)
-                 deviceInfo = accessRespository.findById(doorId[0]).get();
-                    AccessPerson accessPerson1 = accessPersonResposity.findByPidEqualsAndAdvIdEqualsAndDoorsNumContains((String) personInfo.getId(), deviceInfo.getId() ,
-                            doorNums);
-                    if(accessPerson1!=null)
-                        return ResultUtil.ok();
-                    // return new ResultUtil(-1 ,"存在同一个人下发到了相同门："+accessPerson1.getName()+",请重新选择");
 
-                    String doorIds = "";
-                    for (Doors i : doorNums) {
-                        doorIds += i.getId() + ",";
-                    }
-                    String pin = "";
-                    if (personInfo.getAccessId().length() > 8)
-                        pin = personInfo.getAccessId().substring(0, 8);
-                    else
-                        pin = personInfo.getAccessId();
-                    String url = "http://" + SysConfigUtil.getIns().getProAccessServer() +
-                            "/setDeviceData?ip=" + deviceInfo.getIp() + "&CardNo=" + personInfo.getAccessId() + "&pin=" + pin +
-                            "&pw=" + personInfo.getAccessPw() + "&doorIds=" + doorIds.substring(0, doorIds.length() - 1);
-                    ResultUtil ru = httpUtil.get(url);
-                    //ResultUtil ru = ResultUtil.ok();
-                    log.info("门禁下发返回：{} , URL:{}", JSON.toJSONString(ru), url);
+            List<Map<String , List<Doors>>>  list = AccessUtil.parseDoors(issueVo.getDvIds());
+            StringBuilder ips = new StringBuilder();
+            List<BatchPersonInfo>  batchPersonInfos = new ArrayList<>();
+            List<AccessPerson> accessPersons= new ArrayList<>();
+            //批量下发设备
+            list.stream().forEach(l->{
+                Iterator a = l.entrySet ().iterator ();
+                while (a.hasNext ()){
+                    Map.Entry entry = (Map.Entry)a.next();
+                    System.out.println (entry.getKey()+"------"+entry.getValue ());
+                    DeviceInfo deviceInfo = accessRespository.findById(String.valueOf(entry.getKey())).get();
+                    ips.append(deviceInfo.getIp());
+                    ips.append("&ip=");
 
-                    if (ru.getCode() != 0) {
-                        resultUtil.setCode(-1);
-                    } else {
-                        /**下发成功 加入数据库**/
+                    issueVo.getPids().stream().forEach(pid->{
+                        BatchPersonInfo batchPersonInfo = new BatchPersonInfo();
+                        //查出人员信息
+                        Optional<PersonInfo>   optional = personRepository.findById(pid);
+                        if(!optional.isPresent())
+                            return;
+                        PersonInfo personInfo = optional.get();
                         AccessPerson accessPerson = new AccessPerson();
 
-                        accessPerson.setPid((String) personInfo.getId());
+                        accessPerson.setPid( personInfo.getId());
                         accessPerson.setAccessId(personInfo.getAccessId());
                         accessPerson.setAccessPw(personInfo.getAccessPw());
                         accessPerson.setName(personInfo.getName());
                         accessPerson.setIp(deviceInfo.getIp());
                         accessPerson.setDepartment(personInfo.getDepartment());
-                        accessPersonResposity.save(accessPerson);
-                        resultUtil.setCode(0);
-                    }
+                        accessPersons.add(accessPerson);
+                        List<Doors>  doorNums = (List<Doors>)entry.getValue();
+                        AccessPerson accessPerson1 = accessPersonResposity.findByPidEqualsAndAdvIdEqualsAndDoorsNumContains((String) personInfo.getId(), String.valueOf(entry.getKey()) ,
+                                doorNums );
+                        if(accessPerson1!=null)
+                            return;
+                        int  doorId = AccessUtil.getDoor(doorNums.stream().map(Doors::getId).collect(Collectors.toList()));
+                        String pin = "";
+                        if (personInfo.getAccessId()!= null && personInfo.getAccessId().length() > 8)
+                            pin = personInfo.getAccessId().substring(0, 8);
+                        else
+                            pin = personInfo.getAccessId();
+
+                        batchPersonInfo.setCardNo(personInfo.getAccessId());
+                        batchPersonInfo.setPin(pin);
+                        batchPersonInfo.setDoorId(doorId);
+                        batchPersonInfo.setPw(personInfo.getAccessPw());
+                        batchPersonInfos.add(batchPersonInfo);
+                    });
+
+
+                }
+            });
+            String url = "http://" + SysConfigUtil.getIns().getProAccessServer() +
+                    "/batch?ips=" + ips.toString();
+            ResultUtil ru = httpUtil.post(url ,JSON.toJSONString(batchPersonInfos));
+
+            //ResultUtil ru = ResultUtil.ok();
+            log.info("门禁下发返回：{} , URL:{}", JSON.toJSONString(ru), url);
+
+            if (ru.getCode() != 0) {
+                return ru;
+            } else {
+                /**下发成功 加入数据库**/
+
+                accessPersonResposity.saveAll(accessPersons);
+                resultUtil.setCode(0);
+            }
 
             if (resultUtil.getCode() != null &&resultUtil.getCode() != 0 ) {
 

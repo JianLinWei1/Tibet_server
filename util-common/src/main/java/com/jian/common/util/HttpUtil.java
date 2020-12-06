@@ -63,8 +63,9 @@ public class HttpUtil {
     }
 
 
-    public  String  post(String  url , String strPost) throws IOException {
-        String str ="";
+    public  ResultUtil  post(String  url , String strPost)  {
+
+        ResultUtil resultUtil = new ResultUtil();
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost hp = new HttpPost(url);
 
@@ -76,23 +77,29 @@ public class HttpUtil {
         hp.setHeader("Content-Type", "application/json");
 
         hp.setEntity(new StringEntity(strPost, Charset.forName("UTF-8")));
-
+        try {
             CloseableHttpResponse  response = httpClient.execute(hp);
             StatusLine statusline = response.getStatusLine();
             int responsecode = statusline.getStatusCode();
             if(responsecode == 200){
                 HttpEntity he = response.getEntity();
-                str = EntityUtils.toString(he, "UTF-8");
+                resultUtil = JSON.parseObject(EntityUtils.toString(he, "UTF-8"),ResultUtil.class);
 
             }else{
-                return  str ;
+                return  new ResultUtil(-1 ,EntityUtils.toString(response.getEntity())) ;
             }
 
             response.close();
             httpClient.close();
-            return str ;
+            return resultUtil ;
 
-
+        } catch (ClientProtocolException e) {
+            log.error(e);
+            return new ResultUtil(-1 ,null ,e.getMessage());
+        } catch (IOException e) {
+            log.error(e);
+            return new ResultUtil(-1 ,null ,e.getMessage());
+        }
 
     }
 

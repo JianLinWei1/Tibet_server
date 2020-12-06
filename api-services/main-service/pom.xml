@@ -17,7 +17,7 @@
         <mysql.version>8.0.21</mysql.version>
         <mybatis.version>3.3.2</mybatis.version>
         <docker.image.prefix>main-service</docker.image.prefix>
-        <main.version>1.1.6</main.version>
+        <main.version>1.1.7</main.version>
         <docker.repostory>registry.cn-beijing.aliyuncs.com</docker.repostory>
         <docker.repostory.name>ljserver</docker.repostory.name>
     </properties>
@@ -52,7 +52,7 @@
                     <source>1.8</source>
                     <target>1.8</target>
                     <encoding>UTF-8</encoding>
-                    <fork>true</fork>
+<!--                    <fork>true</fork>-->
 
                 </configuration>
             </plugin>

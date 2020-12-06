@@ -18,5 +18,7 @@ public class BatchIssueVo {
     private String advName;
     private  String ip ;
     private List<Doors> doorsNum;
+    private  List<String> pids;
+    private List<String>  dvIds;
 
 }

@@ -11,6 +11,9 @@ public class Doors {
     private Integer id;
     private String name;
 
+    public Doors() {
+        super();
+    }
     public Doors(int id ,String name){
         this.id = id ;
         this.name = name;
