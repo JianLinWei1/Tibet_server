@@ -1,8 +1,11 @@
 package com.mj.mainservice.entitys.access;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jian.common.util.PageHelper;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -22,6 +25,9 @@ public class AccessPerson  extends PageHelper {
     private  String ip;
     private String userId;
     private List<Doors>  doorsNum;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private LocalDateTime  time;
 
 
     private String department;

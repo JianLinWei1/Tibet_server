@@ -25,9 +25,9 @@ public class OpenApiController {
 
 
     @PostMapping("/upload")
-    public ResultUtil   upload(@RequestBody List<Translation>  translations){
+    public ResultUtil   upload(@RequestBody List<Translation>  translations ,String sn){
 
-         return accessService.upload(translations);
+         return accessService.upload(translations ,sn);
     }
 
 

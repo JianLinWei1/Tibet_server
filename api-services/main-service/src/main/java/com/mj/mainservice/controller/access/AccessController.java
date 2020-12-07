@@ -78,7 +78,7 @@ public class AccessController {
         personVo.setUserId(userId);
 
 
-        return accessService.issuedPerson(personVo);
+        return accessService.issuedPerson2(personVo);
     }
 
     /*@SysLogInter("获取发卡记录")*/

@@ -35,7 +35,7 @@ public interface AccessService {
     ResultUtil DelAccessPerson(List<String> ids);
 
 
-    ResultUtil upload(List<Translation>  translations );
+    ResultUtil upload(List<Translation>  translations ,String sn);
 
 
     ResultUtil listRecords(TranslationVo translation );
@@ -52,4 +52,6 @@ public interface AccessService {
     ResultUtil  getDeviceTreeDoor(String userId);
 
     ResultUtil  batchIssue(BatchIssueVo issueVo);
+
+    ResultUtil issuedPerson2(AccessPersonVo accessPersonVo);
 }

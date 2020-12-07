@@ -28,4 +28,6 @@ public class DeviceInfo  extends PageHelper {
     private List<Doors> doors = Arrays.asList(new Doors(1,"1号门") ,new Doors(2,"2号门") ,
             new Doors(3,"3号门") ,new Doors(4,"4号门"));//初始化四个门
 
+    private  Boolean status;
+
 }

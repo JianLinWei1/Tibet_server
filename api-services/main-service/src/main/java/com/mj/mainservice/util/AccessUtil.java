@@ -24,7 +24,7 @@ public class AccessUtil {
         List<Map<String , List<Doors>>>  maps = new ArrayList<>();
         dvIds.stream().forEach(d->{
             String[] objs =  d.split("-");
-           if(objs.length >= 2){
+           if(objs.length >= 3){
                Map<String ,List<Doors>>  map = new HashedMap<>();
                if(!deviceId.contains(objs[0])){
                    deviceId.add(objs[0]);
@@ -34,6 +34,8 @@ public class AccessUtil {
                        if(objs1.length >= 2){
                            Doors doors1 = new Doors();
                            doors1.setId(Integer.valueOf(objs1[1]));
+                           doors1.setName(objs1[2]);
+                           if (!doors.contains(doors1))
                            doors.add(doors1);
                        }
                    });

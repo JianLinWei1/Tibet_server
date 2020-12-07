@@ -24,7 +24,7 @@ public class Translation  extends PageHelper {
     private String personId;
     @ExcelProperty("姓名")
     private String name;
-    @ExcelProperty("姓名")
+    @ExcelProperty("部门")
     private String department;
 
 
