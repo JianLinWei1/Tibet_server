@@ -118,6 +118,13 @@ public class AccessController {
         return accessService.exportRecords(translation);
     }
 
+    @PostMapping("/exportSearchRecords")
+    public ResultUtil exportSearchRecords( @RequestBody TranslationVo translation , String userId ){
+        if(StringUtils.isEmpty(translation.getUserId()))
+            translation.setUserId(userId);
+        return accessService.exportSearchRecords(translation);
+    }
+
 
     @PostMapping("/delDevice")
     public ResultUtil  delDevice( @RequestBody List<String> ids){

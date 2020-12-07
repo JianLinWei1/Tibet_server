@@ -54,4 +54,6 @@ public interface AccessService {
     ResultUtil  batchIssue(BatchIssueVo issueVo);
 
     ResultUtil issuedPerson2(AccessPersonVo accessPersonVo);
+
+    ResultUtil  exportSearchRecords(TranslationVo translation );
 }

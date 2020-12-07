@@ -29,4 +29,5 @@ public interface ParkingVoService {
     ResultUtil delParkingResult(List<String>  ids);
 
     ResultUtil exportRecords(List<ParkingResult>  results);
+    ResultUtil exportSearchRecords(ParkingResult parkingResult);
 }

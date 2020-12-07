@@ -111,4 +111,11 @@ public class ParkingVoController {
         return parkingVoService.exportRecords(translations);
     }
 
+    @PostMapping("/exportSearchRecords")
+    public ResultUtil exportSearchRecords(@RequestBody ParkingResult parkingResult, String userId) {
+        if(StringUtils.isEmpty(parkingResult.getUserId()))
+            parkingResult.setUserId(userId);
+        return parkingVoService.exportSearchRecords(parkingResult);
+    }
+
 }

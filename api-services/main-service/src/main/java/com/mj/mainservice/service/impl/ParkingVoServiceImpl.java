@@ -231,4 +231,24 @@ public class ParkingVoServiceImpl implements ParkingVoService {
             return new ResultUtil(-1, e.getMessage());
         }
     }
+
+    @Override
+    public ResultUtil exportSearchRecords(ParkingResult parkingResult) {
+        try {
+            ExampleMatcher matcher = ExampleMatcher.matching().withMatcher("ipaddr", ExampleMatcher.GenericPropertyMatchers.exact())
+                    .withMatcher("plateid", ExampleMatcher.GenericPropertyMatchers.contains())
+                    .withIgnorePaths("page", "limit");
+            Example<ParkingResult> example = Example.of(parkingResult, matcher);
+            Page<ParkingResult> page = parkingResultResposity.findAll(example, PageRequest.of(0,
+                    2000 , Sort.by(Sort.Direction.DESC, "time")));
+
+            String path = System.currentTimeMillis() + ".xlsx";
+            EasyExcel.write("upload" + File.separator + path, ParkingResult.class).sheet("sheet").doWrite(page.getContent());
+            return new ResultUtil(0, path, "");
+
+        } catch (Exception e) {
+            log.error(e);
+            return new ResultUtil(-1, e.getMessage());
+        }
+    }
 }

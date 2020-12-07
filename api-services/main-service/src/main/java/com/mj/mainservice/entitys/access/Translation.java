@@ -28,6 +28,7 @@ public class Translation  extends PageHelper {
     private String department;
 
 
+
     @ExcelProperty(value = "刷卡时间" ,converter = LocalDateTimeConverter.class)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
