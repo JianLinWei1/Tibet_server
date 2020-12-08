@@ -21,7 +21,7 @@ import java.util.List;
 @Repository
 public interface AccessPersonResposity  extends MongoRepository<AccessPerson,String> {
 
-    List<AccessPerson> findByAccessIdEquals(String pid);
+    AccessPerson   findByAccessIdEqualsAndAdvIdEquals(String pid  ,String sn);
 
     List<AccessPerson>  findAllByPidEquals(String pid);
 

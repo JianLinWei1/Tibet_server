@@ -320,13 +320,13 @@ public class AccessServiceImpl implements AccessService {
     @Override
     public ResultUtil upload(List<Translation> translations, String sn) {
         try {
-            if (mapCache.get(sn) != null)
-                mapCache.add(sn, 1, 10 * 1000);
+            if (mapCache.get(sn) == null)
+                mapCache.add(sn, 1, 30 * 1000);
             translations.stream().forEach(translation -> {
-                List<AccessPerson> accessPersons = accessPersonResposity.findByAccessIdEquals(translation.getIcCard());
-                if (accessPersons == null && accessPersons.size() <=0)
+                AccessPerson accessPerson = accessPersonResposity.findByAccessIdEqualsAndAdvIdEquals(translation.getIcCard() ,sn);
+                if (accessPerson == null)
                     return;
-                AccessPerson accessPerson = accessPersons.get(0);
+
                 translation.setPersonId(accessPerson.getPid());
                 translation.setName(accessPerson.getName());
                 translation.setDvName(accessPerson.getAdvName());
@@ -533,6 +533,11 @@ public class AccessServiceImpl implements AccessService {
                             return;
                         List<Doors> doorNums = (List<Doors>) entry.getValue();
                         PersonInfo personInfo = optional.get();
+
+                        AccessPerson accessPerson1 = accessPersonResposity.findByPidEqualsAndAdvIdEqualsAndDoorsNumContains((String) personInfo.getId(), deviceInfo.getSn(),
+                                doorNums);
+                        if (accessPerson1 != null)
+                            return;
                         AccessPerson accessPerson = new AccessPerson();
 
                         accessPerson.setPid(personInfo.getId());
@@ -547,11 +552,6 @@ public class AccessServiceImpl implements AccessService {
                         accessPerson.setAdvName(deviceInfo.getName());
                         accessPerson.setTime(LocalDateTime.now());
                         accessPersons.add(accessPerson);
-
-                        AccessPerson accessPerson1 = accessPersonResposity.findByPidEqualsAndAdvIdEqualsAndDoorsNumContains((String) personInfo.getId(), deviceInfo.getSn(),
-                                doorNums);
-                        if (accessPerson1 != null)
-                            return;
                         int doorId = AccessUtil.getDoor(doorNums.stream().map(Doors::getId).collect(Collectors.toList()));
                         String pin = "";
                         if (personInfo.getAccessId() != null && personInfo.getAccessId().length() > 8)
@@ -580,7 +580,9 @@ public class AccessServiceImpl implements AccessService {
              /*   BatchMsg batchMsg = new BatchMsg();
                 batchMsg.setIp(ip);
                 batchMsg.setStatus(true);*/
-                if (batchMsg !=null && batchMsg.getStatus()) {
+                if(batchMsg == null)
+                    continue;
+                if ( batchMsg.getStatus()) {
                     /**下发成功 加入数据库**/
                     accessPersons.stream().forEach(p -> {
                         if (StringUtils.equals(p.getIp(), batchMsg.getIp()))
