@@ -289,9 +289,9 @@ public class PersonServiceImpl implements PersonService {
             rows.stream().forEach(c -> {
                 List<String> strings = c.getRawList();
                 PersonInfo personInfo = new PersonInfo();
-                personInfo.setName(strings.get(0));
-                personInfo.setId(strings.get(1));
-                personInfo.setDepartment(strings.get(2));
+                personInfo.setName(strings.get(0).replace("\t" ,""));
+                personInfo.setId(strings.get(1).replace("\t" ,""));
+                personInfo.setDepartment(strings.get(2).replace("\t" ,""));
                 personInfo.setCreateTime(LocalDateTime.now());
                 Optional<PersonInfo> optional = personRepository.findById(personInfo.getId());
                 if (optional.isPresent())
@@ -313,7 +313,7 @@ public class PersonServiceImpl implements PersonService {
             return ResultUtil.ok();
         } catch (Exception e) {
             log.error(e);
-            return new ResultUtil(-1, e.getMessage());
+            return new ResultUtil(-1, "请检查CSV格式"+e.getMessage());
         }
     }
 

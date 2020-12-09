@@ -321,7 +321,7 @@ public class AccessServiceImpl implements AccessService {
     public ResultUtil upload(List<Translation> translations, String sn) {
         try {
             if (mapCache.get(sn) == null)
-                mapCache.add(sn, 1, 30 * 1000);
+                mapCache.add(sn, 1, 60 * 1000);
             translations.stream().forEach(translation -> {
                 AccessPerson accessPerson = accessPersonResposity.findByAccessIdEqualsAndAdvIdEquals(translation.getIcCard() ,sn);
                 if (accessPerson == null)

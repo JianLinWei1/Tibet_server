@@ -139,6 +139,7 @@ public class UploadRecordServiceImpl implements UploadRecoedService {
             Optional<ParkInfo>  optional = parkingResposity.findById(plateUpload.getAlarmInfoPlate().getSerialno());
             if(!optional.isPresent()){
                 log.error("当前不存在serilno:{},在服务器" ,plateUpload.getAlarmInfoPlate().getSerialno());
+                return;
             }
             ParkInfo parkInfo = optional.get();
             parkingResult.setUserId(parkInfo.getUserId());
