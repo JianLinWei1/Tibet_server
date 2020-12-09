@@ -78,6 +78,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
     public ResultUtil saveParkInfo(ParkInfo parkInfo) {
         try {
             parkingResposity.save(parkInfo);
+
             return ResultUtil.ok();
         } catch (Exception e) {
             log.error(e);

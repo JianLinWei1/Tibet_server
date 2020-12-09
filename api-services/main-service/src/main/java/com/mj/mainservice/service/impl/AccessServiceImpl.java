@@ -593,7 +593,7 @@ public class AccessServiceImpl implements AccessService {
                   BatchMsg batchMsg1 = new BatchMsg();
                     batchMsg1.setIp(ip);
                     batchMsg1.setStatus(false);
-                    batchMsg1.setMsg(ru.getMsg());
+                    batchMsg1.setMsg(batchMsg.getMsg());
                     list1.add(batchMsg1);
                 }
 
@@ -670,9 +670,12 @@ public class AccessServiceImpl implements AccessService {
             ResultUtil ru = httpUtil.post(url, JSON.toJSONString(batchPersonInfos));
            // ResultUtil ru = ResultUtil.ok();
             log.info("门禁下发返回：{} , URL:{}", JSON.toJSONString(ru), url);
-
-            if (ru.getCode() == 0) {
+            BatchMsg batchMsg = JSON.parseObject(JSON.toJSONString(ru.getData()), BatchMsg.class);
+            if (batchMsg.getStatus()) {
                 accessPersonResposity.saveAll(accessPersons);
+            }else{
+                ru.setCode(-1);
+                ru.setMsg(batchMsg.getMsg());
             }
 
             return ru;
