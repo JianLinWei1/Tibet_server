@@ -5,11 +5,9 @@ package com.mj.mainservice.controller.access;
 import com.jian.common.util.ResultUtil;
 import com.mj.mainservice.entitys.access.Translation;
 import com.mj.mainservice.service.access.AccessService;
+import com.mj.mainservice.vo.access.BatchIssueVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,6 +27,13 @@ public class OpenApiController {
 
          return accessService.upload(translations ,sn);
     }
+
+    @GetMapping("/getDeviceIps")
+    public  ResultUtil getDeviceIps(){
+
+        return accessService.getDeviceIps();
+    }
+
 
 
 

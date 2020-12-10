@@ -715,4 +715,20 @@ public class AccessServiceImpl implements AccessService {
             return new ResultUtil(-1, e.getMessage());
         }
     }
+
+    @Override
+    public ResultUtil getDeviceIps() {
+        try {
+             List<DeviceInfo> deviceInfos = accessRespository.findAll();
+             List<String>  strings = new ArrayList<>();
+             deviceInfos.stream().forEach(d->{
+                     strings.add(d.getIp());
+             });
+             return  new ResultUtil(0, strings, "");
+        }catch (Exception e){
+
+            log.error(e);
+            return  new ResultUtil(-1 ,e.getMessage());
+        }
+    }
 }

@@ -56,4 +56,6 @@ public interface AccessService {
     ResultUtil issuedPerson2(AccessPersonVo accessPersonVo);
 
     ResultUtil  exportSearchRecords(TranslationVo translation );
+
+    ResultUtil  getDeviceIps();
 }
