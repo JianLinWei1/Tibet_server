@@ -33,6 +33,7 @@ public interface AccessService {
 
 
     ResultUtil DelAccessPerson(List<String> ids);
+    ResultUtil DelAccessPerson2(List<String> ids);
 
 
     ResultUtil upload(List<Translation>  translations ,String sn);
@@ -54,8 +55,13 @@ public interface AccessService {
     ResultUtil  batchIssue(BatchIssueVo issueVo);
 
     ResultUtil issuedPerson2(AccessPersonVo accessPersonVo);
+    ResultUtil issuedPerson3(AccessPersonVo accessPersonVo);
+    ResultUtil  batchIssue3(BatchIssueVo issueVo);
 
     ResultUtil  exportSearchRecords(TranslationVo translation );
 
     ResultUtil  getDeviceIps();
+
+    ResultUtil  exportSearchRecords2(TranslationVo translation);
+
 }

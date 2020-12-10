@@ -17,4 +17,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AccessRespository  extends MongoRepository<DeviceInfo, String> {
     Page<DeviceInfo> findAll(Example<DeviceInfo> example , Query query, Pageable pageable);
+
+    DeviceInfo  findBySnEquals(String sn);
 }

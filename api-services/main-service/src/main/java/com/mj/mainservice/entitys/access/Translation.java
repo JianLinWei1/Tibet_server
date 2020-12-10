@@ -39,5 +39,10 @@ public class Translation  extends PageHelper {
     private String dvName;
 
     @ExcelIgnore
+    private int doorId;
+    @ExcelProperty("门名称")
+    private String doorName;
+
+    @ExcelIgnore
     private String userId;
 }

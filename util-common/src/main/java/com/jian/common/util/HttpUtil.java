@@ -83,7 +83,9 @@ public class HttpUtil {
             int responsecode = statusline.getStatusCode();
             if(responsecode == 200){
                 HttpEntity he = response.getEntity();
-                resultUtil = JSON.parseObject(EntityUtils.toString(he, "UTF-8"),ResultUtil.class);
+                String res = EntityUtils.toString(he, "UTF-8");
+                log.info("请求返回：" + res);
+                resultUtil = JSON.parseObject(res,ResultUtil.class);
 
             }else{
                 return  new ResultUtil(-1 ,EntityUtils.toString(response.getEntity())) ;

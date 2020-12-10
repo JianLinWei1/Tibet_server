@@ -21,11 +21,17 @@ import java.util.List;
 @Repository
 public interface AccessPersonResposity  extends MongoRepository<AccessPerson,String> {
 
-    AccessPerson   findByAccessIdEqualsAndAdvIdEquals(String pid  ,String sn);
+    List<AccessPerson>  findByAccessIdEqualsAndAdvIdEquals(String pid  ,String sn);
 
     List<AccessPerson>  findAllByPidEquals(String pid);
 
     Page<AccessPerson> findAll(Example<AccessPerson> example , Query query, Pageable pageable);
 
     AccessPerson  findByPidEqualsAndAdvIdEqualsAndDoorsNumContains(String pid , String aid , List<Doors> doors);
+
+
+    int   countByPidEqualsAndAdvIdEquals(String pid , String advId);
+
+
+
 }

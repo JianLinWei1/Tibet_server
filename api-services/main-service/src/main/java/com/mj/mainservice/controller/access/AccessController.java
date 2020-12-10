@@ -78,7 +78,7 @@ public class AccessController {
         personVo.setUserId(userId);
 
 
-        return accessService.issuedPerson2(personVo);
+        return accessService.issuedPerson3(personVo);
     }
 
     /*@SysLogInter("获取发卡记录")*/
@@ -143,7 +143,13 @@ public class AccessController {
     @PostMapping("/batchIssue")
     public  ResultUtil batchIssue(@RequestBody BatchIssueVo issueVo){
 
-        return accessService.batchIssue(issueVo);
+        return accessService.batchIssue3(issueVo);
+    }
+
+    @PostMapping("/exportSearchRecords2")
+    public  ResultUtil exportSearchRecords2(@RequestBody TranslationVo issueVo){
+
+        return accessService.exportSearchRecords2(issueVo);
     }
 
 
