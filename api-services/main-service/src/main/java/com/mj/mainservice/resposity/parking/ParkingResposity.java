@@ -11,4 +11,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface ParkingResposity   extends MongoRepository<ParkInfo, String> {
 
     Page<ParkInfo>  findAll(Example<ParkInfo> example , Query query , Pageable pageable);
+
+    ParkInfo  findBySerialnoEquals(String serNo);
 }

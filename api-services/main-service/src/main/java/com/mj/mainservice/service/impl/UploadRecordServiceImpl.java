@@ -45,7 +45,10 @@ public class UploadRecordServiceImpl implements UploadRecoedService {
 //                                            .withMatcher("serialno" ,)
             parkInfo.setUserId("1");
             log.info("车辆道闸接收心跳：{}",parkInfo);
-            if(parkInfo != null)
+            ParkInfo parkInfo1 = parkingResposity.findBySerialnoEquals(parkInfo.getSerialno());
+
+
+            if(parkInfo != null && parkInfo1 == null)
                 parkingResposity.save(parkInfo);
 
 
