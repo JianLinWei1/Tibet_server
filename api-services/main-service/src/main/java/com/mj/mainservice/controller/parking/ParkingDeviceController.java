@@ -17,7 +17,7 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/api/main/lj")
+@RequestMapping("/lj")
 public class ParkingDeviceController {
 
    @Autowired

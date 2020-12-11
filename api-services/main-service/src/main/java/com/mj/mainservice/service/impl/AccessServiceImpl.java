@@ -41,8 +41,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import javax.annotation.Resource;
+import javax.swing.text.html.Option;
 import java.io.File;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -350,7 +352,8 @@ public class AccessServiceImpl implements AccessService {
                 deviceDataVo.setData(userDataVo);
                 log.info("门禁删除权限请求：{} , URL:{}", JSON.toJSONString(deviceDataVo));
                 String url = "http://" + SysConfigUtil.getIns().getProAccessServer() + "/deleteDeviceData";
-                ResultUtil ru = httpUtil.get(url);
+                String json = JSON.toJSONString(deviceDataVo);
+                ResultUtil ru = httpUtil.post(url ,json);
                 log.info("门禁删除权限返回：{} , URL:{}", JSON.toJSONString(ru), url);
                 if (ru.getCode() != 0) {
                     resultUtil.setCode(-1);
@@ -380,7 +383,7 @@ public class AccessServiceImpl implements AccessService {
     public ResultUtil upload(List<Translation> translations, String sn) {
         try {
             if (mapCache.get(sn) == null)
-                mapCache.add(sn, 1, 60 * 1000);
+                mapCache.add(sn, 1, 300 * 1000);
             translations.stream().forEach(translation -> {
                 List<AccessPerson> accessPersons = accessPersonResposity.findByAccessIdEqualsAndAdvIdEquals(translation.getIcCard() ,sn);
                 if (accessPersons == null || accessPersons.size()<=0)
@@ -411,7 +414,7 @@ public class AccessServiceImpl implements AccessService {
     public ResultUtil listRecords(TranslationVo translation) {
         try {
             ExampleMatcher matcher = ExampleMatcher.matching()
-                    .withIgnorePaths("page", "limit", "dates")
+                    .withIgnorePaths("page", "limit", "dates","doorId")
                     .withMatcher("icCard", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withMatcher("dvName", ExampleMatcher.GenericPropertyMatchers.contains())
@@ -503,10 +506,28 @@ public class AccessServiceImpl implements AccessService {
     public ResultUtil delDevice(List<String> ids) {
 
         try {
+            List<String>  msgs = new ArrayList<>();
             ids.stream().forEach(id -> {
+                Optional<DeviceInfo>  deviceInfo =accessRespository.findById(id);
+                if(!deviceInfo.isPresent())
+                    return;
+                String url = null;
+                try {
+                    url = "http://" + SysConfigUtil.getIns().getProAccessServer() + "/deleteDevice?ip=" + deviceInfo.get().getIp();
+                } catch (IOException e) {
+                    log.error(e);
+                    return;
+                }
+                HttpUtil httpUtil = new HttpUtil();
+                ResultUtil res = httpUtil.get(url);
+                log.info(url + "获取设备参数返回：{}", JSON.toJSONString(res));
+                if(res.getCode() ==0 )
                 accessRespository.deleteById(id);
+                else
+                    msgs.add(res.getMsg());
             });
-
+            if(msgs!=null && msgs.size()>0)
+                return new ResultUtil(-1,JSON.toJSONString(msgs));
             return ResultUtil.ok();
         } catch (Exception e) {
             log.error(e);
@@ -749,6 +770,8 @@ public class AccessServiceImpl implements AccessService {
                 deviceDataVo.setIp(ip);
                 deviceDataVo.setData(userDataVos);
                 log.info("批量门禁下发请求：{} ", JSON.toJSONString(deviceDataVo), url);
+                if(userDataVos == null || userDataVos.size()<=0)
+                    continue;
                 ResultUtil ru = httpUtil.post(url, JSON.toJSONString(deviceDataVo));
                 // ResultUtil ru = ResultUtil.ok();
                 log.info("门禁下发返回：{} , URL:{}", JSON.toJSONString(ru), url);
@@ -945,7 +968,7 @@ public class AccessServiceImpl implements AccessService {
     public ResultUtil exportSearchRecords(TranslationVo translation) {
         try {
             ExampleMatcher matcher = ExampleMatcher.matching()
-                    .withIgnorePaths("page", "limit", "dates")
+                    .withIgnorePaths("page", "limit", "dates" ,"doorId")
                     .withMatcher("icCard", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withMatcher("dvName", ExampleMatcher.GenericPropertyMatchers.contains())
@@ -976,9 +999,12 @@ public class AccessServiceImpl implements AccessService {
     public ResultUtil getDeviceIps() {
         try {
              List<DeviceInfo> deviceInfos = accessRespository.findAll();
-             List<String>  strings = new ArrayList<>();
+             List<Map<String ,String> >  strings = new ArrayList<>();
              deviceInfos.stream().forEach(d->{
-                     strings.add(d.getIp());
+                 Map<String ,String>  map = new HashMap<>();
+                 map.put("sn", d.getSn());
+                 map.put("ip", d.getIp());
+                     strings.add(map);
              });
              return  new ResultUtil(0, strings, "");
         }catch (Exception e){
@@ -993,7 +1019,7 @@ public class AccessServiceImpl implements AccessService {
         try {
 
                 ExampleMatcher matcher = ExampleMatcher.matching()
-                        .withIgnorePaths("page", "limit", "dates")
+                        .withIgnorePaths("page", "limit", "dates" ,"doorId")
                         .withMatcher("icCard", ExampleMatcher.GenericPropertyMatchers.contains())
                         .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
                         .withMatcher("dvName", ExampleMatcher.GenericPropertyMatchers.contains())

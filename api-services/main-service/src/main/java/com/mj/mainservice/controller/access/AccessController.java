@@ -93,7 +93,7 @@ public class AccessController {
     @PostMapping("/DelAccessPerson")
     public ResultUtil DelAccessPerson(@RequestBody List<String> ids){
 
-        return accessService.DelAccessPerson(ids);
+        return accessService.DelAccessPerson2(ids);
     }
 
 
