@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jian.common.util.LocalDateTimeConverter;
 import com.jian.common.util.PageHelper;
 import lombok.Data;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
  */
 
 @Data
+@Document(collection = "translation" )
 public class Translation  extends PageHelper {
     @ExcelProperty("ID")
     private String id;
@@ -32,6 +35,7 @@ public class Translation  extends PageHelper {
     @ExcelProperty(value = "刷卡时间" ,converter = LocalDateTimeConverter.class)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @Indexed
     private LocalDateTime time;
     @ExcelProperty("设备编号")
     private String sn;
