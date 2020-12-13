@@ -44,7 +44,7 @@ public class UploadRecordServiceImpl implements UploadRecoedService {
 //            ExampleMatcher exampleMatcher = ExampleMatcher.matching()
 //                                            .withMatcher("serialno" ,)
             parkInfo.setUserId("1");
-            log.info("车辆道闸接收心跳：{}",parkInfo);
+          //  log.info("车辆道闸接收心跳：{}",parkInfo);
             ParkInfo parkInfo1 = parkingResposity.findBySerialnoEquals(parkInfo.getSerialno());
 
 
@@ -134,7 +134,7 @@ public class UploadRecordServiceImpl implements UploadRecoedService {
     @Override
     public void plateUpload(PlateUpload plateUpload) {
         try {
-            log.info("车辆推送：{}", JSON.toJSONString(plateUpload));
+           // log.info("车辆推送：{}", JSON.toJSONString(plateUpload));
             ParkingResult  parkingResult = new ParkingResult();
             parkingResult.setSerialno(plateUpload.getAlarmInfoPlate().getSerialno());
             parkingResult.setDeviceName(plateUpload.getAlarmInfoPlate().getDeviceName());
