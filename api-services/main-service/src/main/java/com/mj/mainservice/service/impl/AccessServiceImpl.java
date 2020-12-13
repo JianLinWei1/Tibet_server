@@ -943,6 +943,9 @@ public class AccessServiceImpl implements AccessService {
             deviceDataVo.setData(userDataVos);
             String json = JSON.toJSONString(deviceDataVo);
             log.info("门禁下发请求：{}, URL:{}", json, url);
+            if (userDataVos == null || userDataVos.size() <= 0) {
+                return  ResultUtil.ok();
+            }
             ResultUtil ru = httpUtil.post(url, json);
             // ResultUtil ru = ResultUtil.ok();
             log.info("门禁下发返回：{} , URL:{}", JSON.toJSONString(ru), url);
