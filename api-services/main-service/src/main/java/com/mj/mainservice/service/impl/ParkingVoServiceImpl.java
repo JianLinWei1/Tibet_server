@@ -125,6 +125,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
 
                 });
             } else {
+                parkingUserInfo.setAction(0);
                 parkingUserInfo.setStatus(false);
                 parkingPersonResposity.save(parkingUserInfo);
             }

@@ -1,11 +1,13 @@
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.alibaba.fastjson.JSON;
+import com.mj.mainservice.util.camera.entitys.Condition;
+import com.mj.mainservice.util.camera.entitys.QueryCondition;
+import com.mj.mainservice.util.camera.util.UniUtil;
+import org.checkerframework.checker.units.qual.C;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -24,5 +26,10 @@ public class Main {
         String sign = SecureUtil.md5(base + "oc9z0Idmj82fN99QKBoq" + SecureUtil.md5("Admin123"));
         System.out.println(sign);
 
+        //49.4.85.77:8088
+        UniUtil loginUtil = new UniUtil();
+       String token =   loginUtil.login("49.4.85.77" ,"admin" ,"Admin123");
+        System.out.println(token);
+         loginUtil.getCameraInfo("49.4.85.77" , token);
     }
 }
