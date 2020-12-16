@@ -30,4 +30,5 @@ public interface ParkingVoService {
 
     ResultUtil exportRecords(List<ParkingResult>  results);
     ResultUtil exportSearchRecords(ParkingResult parkingResult);
+    Long  countParking(String userId);
 }

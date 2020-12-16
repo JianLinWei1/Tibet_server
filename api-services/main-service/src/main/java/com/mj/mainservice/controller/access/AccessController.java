@@ -152,6 +152,12 @@ public class AccessController {
         return accessService.exportSearchRecords2(issueVo);
     }
 
+    @SysLogInter(value = "远程开门")
+    @GetMapping("/openDoor")
+    public  ResultUtil openDoor(String ip , Integer id ){
+
+        return accessService.openDoor(ip , id);
+    }
 
 
 

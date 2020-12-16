@@ -1062,4 +1062,38 @@ public class AccessServiceImpl implements AccessService {
             return new ResultUtil(-1, e.getMessage());
         }
     }
+
+
+    @Override
+    public ResultUtil openDoor(String ip , Integer id) {
+        try {
+            HttpUtil  httpUtil = new HttpUtil();
+            String url = "http://" + SysConfigUtil.getIns().getProAccessServer() +
+                    "/openDoor?ip="+ip +"&doorId="+id;
+            ResultUtil  res =  httpUtil.get(url);
+            return  res;
+        }catch (Exception e){
+            log.error(e);
+            return new ResultUtil(-1 ,e.getMessage());
+        }
+    }
+
+    @Override
+    public Long countAccess(String userId) {
+        try {
+            DeviceInfo info = new DeviceInfo();
+            info.setUserId(userId);
+            ExampleMatcher matcher = ExampleMatcher.matching()
+                    .withIgnorePaths("page", "limit", "doors")
+                    .withMatcher("userId", ExampleMatcher.GenericPropertyMatchers.exact())
+                    .withNullHandler(ExampleMatcher.NullHandler.IGNORE)
+                    .withIgnoreNullValues();
+            Example<DeviceInfo> example = Example.of(info, matcher);
+            long  count = accessRespository.count(example);
+            return  count;
+        }catch (Exception e){
+            log.error(e);
+            return  0l;
+        }
+    }
 }

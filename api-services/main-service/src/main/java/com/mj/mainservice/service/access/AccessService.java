@@ -64,4 +64,7 @@ public interface AccessService {
 
     ResultUtil  exportSearchRecords2(TranslationVo translation);
 
+    ResultUtil   openDoor(String ip , Integer id);
+    Long  countAccess(String userId);
+
 }

@@ -7,6 +7,8 @@ import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.text.csv.CsvReader;
 import cn.hutool.core.text.csv.CsvRow;
 import cn.hutool.core.text.csv.CsvUtil;
+import cn.hutool.core.text.csv.CsvWriter;
+import cn.hutool.core.util.CharsetUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson.JSON;
 import com.jian.common.entity.AntdTree;
@@ -40,9 +42,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -100,10 +104,10 @@ public class PersonServiceImpl implements PersonService {
 //                    StringUtils.isNotEmpty(info.getName()) || StringUtils.isNotEmpty(info.getAccessId()) || info.getRole() != null) {
             ExampleMatcher matcher = ExampleMatcher.matching()
                     .withMatcher("id", ExampleMatcher.GenericPropertyMatchers.exact())
-                    .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
-                    .withMatcher("accessId", ExampleMatcher.GenericPropertyMatchers.contains())
-                    .withMatcher("idCard", ExampleMatcher.GenericPropertyMatchers.contains())
-                    .withMatcher("department", ExampleMatcher.GenericPropertyMatchers.contains())
+                    .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.exact())
+                    .withMatcher("accessId", ExampleMatcher.GenericPropertyMatchers.exact())
+                    .withMatcher("idCard", ExampleMatcher.GenericPropertyMatchers.exact())
+                    .withMatcher("department", ExampleMatcher.GenericPropertyMatchers.exact())
                     .withMatcher("userId", ExampleMatcher.GenericPropertyMatchers.exact())
                     .withIgnorePaths("page", "limit", "accessPw")
                     .withNullHandler(ExampleMatcher.NullHandler.IGNORE)
@@ -283,7 +287,7 @@ public class PersonServiceImpl implements PersonService {
             CsvReader reader = CsvUtil.getReader();
             FileUtils.copyInputStreamToFile(file.getInputStream(), file1);
 
-            List<CsvRow> rows = reader.read(file1).getRows();
+            List<CsvRow> rows = reader.read(file1 ,CharsetUtil.CHARSET_GBK).getRows();
             rows.remove(0);
             //List<ImportPersonVo>  personVos = reader.read(ResourceUtil.getUtf8Reader(file1.getAbsolutePath()), ImportPersonVo.class);
             rows.stream().forEach(c -> {
@@ -358,6 +362,25 @@ public class PersonServiceImpl implements PersonService {
         }catch (Exception e){
             log.error(e);
             return  new ResultUtil(-1, e.getMessage());
+        }
+    }
+
+    @Override
+    public Long countPersons(String userId) {
+        try {
+            PersonInfo personInfo = new PersonInfo();
+            personInfo.setUserId(userId);
+            ExampleMatcher exampleMatcher = ExampleMatcher.matching()
+                    .withMatcher("userId" , ExampleMatcher.GenericPropertyMatchers.exact())
+                    .withIgnorePaths("page", "limit", "accessPw")
+                    .withNullHandler(ExampleMatcher.NullHandler.IGNORE)
+                    .withIgnoreNullValues();
+            Example<PersonInfo>  example = Example.of(personInfo ,exampleMatcher);
+            long count = personRepository.count(example);
+            return  count;
+        }catch (Exception e){
+            log.error(e);
+            return  0l;
         }
     }
 }

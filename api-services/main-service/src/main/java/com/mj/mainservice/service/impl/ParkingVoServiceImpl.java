@@ -253,4 +253,24 @@ public class ParkingVoServiceImpl implements ParkingVoService {
             return new ResultUtil(-1, e.getMessage());
         }
     }
+
+    @Override
+    public Long countParking(String userId) {
+        try {
+            ParkInfo  info = new ParkInfo();
+            info.setUserId(userId);
+            ExampleMatcher matcher = ExampleMatcher.matching()
+                    .withMatcher("ipaddr", ExampleMatcher.GenericPropertyMatchers.exact())
+                    .withMatcher("userId", ExampleMatcher.GenericPropertyMatchers.exact())
+                    .withMatcher("device_name", ExampleMatcher.GenericPropertyMatchers.contains())
+                    .withNullHandler(ExampleMatcher.NullHandler.IGNORE)
+                    .withIgnorePaths("page", "limit");
+            Example<ParkInfo> example = Example.of(info, matcher);
+            long count = parkingResposity.count(example);
+            return  count;
+        }catch (Exception e){
+            log.error(e);
+            return  0l;
+        }
+    }
 }

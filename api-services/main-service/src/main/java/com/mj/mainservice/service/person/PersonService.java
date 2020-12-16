@@ -34,5 +34,7 @@ public interface PersonService {
 
     ResultUtil getPersonTree(String userId);
 
+    Long  countPersons(String userId);
+
 
 }
