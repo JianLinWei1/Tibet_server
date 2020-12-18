@@ -2,6 +2,7 @@ package com.mj.mainservice.service.impl;
 
 import com.alibaba.excel.EasyExcel;
 
+import com.jian.common.entity.AntdTree;
 import com.jian.common.util.ResultUtil;
 
 import com.mj.mainservice.entitys.person.PersonInfo;
@@ -11,8 +12,10 @@ import com.mj.mainservice.entitys.parking.ParkingUserInfo;
 import com.mj.mainservice.resposity.parking.ParkingPersonResposity;
 import com.mj.mainservice.resposity.parking.ParkingResposity;
 import com.mj.mainservice.resposity.parking.ParkingResultResposity;
+import com.mj.mainservice.resposity.person.PersonRepository;
 import com.mj.mainservice.service.parking.ParkingVoService;
 import com.mj.mainservice.service.person.PersonService;
+import com.mj.mainservice.vo.access.BatchIssueVo;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.*;
@@ -23,7 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by MrJan on 2020/10/29
@@ -42,6 +48,8 @@ public class ParkingVoServiceImpl implements ParkingVoService {
     private ParkingPersonResposity parkingPersonResposity;
     @Resource
     private ParkingResultResposity parkingResultResposity;
+    @Resource
+    private PersonRepository personRepository;
 
 
     @Override
@@ -153,7 +161,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
             Pageable pageable = PageRequest.of(parkingUserInfo.getPage()-1, parkingUserInfo.getLimit());
             Query query = new Query();
             //childs.add(parkingUserInfo.getUserId());
-            query.addCriteria(Criteria.where("action").ne(1));
+            query.addCriteria(Criteria.where("action").ne(0));
             //query.addCriteria(Criteria.where("userId").in(childs));
             Page<ParkingUserInfo> page = parkingPersonResposity.findAll(example, query, pageable);
             ResultUtil resultUtil = new ResultUtil();
@@ -271,6 +279,83 @@ public class ParkingVoServiceImpl implements ParkingVoService {
         }catch (Exception e){
             log.error(e);
             return  0l;
+        }
+    }
+
+    @Override
+    public ResultUtil getParingTree(String userId) {
+        try {
+           List<ParkInfo>  parkInfos = parkingResposity.findAllByUserIdEquals(userId);
+            List<AntdTree> antdTrees = new ArrayList<>();
+            List<AntdTree> antdTrees2 = new ArrayList<>();
+            parkInfos.stream().forEach(dv -> {
+                AntdTree antdTree = new AntdTree();
+                antdTree.setKey(dv.getSerialno());
+                antdTree.setValue(dv.getIpaddr());
+                antdTree.setTitle(dv.getDevice_name());
+                antdTrees.add(antdTree);
+            });
+
+            AntdTree antdTree = new AntdTree();
+            antdTree.setKey("-");
+            antdTree.setTitle("选择车辆设备");
+            antdTree.setValue("-");
+            antdTree.setChildren(antdTrees);
+            antdTrees2.add(antdTree);
+            ResultUtil resultUtil = new ResultUtil();
+            resultUtil.setCode(0);
+            resultUtil.setData(antdTrees2);
+            return resultUtil;
+        }catch (Exception e){
+            log.error(e);
+            return  new ResultUtil(-1, e.getMessage());
+        }
+    }
+
+    @Override
+    public ResultUtil batchIssue(BatchIssueVo issueVo) {
+        try {
+
+            issueVo.getPids().forEach(pid ->{
+                Optional<PersonInfo>  optional = personRepository.findById(pid);
+                if(!optional.isPresent())
+                    return;
+                PersonInfo personInfo = optional.get();
+                if(personInfo.getCarId()== null ||personInfo.getCarId().size()<=0)
+                    return;
+                //排除已下发的
+                Optional<ParkingUserInfo>  optional1 = parkingPersonResposity.findAllByPersonIdEqualsAndCarIdEquals(pid,personInfo.getCarId());
+                if(optional1.isPresent())
+                    return;
+                ParkingUserInfo parkingUserInfo = new ParkingUserInfo();
+                parkingUserInfo.setAction(1);
+                parkingUserInfo.setCarId(personInfo.getCarId());
+                parkingUserInfo.setDepartment(personInfo.getDepartment());
+                parkingUserInfo.setEnable(1);
+                parkingUserInfo.setNeed_alarm(0);
+                parkingUserInfo.setEnable_time(LocalDateTime.now());
+                parkingUserInfo.setName(personInfo.getName());
+                parkingUserInfo.setPersonId(pid);
+                parkingUserInfo.setUserId(personInfo.getUserId());
+                parkingUserInfo.setStatus(false);
+                parkingUserInfo.setOverdue_time(null);
+                issueVo.getDvIds().forEach(dv ->{
+                    Optional<ParkInfo> optional2 =parkingResposity.findById(dv);
+                    if(!optional2.isPresent())
+                        return;
+                    ParkInfo  parkInfo = optional2.get();
+                    parkingUserInfo.setId(null);
+                    parkingUserInfo.setSerialno(parkInfo.getSerialno());
+                    parkingUserInfo.setDevice_name(parkInfo.getDevice_name());
+                    parkingPersonResposity.save(parkingUserInfo);
+                });
+            });
+
+
+            return ResultUtil.ok();
+        }catch (Exception e){
+            log.error(e);
+            return  new ResultUtil(-1,e.getMessage());
         }
     }
 }

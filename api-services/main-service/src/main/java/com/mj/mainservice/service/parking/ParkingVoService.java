@@ -4,6 +4,7 @@ import com.jian.common.util.ResultUtil;
 import com.mj.mainservice.entitys.parking.ParkInfo;
 import com.mj.mainservice.entitys.parking.ParkingResult;
 import com.mj.mainservice.entitys.parking.ParkingUserInfo;
+import com.mj.mainservice.vo.access.BatchIssueVo;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -31,4 +32,8 @@ public interface ParkingVoService {
     ResultUtil exportRecords(List<ParkingResult>  results);
     ResultUtil exportSearchRecords(ParkingResult parkingResult);
     Long  countParking(String userId);
+
+    ResultUtil getParingTree(String userId);
+
+    ResultUtil  batchIssue(BatchIssueVo issueVo);
 }

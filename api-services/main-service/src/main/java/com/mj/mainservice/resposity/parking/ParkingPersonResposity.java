@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -24,5 +25,7 @@ public interface ParkingPersonResposity   extends MongoRepository<ParkingUserInf
      Page<ParkingUserInfo>   findAllByStatusIsNotAndActionIsAndSerialnoIs(boolean status , int action ,String serialno ,Pageable pageable);
 
      List<ParkingUserInfo>    findAllByPersonIdEquals(String pid);
+
+     Optional<ParkingUserInfo>   findAllByPersonIdEqualsAndCarIdEquals(String personId, List<String> carId);
 
 }
