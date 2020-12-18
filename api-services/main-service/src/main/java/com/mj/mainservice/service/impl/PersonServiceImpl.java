@@ -331,7 +331,12 @@ public class PersonServiceImpl implements PersonService {
             Example<Department>  example = Example.of(department);
            List<Department> departments = departmentResposity.findAll(example);
 
+            AntdTree antdTree = new AntdTree();
+            antdTree.setValue("-");
+            antdTree.setTitle("请选择人员");
+            antdTree.setKey("-");
             List<AntdTree> departmemnTree = new ArrayList<>();
+            List<AntdTree>  antdTrees = new ArrayList<>();
             departments.stream().forEach(d -> {
                  AntdTree deTree= new AntdTree();
                  deTree.setKey(d.getId());
@@ -354,10 +359,11 @@ public class PersonServiceImpl implements PersonService {
                 departmemnTree.add(deTree);
 
             });
-
+            antdTree.setChildren(departmemnTree);
+            antdTrees.add(antdTree);
             ResultUtil r = new ResultUtil();
             r.setCode(0);
-            r.setData(departmemnTree);
+            r.setData(antdTrees);
             return  r;
         }catch (Exception e){
             log.error(e);

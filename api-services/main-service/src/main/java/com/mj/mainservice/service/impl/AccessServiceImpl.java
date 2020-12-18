@@ -547,6 +547,7 @@ public class AccessServiceImpl implements AccessService {
             Example<DeviceInfo> example = Example.of(deviceInfo, matcher);
             List<DeviceInfo> deviceInfos = accessRespository.findAll(example);
             List<AntdTree> antdTrees = new ArrayList<>();
+            List<AntdTree> antdTrees2 = new ArrayList<>();
             deviceInfos.stream().forEach(dv -> {
                 AntdTree antdTree = new AntdTree();
                 antdTree.setKey(dv.getId());
@@ -564,24 +565,15 @@ public class AccessServiceImpl implements AccessService {
                 antdTrees.add(antdTree);
             });
 
-          /*  AntdTree antdTree = new AntdTree();
-            antdTree.setKey("0");
+            AntdTree antdTree = new AntdTree();
+            antdTree.setKey("-");
             antdTree.setTitle("选择门禁设备");
-            List<AntdTree> child = new ArrayList<>();
-            deviceInfos.stream().forEach(dv -> {
-                dv.getDoors().stream().forEach(d->{
-                    AntdTree antdTree1 = new AntdTree();
-                    antdTree1.setKey(dv.getId()+"-"+d.getId());
-                    antdTree1.setTitle(dv.getName()+"-"+d.getName());
-                    child.add(antdTree1);
-                });
-            });*/
-          /*  antdTree.setChildren(child);
-            List<Object> objects = new ArrayList<>();
-            objects.add(antdTree);*/
+            antdTree.setValue("-");
+            antdTree.setChildren(antdTrees);
+            antdTrees2.add(antdTree);
             ResultUtil resultUtil = new ResultUtil();
             resultUtil.setCode(0);
-            resultUtil.setData(antdTrees);
+            resultUtil.setData(antdTrees2);
             return resultUtil;
         } catch (Exception e) {
             log.error(e);
