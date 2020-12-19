@@ -16,7 +16,7 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/api/main/open")
+@RequestMapping("/open")
 public class OpenApiController {
     @Autowired
     private AccessService accessService;
