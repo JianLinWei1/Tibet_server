@@ -30,8 +30,8 @@ public class Main {
 
         //49.4.85.77:8088
         UniUtil loginUtil = new UniUtil();
-       String token =   loginUtil.login();
+       String token =   loginUtil.login("Tingjiguan" ,"Admin123z");
         System.out.println(token);
-         loginUtil.getResInfo(token);
+         loginUtil.getResInfo(token ,0 , 10);
     }
 }

@@ -41,6 +41,8 @@ public class SysConfigUtil {
             properties.setProperty("admin", sysConfig.getAdmin());
         if(StringUtils.isNotEmpty(sysConfig.getPw()))
             properties.setProperty("pw", sysConfig.getPw());
+        if(sysConfig.getUniPort() != 0)
+            properties.setProperty("uniPort" ,String.valueOf(sysConfig.getUniPort()));
          properties.store(new PrintStream(file) ,"utf-8");
          properties.load(new FileInputStream(file));
 
@@ -63,6 +65,15 @@ public class SysConfigUtil {
 
         properties.load(new FileInputStream(file));
         return  properties.getProperty("uniServer");
+
+
+    }
+    public String getProUniPort() throws IOException {
+
+        Properties properties = new Properties();
+
+        properties.load(new FileInputStream(file));
+        return  properties.getProperty("uniPort");
 
 
     }
@@ -97,6 +108,7 @@ public class SysConfigUtil {
         sysConfig.setUniServer(properties.getProperty("uniServer"));
         sysConfig.setAdmin(properties.getProperty("admin"));
         sysConfig.setPw(properties.getProperty("pw"));
+        sysConfig.setUniPort(Integer.valueOf(properties.getProperty("uniPort")));
         return  sysConfig;
     }
 

@@ -3,6 +3,7 @@ package com.mj.mainservice.entitys.camrea;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jian.common.util.LocalDateTimeConverter;
+import com.jian.common.util.PageHelper;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @Document(collection = "Camera")
-public class Camera {
+public class Camera  extends PageHelper {
     @Id
     private String cameraCode;
     private String cameraName;
@@ -28,4 +29,8 @@ public class Camera {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @Indexed
     private LocalDateTime time;
+
+    private String userId;
+
+    private CameraBind cameraBind;
 }

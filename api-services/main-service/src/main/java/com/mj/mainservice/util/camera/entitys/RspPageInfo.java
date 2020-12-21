@@ -10,8 +10,8 @@ import lombok.Data;
 @Data
 public class RspPageInfo {
     @JSONField(name = "TotalRowNum")
-    private  String TotalRowNum;
+    private  int TotalRowNum;
 
     @JSONField(name = "RowNum")
-    private String RowNum;
+    private int RowNum;
 }

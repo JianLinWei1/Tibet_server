@@ -3,6 +3,7 @@ package com.jian.common.util;
 import com.alibaba.excel.annotation.ExcelIgnore;
 
 import lombok.Data;
+import org.springframework.data.annotation.Transient;
 
 
 /**
@@ -13,8 +14,10 @@ import lombok.Data;
 public class PageHelper  {
 
     @ExcelIgnore
+    @Transient
     private  Integer  page ;
     @ExcelIgnore
+    @Transient
     private Integer limit;
 
 

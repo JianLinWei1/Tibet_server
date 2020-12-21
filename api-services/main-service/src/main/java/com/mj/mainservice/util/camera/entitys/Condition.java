@@ -15,4 +15,6 @@ public class Condition {
     private Integer LogicFlag;
     @JSONField(name = "QueryData")
     private String  QueryData;
+    @JSONField(name = "QueryColumn")
+    private  String QueryColumn;
 }

@@ -14,5 +14,5 @@ public class UniRes {
     @JSONField(name = "ErrMsg")
     private  String  ErrMsg;
     @JSONField(name = "Result")
-    private  Object Result;
+    private  CameraResult Result;
 }

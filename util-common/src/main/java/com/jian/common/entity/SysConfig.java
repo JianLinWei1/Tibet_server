@@ -15,4 +15,6 @@ public class SysConfig {
     private String admin;
 
     private String pw;
+
+    private int uniPort;
 }
