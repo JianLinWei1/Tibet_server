@@ -6,6 +6,7 @@ import cn.hutool.http.HttpUtil;
 
 
 import com.alibaba.fastjson.JSON;
+import com.jian.common.util.SysConfigUtil;
 import com.mj.mainservice.util.camera.entitys.Condition;
 import com.mj.mainservice.util.camera.entitys.LoginInfo;
 import com.mj.mainservice.util.camera.entitys.QueryCondition;
@@ -31,11 +32,14 @@ import java.util.List;
 @Component
 @Log4j2
 public class UniUtil {
-    private String loginUrl = ":8088/VIID/login";
-    private String  queryCamUrl =":8088/VIID/query";
+    private String loginUrl = "/VIID/login";
+    private String  queryResUrl ="/VIID/query";
+    private String  queryCamUrl = "/VIID/dev/ec/query/camera";
 
-    public String  login(String ip, String UserName , String pw) throws IOException {
-        String url = "http://" + ip + loginUrl;
+    public String  login() throws IOException {
+        String url = "http://" + SysConfigUtil.getIns().getProUniServer() + loginUrl;
+        String admin = SysConfigUtil.getIns().getProUniAdmin();
+        String pw = SysConfigUtil.getIns().getProUniPw();
         LoginInfo  loginInfo = new LoginInfo();
         //第一次请求
         HttpPost hp = new HttpPost(url);
@@ -44,8 +48,8 @@ public class UniUtil {
             String res = EntityUtils.toString(response.getEntity());
             log.info("第一次请求登录结果：{}", res);
             loginInfo = JSON.parseObject(res, LoginInfo.class);
-            loginInfo.setUserName(UserName);
-            String sign = SecureUtil.md5( Base64.getEncoder().encodeToString(UserName.getBytes()) + loginInfo.getAccessCode()+ SecureUtil.md5(pw));
+            loginInfo.setUserName(admin);
+            String sign = SecureUtil.md5( Base64.getEncoder().encodeToString(admin.getBytes()) + loginInfo.getAccessCode()+ SecureUtil.md5(pw));
             loginInfo.setLoginSignature(sign);
             String token = HttpUtil.post(url ,JSON.toJSONString(loginInfo));
             log.info("第二次登录请求：{} ,返回：{}" , JSON.toJSONString(loginInfo),token);
@@ -59,11 +63,11 @@ public class UniUtil {
     }
 
 
-    public  String getCameraInfo(String ip ,String  token) throws UnsupportedEncodingException {
+    public  String getResInfo(String  token) throws IOException {
         QueryCondition queryCondition = new QueryCondition();
         queryCondition.setItemNum(2);
         queryCondition.setPageFirstRowNumber(0);
-        queryCondition.setPageRowNum(20);
+        queryCondition.setPageRowNum(200);
         queryCondition.setQueryCount(1);
         List<Condition> conditions = new ArrayList<>();
         Condition condition = new Condition();
@@ -78,7 +82,7 @@ public class UniUtil {
         conditions.add(condition1);
         queryCondition.setCondition(conditions);
         String  condition_enc = URLEncoder.encode(JSON.toJSONString(queryCondition) ,"utf-8");
-        String url = "http://" + ip + queryCamUrl+"?condition="+condition_enc;
+        String url = "http://" + SysConfigUtil.getIns().getProUniServer() + queryResUrl+"?condition="+condition_enc;
         String res = HttpRequest.get(url).header("Authorization",token).execute().body();
         System.out.println(res);
         return "";

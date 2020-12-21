@@ -161,7 +161,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
             Pageable pageable = PageRequest.of(parkingUserInfo.getPage()-1, parkingUserInfo.getLimit());
             Query query = new Query();
             //childs.add(parkingUserInfo.getUserId());
-            query.addCriteria(Criteria.where("action").ne(0));
+            query.addCriteria(Criteria.where("action").ne(1));
             //query.addCriteria(Criteria.where("userId").in(childs));
             Page<ParkingUserInfo> page = parkingPersonResposity.findAll(example, query, pageable);
             ResultUtil resultUtil = new ResultUtil();
@@ -328,7 +328,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
                 if(optional1.isPresent())
                     return;
                 ParkingUserInfo parkingUserInfo = new ParkingUserInfo();
-                parkingUserInfo.setAction(1);
+                parkingUserInfo.setAction(0);
                 parkingUserInfo.setCarId(personInfo.getCarId());
                 parkingUserInfo.setDepartment(personInfo.getDepartment());
                 parkingUserInfo.setEnable(1);

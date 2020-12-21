@@ -9,4 +9,10 @@ import lombok.Data;
 @Data
 public class SysConfig {
     private String accessServer;
+
+    private String uniServer;
+
+    private String admin;
+
+    private String pw;
 }

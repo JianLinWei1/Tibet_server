@@ -35,7 +35,7 @@ public class ParkingUserInfo   extends PageHelper {
 
     private List<String> personIds;
 
-    private  Integer action;
+    private  Integer action; //1 del 0 add
 
     private  Integer enable;
 

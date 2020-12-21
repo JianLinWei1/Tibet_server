@@ -29,6 +29,11 @@ public interface AccessPersonResposity  extends MongoRepository<AccessPerson,Str
 
     AccessPerson  findByPidEqualsAndAdvIdEqualsAndDoorsNumContains(String pid , String aid , List<Doors> doors);
 
+    AccessPerson  findByPidEqualsAndAdvIdEqualsAndDoorsNumLike(String pid , String aid , List<Doors> doors);
+
+    @org.springframework.data.mongodb.repository.Query("{'pid':?0 , 'advId':?1 ,'doorsNum.id':{'$in':?2}}")
+    AccessPerson  findByPidEqualsAndAdvIdEqualsAndDoorsNum(String pid , String aid , List<Integer> doors);
+
 
     int   countByPidEqualsAndAdvIdEquals(String pid , String advId);
 

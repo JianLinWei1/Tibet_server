@@ -22,14 +22,16 @@ public class Main {
         if(!file1.exists())
             file1.createNewFile();*/
 
+
+
         String  base = Base64.getEncoder().encodeToString("admin".getBytes());
         String sign = SecureUtil.md5(base + "oc9z0Idmj82fN99QKBoq" + SecureUtil.md5("Admin123"));
         System.out.println(sign);
 
         //49.4.85.77:8088
         UniUtil loginUtil = new UniUtil();
-       String token =   loginUtil.login("49.4.85.77" ,"admin" ,"Admin123");
+       String token =   loginUtil.login();
         System.out.println(token);
-         loginUtil.getCameraInfo("49.4.85.77" , token);
+         loginUtil.getResInfo(token);
     }
 }

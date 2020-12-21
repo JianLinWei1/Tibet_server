@@ -26,6 +26,8 @@ public class SysConfigUtil {
     }
 
 
+
+
     public void setPro(SysConfig sysConfig) throws IOException {
         Properties properties = new Properties();
         if (!file.exists())
@@ -33,6 +35,12 @@ public class SysConfigUtil {
 
         if (StringUtils.isNotEmpty(sysConfig.getAccessServer()))
             properties.setProperty("accessServer", sysConfig.getAccessServer());
+        if(StringUtils.isNotEmpty(sysConfig.getUniServer()))
+            properties.setProperty("uniServer", sysConfig.getUniServer());
+        if(StringUtils.isNotEmpty(sysConfig.getAdmin()))
+            properties.setProperty("admin", sysConfig.getAdmin());
+        if(StringUtils.isNotEmpty(sysConfig.getPw()))
+            properties.setProperty("pw", sysConfig.getPw());
          properties.store(new PrintStream(file) ,"utf-8");
          properties.load(new FileInputStream(file));
 
@@ -49,6 +57,35 @@ public class SysConfigUtil {
 
     }
 
+    public String getProUniServer() throws IOException {
+
+        Properties properties = new Properties();
+
+        properties.load(new FileInputStream(file));
+        return  properties.getProperty("uniServer");
+
+
+    }
+    public String getProUniAdmin() throws IOException {
+
+        Properties properties = new Properties();
+
+        properties.load(new FileInputStream(file));
+        return  properties.getProperty("admin");
+
+
+    }
+
+    public String getProUniPw() throws IOException {
+
+        Properties properties = new Properties();
+
+        properties.load(new FileInputStream(file));
+        return  properties.getProperty("pw");
+
+
+    }
+
 
     public  SysConfig getSysConfig() throws IOException {
         Properties properties = new Properties();
@@ -57,6 +94,9 @@ public class SysConfigUtil {
 
         SysConfig sysConfig = new SysConfig();
         sysConfig.setAccessServer(properties.getProperty("accessServer"));
+        sysConfig.setUniServer(properties.getProperty("uniServer"));
+        sysConfig.setAdmin(properties.getProperty("admin"));
+        sysConfig.setPw(properties.getProperty("pw"));
         return  sysConfig;
     }
 

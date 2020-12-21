@@ -1,7 +1,10 @@
 import com.alibaba.fastjson.JSON;
 import com.mj.mainservice.MainApplication;
+import com.mj.mainservice.entitys.access.AccessPerson;
 import com.mj.mainservice.entitys.access.DeviceInfo;
+import com.mj.mainservice.entitys.access.Doors;
 import com.mj.mainservice.entitys.access.Translation;
+import com.mj.mainservice.resposity.access.AccessPersonResposity;
 import com.mj.mainservice.resposity.access.AccessRespository;
 import com.mj.mainservice.service.access.AccessService;
 import com.mj.mainservice.service.access.TranslationService;
@@ -30,27 +33,23 @@ public class Test {
     private AccessService translationService;
     @Autowired
     private AccessRespository accessRespository;
+    @Autowired
+    private AccessPersonResposity personResposity;
 
 
     @org.junit.Test
     public  void test(){
-       /* List<String>  strings = iSysAdminService.getChildByUerIds("526788978314186752");
-        System.out.println(strings);
-        System.out.println("输出"+strings.size());*/
-       Translation translation =new Translation();
-       translation.setPage(0);
-       translation.setLimit(10);
-       List<String>  strings = new ArrayList<>();
-          strings.add("1");
-          strings.add("526788978314186752");
-              //int c = Math.toIntExact(translationService.listRecords(translation).getCount());
+        List<Integer>  doors = new ArrayList<>();
+        for(int i = 1 ; i<= 4 ; i++){
+            Doors doors1 = new Doors();
+            doors1.setId(i);
+            doors.add(i);
+            //doors1.setName(String.valueOf(i));
+        }
 
-       // System.out.println(c);
-        DeviceInfo deviceInfo = new DeviceInfo();
-        deviceInfo.setUserId("1");
-        deviceInfo.setName("trest");
-        deviceInfo.setSn("tttttt");
-        accessRespository.save(deviceInfo);
+        AccessPerson  accessPerson = personResposity.findByPidEqualsAndAdvIdEqualsAndDoorsNum("702605", "DGD0380010082100164",doors );
+
+        System.out.println(accessPerson);
     }
 
 

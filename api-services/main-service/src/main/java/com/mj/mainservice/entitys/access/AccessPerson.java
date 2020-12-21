@@ -3,6 +3,7 @@ package com.mj.mainservice.entitys.access;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jian.common.util.PageHelper;
 import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;

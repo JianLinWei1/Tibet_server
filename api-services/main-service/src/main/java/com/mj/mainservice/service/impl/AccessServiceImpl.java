@@ -260,6 +260,16 @@ public class AccessServiceImpl implements AccessService {
             Example<AccessPerson> example = Example.of(accessPerson, matcher);
 
             Page<AccessPerson> personPage = accessPersonResposity.findAll(example, PageRequest.of(accessPerson.getPage() - 1, accessPerson.getLimit(), Sort.by(Sort.Direction.DESC, "time")));
+             personPage.getContent().stream().forEach(per ->{
+                 DeviceInfo  optional =  accessRespository.findBySnEquals(per.getAdvId());
+                 if(optional == null)
+                     return;
+                 per.setAdvName(optional.getName());
+                 per.setIp(optional.getIp());
+                 per.getDoorsNum().stream().forEach(dr->{
+                     dr.setName(optional.getDoors().stream().filter(d->d.getId() == dr.getId()).collect(Collectors.toList()).get(0).getName());
+                 });
+             });
             ResultUtil resultUtil = new ResultUtil();
             resultUtil.setCode(0);
             resultUtil.setData(personPage.toList());
@@ -715,8 +725,13 @@ public class AccessServiceImpl implements AccessService {
                         List<Doors> doorNums = (List<Doors>) entry.getValue();
                         PersonInfo personInfo = optional.get();
 
-                        AccessPerson accessPerson1 = accessPersonResposity.findByPidEqualsAndAdvIdEqualsAndDoorsNumContains((String) personInfo.getId(), deviceInfo.getSn(),
-                                doorNums);
+                        List<Integer>  doorsNum = new ArrayList<>();
+                        doorNums.stream().forEach(d->{
+                            doorsNum.add(d.getId());
+                        });
+
+                        AccessPerson accessPerson1 = accessPersonResposity.findByPidEqualsAndAdvIdEqualsAndDoorsNum((String) personInfo.getId(), deviceInfo.getSn(),
+                                doorsNum);
                         if (accessPerson1 != null)
                             return;
                         AccessPerson accessPerson = new AccessPerson();
@@ -890,8 +905,12 @@ public class AccessServiceImpl implements AccessService {
                 PersonInfo personInfo = personRepository.findById((String) pid).get();
                 DeviceInfo deviceInfo = accessRespository.findById(accessPersonVo.getAdvId()).get();
                 ip = deviceInfo.getIp();
-                AccessPerson accessPerson1 = accessPersonResposity.findByPidEqualsAndAdvIdEqualsAndDoorsNumContains((String) pid, deviceInfo.getSn(),
-                        accessPersonVo.getDoorsNum());
+                List<Integer>  doorsNum = new ArrayList<>();
+                accessPersonVo.getDoorsNum().stream().forEach(d->{
+                    doorsNum.add(d.getId());
+                });
+                AccessPerson accessPerson1 = accessPersonResposity.findByPidEqualsAndAdvIdEqualsAndDoorsNum((String) pid, deviceInfo.getSn(),
+                        doorsNum);
                 if (accessPerson1 != null)
                     continue;
                 // return new ResultUtil(-1 ,"存在同一个人下发到了相同门："+accessPerson1.getName()+",请重新选择");
