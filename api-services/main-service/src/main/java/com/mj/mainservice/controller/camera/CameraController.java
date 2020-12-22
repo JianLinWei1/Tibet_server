@@ -46,4 +46,10 @@ public class CameraController {
         return cameraService.listCamera(camera);
     }
 
+    @PostMapping("/loginV2")
+    public ResultUtil loginV2(@RequestBody CameraBind cameraBind){
+
+        return cameraService.loginV2(cameraBind);
+    }
+
 }

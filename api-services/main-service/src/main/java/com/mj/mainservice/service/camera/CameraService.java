@@ -18,4 +18,6 @@ public interface CameraService {
 
 
     ResultUtil  listCamera(Camera camera);
+
+    ResultUtil loginV2(CameraBind cameraBind);
 }

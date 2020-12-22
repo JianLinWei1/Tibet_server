@@ -102,4 +102,15 @@ public class CameraServiceImpl  implements CameraService {
             return  new ResultUtil(-1 ,e.getMessage());
         }
     }
+
+    @Override
+    public ResultUtil loginV2(CameraBind cameraBind) {
+        try {
+           String token = uniUtil.loginV2(cameraBind.getAdmin() ,cameraBind.getPw());
+           return  ResultUtil.ok(token);
+        }catch (Exception e){
+            log.error(e);
+            return  new ResultUtil(-1 ,e.getMessage());
+        }
+    }
 }

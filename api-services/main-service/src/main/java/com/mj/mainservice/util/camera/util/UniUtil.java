@@ -44,11 +44,38 @@ public class UniUtil {
 
 
     private String loginUrl = "/VIID/login";
+    private String loginUrlV2 = "/VIID/login/v2";
     private String  queryResUrl ="/VIID/query";
     private String  queryCamUrl = "/VIID/dev/ec/query/camera";
 
     public String  login(String admin , String pw) throws IOException {
         String url = "http://" + SysConfigUtil.getIns().getProUniServer() +":" + SysConfigUtil.getIns().getProUniPort()+ loginUrl;
+        /*String admin = SysConfigUtil.getIns().getProUniAdmin();
+        String pw = SysConfigUtil.getIns().getProUniPw();*/
+        LoginInfo  loginInfo = new LoginInfo();
+        //第一次请求
+        HttpPost hp = new HttpPost(url);
+        CloseableHttpResponse response = HttpClients.createDefault().execute(hp);
+        if (response.getStatusLine().getStatusCode() == 200){
+            String res = EntityUtils.toString(response.getEntity());
+            log.info("第一次请求登录结果：{}", res);
+            loginInfo = JSON.parseObject(res, LoginInfo.class);
+            loginInfo.setUserName(admin);
+            String sign = SecureUtil.md5( Base64.getEncoder().encodeToString(admin.getBytes()) + loginInfo.getAccessCode()+ SecureUtil.md5(pw));
+            loginInfo.setLoginSignature(sign);
+            String token = HttpUtil.post(url ,JSON.toJSONString(loginInfo));
+            log.info("第二次登录请求：{} ,返回：{}" , JSON.toJSONString(loginInfo),token);
+            loginInfo = JSON.parseObject(token ,LoginInfo.class);
+
+            return  loginInfo.getAccessToken();
+        }
+
+        return null;
+
+    }
+
+    public String  loginV2(String admin , String pw) throws IOException {
+        String url = "http://" + SysConfigUtil.getIns().getProUniServer() +":" + SysConfigUtil.getIns().getProUniPort()+ loginUrlV2;
         /*String admin = SysConfigUtil.getIns().getProUniAdmin();
         String pw = SysConfigUtil.getIns().getProUniPw();*/
         LoginInfo  loginInfo = new LoginInfo();

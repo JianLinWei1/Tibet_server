@@ -53,7 +53,7 @@ public class AccessController {
     @SysLogInter("编辑门禁控制器")
     @PostMapping("/editDevice")
     public ResultUtil editDevice(@RequestBody DeviceInfo info, String userId) {
-        info.setUserId(userId);
+        //info.setUserId(userId);
         return accessService.editDevice(info);
     }
 
