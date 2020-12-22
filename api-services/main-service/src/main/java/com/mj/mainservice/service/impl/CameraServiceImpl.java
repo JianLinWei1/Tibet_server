@@ -93,7 +93,7 @@ public class CameraServiceImpl  implements CameraService {
             String token  = uniUtil.login(optional.get().getAdmin() ,optional.get().getPw());
             if(StringUtils.isEmpty(token))
                 return new ResultUtil(-2,"登录平台token失败");
-            ResultUtil resultUtil = uniUtil.getResInfo(token ,camera.getPage()-1 ,camera.getLimit());
+            ResultUtil resultUtil = uniUtil.getResInfo(token ,camera.getPage()-1 ,camera.getLimit() ,camera.getUserId());
 
 
             return resultUtil;

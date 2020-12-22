@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSON;
 import com.jian.common.util.ResultUtil;
 import com.jian.common.util.SysConfigUtil;
 import com.mj.mainservice.entitys.camrea.Camera;
+import com.mj.mainservice.entitys.camrea.CameraBind;
 import com.mj.mainservice.resposity.camera.CameraBindResposity;
 import com.mj.mainservice.util.camera.entitys.Condition;
 import com.mj.mainservice.util.camera.entitys.LoginInfo;
@@ -29,6 +30,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by MrJan on 2020/12/14
@@ -37,6 +39,8 @@ import java.util.List;
 @Component
 @Log4j2
 public class UniUtil {
+    @Resource
+    private CameraBindResposity cameraBindResposity;
 
 
     private String loginUrl = "/VIID/login";
@@ -70,7 +74,7 @@ public class UniUtil {
     }
 
 
-    public  ResultUtil getResInfo(String  token ,int page , int limit) throws IOException {
+    public  ResultUtil getResInfo(String  token ,int page , int limit ,String userId) throws IOException {
         QueryCondition queryCondition = new QueryCondition();
         queryCondition.setItemNum(2);
         queryCondition.setPageFirstRowNumber(page);
@@ -102,6 +106,10 @@ public class UniUtil {
             camera.setCameraCode(info.getResItemV1().getResCode());
             camera.setCameraName(info.getResItemV1().getResName());
             camera.setOrgName(info.getOrgName());
+            Optional<CameraBind> cameraBind = cameraBindResposity.findById(userId);
+            if(cameraBind.isPresent())
+                camera.setCameraBind(cameraBind.get());
+
             cameras.add(camera);
         });
         resultUtil.setData(cameras);

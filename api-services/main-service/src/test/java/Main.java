@@ -32,6 +32,6 @@ public class Main {
         UniUtil loginUtil = new UniUtil();
        String token =   loginUtil.login("Tingjiguan" ,"Admin123z");
         System.out.println(token);
-         loginUtil.getResInfo(token ,0 , 10);
+         loginUtil.getResInfo(token ,0 , 10 ,"1");
     }
 }
