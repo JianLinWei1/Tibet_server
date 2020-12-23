@@ -16,6 +16,7 @@ import com.mj.mainservice.resposity.person.PersonRepository;
 import com.mj.mainservice.service.parking.ParkingVoService;
 import com.mj.mainservice.service.person.PersonService;
 import com.mj.mainservice.vo.access.BatchIssueVo;
+import com.mj.mainservice.vo.parking.TmpPersonVo;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.*;
@@ -23,6 +24,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.File;
@@ -154,14 +156,16 @@ public class ParkingVoServiceImpl implements ParkingVoService {
         try {
 
             ExampleMatcher matcher = ExampleMatcher.matching()
-                    .withIgnorePaths("page", "limit")
+                    .withIgnorePaths("page", "limit","carId")
                     .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains())
-                    .withMatcher("carId", ExampleMatcher.GenericPropertyMatchers.contains());
+                    ;
             Example<ParkingUserInfo> example = Example.of(parkingUserInfo, matcher);
             Pageable pageable = PageRequest.of(parkingUserInfo.getPage()-1, parkingUserInfo.getLimit());
             Query query = new Query();
             //childs.add(parkingUserInfo.getUserId());
             query.addCriteria(Criteria.where("action").ne(1));
+            if(parkingUserInfo.getCarId()!= null && parkingUserInfo.getCarId().size()>0)
+            query.addCriteria(Criteria.where("carId").in(parkingUserInfo.getCarId()));
             //query.addCriteria(Criteria.where("userId").in(childs));
             Page<ParkingUserInfo> page = parkingPersonResposity.findAll(example, query, pageable);
             ResultUtil resultUtil = new ResultUtil();
@@ -197,7 +201,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
     public ResultUtil listParkingResult(ParkingResult parkingResult) {
         try {
             ExampleMatcher matcher = ExampleMatcher.matching().withMatcher("ipaddr", ExampleMatcher.GenericPropertyMatchers.exact())
-                    .withMatcher("plateid", ExampleMatcher.GenericPropertyMatchers.contains())
+                    .withMatcher("license", ExampleMatcher.GenericPropertyMatchers.contains())
                     .withIgnorePaths("page", "limit");
             Example<ParkingResult> example = Example.of(parkingResult, matcher);
             Page<ParkingResult> page = parkingResultResposity.findAll(example, PageRequest.of(parkingResult.getPage()-1,
@@ -321,7 +325,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
                 if(!optional.isPresent())
                     return;
                 PersonInfo personInfo = optional.get();
-                if(personInfo.getCarId()== null ||personInfo.getCarId().size()<=0)
+                if(personInfo.getCarId()== null ||personInfo.getCarId().size()<=0 || StringUtils.isEmpty(personInfo.getCarId().get(0)))
                     return;
                 //排除已下发的
                 Optional<ParkingUserInfo>  optional1 = parkingPersonResposity.findAllByPersonIdEqualsAndCarIdEquals(pid,personInfo.getCarId());
@@ -356,6 +360,45 @@ public class ParkingVoServiceImpl implements ParkingVoService {
         }catch (Exception e){
             log.error(e);
             return  new ResultUtil(-1,e.getMessage());
+        }
+    }
+
+    @Override
+    public ResultUtil batchIssue(MultipartFile file, List<String> parkIds) {
+        try {
+          List<TmpPersonVo>  tmpPersonVos = EasyExcel.read(file.getInputStream()).head(TmpPersonVo.class).sheet().doReadSync();
+          tmpPersonVos.stream().forEach(t->{
+
+              ParkingUserInfo parkingUserInfo = new ParkingUserInfo();
+              parkingUserInfo.setAction(0);
+              List<String> carids =new ArrayList<>();
+              carids.add(t.getCarId());
+              parkingUserInfo.setCarId(carids);
+
+              parkingUserInfo.setEnable(1);
+              parkingUserInfo.setNeed_alarm(0);
+              parkingUserInfo.setEnable_time(t.getStartTime());
+
+              //parkingUserInfo.setUserId(personInfo.getUserId());
+              parkingUserInfo.setStatus(false);
+              parkingUserInfo.setOverdue_time(null);
+              parkIds.forEach(dv ->{
+                  Optional<ParkInfo> optional2 =parkingResposity.findById(dv);
+                  if(!optional2.isPresent())
+                      return;
+                  ParkInfo  parkInfo = optional2.get();
+                  parkingUserInfo.setId(null);
+                  parkingUserInfo.setSerialno(parkInfo.getSerialno());
+                  parkingUserInfo.setDevice_name(parkInfo.getDevice_name());
+                  parkingUserInfo.setUserId(parkInfo.getUserId());
+                  parkingPersonResposity.save(parkingUserInfo);
+              });
+          });
+
+          return  ResultUtil.ok();
+        }catch (Exception e){
+            log.error(e);
+            return  new ResultUtil(-1 ,"请检查Excel文件（注意日期格式)");
         }
     }
 }

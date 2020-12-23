@@ -6,6 +6,11 @@ import com.mj.mainservice.vo.access.BatchIssueVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by MrJan on 2020/12/18
@@ -29,5 +34,13 @@ public class PakringBatchVoController {
     public ResultUtil  batchIssue(@RequestBody BatchIssueVo batchIssueVo){
 
         return  parkingVoService.batchIssue(batchIssueVo);
+    }
+
+    @PostMapping("/batchIssue2")
+    public ResultUtil batchIssue2(MultipartHttpServletRequest request) {
+        MultipartFile file = request.getFile("file");
+        List<String> parkIds = Arrays.asList(request.getParameterValues("parkIds[]"));
+
+        return parkingVoService.batchIssue(file,parkIds);
     }
 }

@@ -14,7 +14,9 @@ import com.mj.mainservice.service.person.PersonService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -117,5 +119,7 @@ public class ParkingVoController {
             parkingResult.setUserId(userId);
         return parkingVoService.exportSearchRecords(parkingResult);
     }
+
+
 
 }

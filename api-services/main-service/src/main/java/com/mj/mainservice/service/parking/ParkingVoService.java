@@ -5,7 +5,9 @@ import com.mj.mainservice.entitys.parking.ParkInfo;
 import com.mj.mainservice.entitys.parking.ParkingResult;
 import com.mj.mainservice.entitys.parking.ParkingUserInfo;
 import com.mj.mainservice.vo.access.BatchIssueVo;
+import com.mj.mainservice.vo.parking.TmpPersonVo;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -36,4 +38,6 @@ public interface ParkingVoService {
     ResultUtil getParingTree(String userId);
 
     ResultUtil  batchIssue(BatchIssueVo issueVo);
+
+    ResultUtil  batchIssue(MultipartFile file , List<String> parkIds);
 }

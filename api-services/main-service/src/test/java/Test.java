@@ -8,6 +8,8 @@ import com.mj.mainservice.resposity.access.AccessPersonResposity;
 import com.mj.mainservice.resposity.access.AccessRespository;
 import com.mj.mainservice.service.access.AccessService;
 import com.mj.mainservice.service.access.TranslationService;
+import com.mj.mainservice.service.impl.UploadRecordServiceImpl;
+import com.mj.mainservice.service.parking.UploadRecoedService;
 import com.mj.mainservice.service.system.ISysAdminService;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +37,13 @@ public class Test {
     private AccessRespository accessRespository;
     @Autowired
     private AccessPersonResposity personResposity;
+    @Autowired
+    private UploadRecoedService  uploadRecoedService;
 
 
     @org.junit.Test
     public  void test(){
-        List<Integer>  doors = new ArrayList<>();
+       /* List<Integer>  doors = new ArrayList<>();
         for(int i = 1 ; i<= 4 ; i++){
             Doors doors1 = new Doors();
             doors1.setId(i);
@@ -49,7 +53,11 @@ public class Test {
 
         AccessPerson  accessPerson = personResposity.findByPidEqualsAndAdvIdEqualsAndDoorsNum("702605", "DGD0380010082100164",doors );
 
-        System.out.println(accessPerson);
+        System.out.println(accessPerson);*/
+
+         uploadRecoedService.getAddWihteList("4a3ebabc-b4e86491");
+
+
     }
 
 
