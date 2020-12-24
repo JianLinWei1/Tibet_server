@@ -22,6 +22,11 @@ public class Main {
         if(!file1.exists())
             file1.createNewFile();*/
 
+        String hex =Long.toHexString(4280476129l);
+        System.out.println(hex);
+        long num = 4280476129l&0x00FFFFFF;
+        System.out.println(num);
+        System.out.println(Long.toHexString(num));
 
 
         String  base = Base64.getEncoder().encodeToString("admin".getBytes());

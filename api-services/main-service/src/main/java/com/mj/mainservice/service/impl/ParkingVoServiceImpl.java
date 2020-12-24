@@ -115,6 +115,8 @@ public class ParkingVoServiceImpl implements ParkingVoService {
     @Transactional
     public ResultUtil saveParkPersonInfo(ParkingUserInfo parkingUserInfo) {
         try {
+            if(parkingUserInfo.getCarId() == null || parkingUserInfo.getCarId().size() <=0 )
+                return new ResultUtil(-1,"车牌和人员下发二选一不能为空");
             if (parkingUserInfo.getPersonIds() != null && parkingUserInfo.getPersonIds().size() > 0) {
                 parkingUserInfo.getPersonIds().stream().forEach(id -> {
                     ParkingUserInfo parkingUserInfo1 = new ParkingUserInfo();
@@ -368,7 +370,8 @@ public class ParkingVoServiceImpl implements ParkingVoService {
         try {
           List<TmpPersonVo>  tmpPersonVos = EasyExcel.read(file.getInputStream()).head(TmpPersonVo.class).sheet().doReadSync();
           tmpPersonVos.stream().forEach(t->{
-
+               if(StringUtils.isEmpty(t.getCarId()))
+                   return;
               ParkingUserInfo parkingUserInfo = new ParkingUserInfo();
               parkingUserInfo.setAction(0);
               List<String> carids =new ArrayList<>();

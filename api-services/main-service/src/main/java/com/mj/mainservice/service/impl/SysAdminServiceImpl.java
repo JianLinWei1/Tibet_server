@@ -133,7 +133,7 @@ public class SysAdminServiceImpl extends ServiceImpl<SysAdminMapper, SysAdmin> i
                 antRouter.setRouter(sysMenu.getRouter());
                 antRouter.setName(sysMenu.getName());
                 antRouter.setIcon(sysMenu.getIcon());
-                if (StringUtils.isEmpty(sysMenu.getAuthority()))
+                if (StringUtils.isNotEmpty(sysMenu.getAuthority()))
                     antRouter.setAuthority(sysMenu.getAuthority());
                 antRouter.setChildren(getRouters(sysMenus, sysMenu.getId()));
                 antRouters.add(antRouter);

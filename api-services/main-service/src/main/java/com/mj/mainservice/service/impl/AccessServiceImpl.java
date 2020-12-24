@@ -342,11 +342,7 @@ public class AccessServiceImpl implements AccessService {
                 for (Doors i : accessPerson.getDoorsNum()) {
                     doorIds += i.getId() + ",";
                 }
-                String pin = "";
-                if (accessPerson.getAccessId().length() > 8)
-                    pin = accessPerson.getAccessId().substring(0, 8);
-                else
-                    pin = accessPerson.getAccessId();
+                String pin = String.valueOf(Long.valueOf(accessPerson.getAccessId())&0x00FFFFFF);
 
                 UserDataVo userDataVo = new UserDataVo();
                 userDataVo.setCardNo(accessPerson.getAccessId());
@@ -752,11 +748,7 @@ public class AccessServiceImpl implements AccessService {
                         for (Doors d : doorNums) {
                             doorIds += d.getId() + ",";
                         }
-                        String pin = "";
-                        if (personInfo.getAccessId() != null && personInfo.getAccessId().length() > 8)
-                            pin = personInfo.getAccessId().substring(0, 8);
-                        else
-                            pin = personInfo.getAccessId();
+                        String pin = String.valueOf(Long.valueOf(personInfo.getAccessId())&0x00FFFFFF);
 
                         userDataVo.setCardNo(personInfo.getAccessId());
                         userDataVo.setPin(pin);
@@ -915,11 +907,7 @@ public class AccessServiceImpl implements AccessService {
                     continue;
                 // return new ResultUtil(-1 ,"存在同一个人下发到了相同门："+accessPerson1.getName()+",请重新选择");
 
-                String pin = "";
-                if (personInfo.getAccessId().length() > 8)
-                    pin = personInfo.getAccessId().substring(0, 8);
-                else
-                    pin = personInfo.getAccessId();
+                String pin = String.valueOf(Long.valueOf(personInfo.getAccessId())&0x00FFFFFF);
                 String doorIds = "";
                 for (Doors d : accessPersonVo.getDoorsNum()) {
                     doorIds += d.getId() + ",";
