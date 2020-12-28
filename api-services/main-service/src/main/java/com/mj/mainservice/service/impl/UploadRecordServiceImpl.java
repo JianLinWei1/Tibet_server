@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.Instant;
@@ -71,6 +72,7 @@ public class UploadRecordServiceImpl implements UploadRecoedService {
     }
 
     @Override
+    @Transactional
     public ParkingResponse getAddWihteList(String serialno) {
 
         WhiteListOperate operate=  new WhiteListOperate();
@@ -98,6 +100,7 @@ public class UploadRecordServiceImpl implements UploadRecoedService {
         responseAlarmInfoPlate.setWhite_list_operate(operate);
         ParkingResponse parkingResponse = new ParkingResponse();
         parkingResponse.setResponse_AlarmInfoPlate(responseAlarmInfoPlate);
+        log.info("白名单返回{}", JSON.toJSONString(parkingResponse));
         return parkingResponse;
     }
 

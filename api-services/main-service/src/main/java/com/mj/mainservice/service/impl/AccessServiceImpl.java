@@ -156,7 +156,7 @@ public class AccessServiceImpl implements AccessService {
                     .withNullHandler(ExampleMatcher.NullHandler.IGNORE)
                     .withIgnoreNullValues();
             Example<DeviceInfo> example = Example.of(info, matcher);
-            Page<DeviceInfo> page1 = accessRespository.findAll(example, PageRequest.of(info.getPage(), info.getLimit()));
+            Page<DeviceInfo> page1 = accessRespository.findAll(example, PageRequest.of(info.getPage()-1, info.getLimit()));
             page1.getContent().stream().forEach(d -> {
                 if (mapCache.get(d.getSn()) != null)
                     d.setStatus(true);
@@ -260,16 +260,16 @@ public class AccessServiceImpl implements AccessService {
             Example<AccessPerson> example = Example.of(accessPerson, matcher);
 
             Page<AccessPerson> personPage = accessPersonResposity.findAll(example, PageRequest.of(accessPerson.getPage() - 1, accessPerson.getLimit(), Sort.by(Sort.Direction.DESC, "time")));
-             personPage.getContent().stream().forEach(per ->{
-                 DeviceInfo  optional =  accessRespository.findBySnEquals(per.getAdvId());
-                 if(optional == null)
-                     return;
-                 per.setAdvName(optional.getName());
-                 per.setIp(optional.getIp());
-                 per.getDoorsNum().stream().forEach(dr->{
-                     dr.setName(optional.getDoors().stream().filter(d->d.getId() == dr.getId()).collect(Collectors.toList()).get(0).getName());
-                 });
-             });
+            personPage.getContent().stream().forEach(per -> {
+                DeviceInfo optional = accessRespository.findBySnEquals(per.getAdvId());
+                if (optional == null)
+                    return;
+                per.setAdvName(optional.getName());
+                per.setIp(optional.getIp());
+                per.getDoorsNum().stream().forEach(dr -> {
+                    dr.setName(optional.getDoors().stream().filter(d -> d.getId() == dr.getId()).collect(Collectors.toList()).get(0).getName());
+                });
+            });
             ResultUtil resultUtil = new ResultUtil();
             resultUtil.setCode(0);
             resultUtil.setData(personPage.toList());
@@ -342,7 +342,7 @@ public class AccessServiceImpl implements AccessService {
                 for (Doors i : accessPerson.getDoorsNum()) {
                     doorIds += i.getId() + ",";
                 }
-                String pin = String.valueOf(Long.valueOf(accessPerson.getAccessId())&0x00FFFFFF);
+                String pin = String.valueOf(Long.valueOf(accessPerson.getAccessId()) & 0x00FFFFFF);
 
                 UserDataVo userDataVo = new UserDataVo();
                 userDataVo.setCardNo(accessPerson.getAccessId());
@@ -696,7 +696,7 @@ public class AccessServiceImpl implements AccessService {
         try {
             HttpUtil httpUtil = new HttpUtil();
             ResultUtil resultUtil = new ResultUtil();
-
+            List<BatchMsg> list1 = new ArrayList<>();
             List<Map<String, List<Doors>>> list = AccessUtil.parseDoors(issueVo.getDvIds());
             StringBuilder ips = new StringBuilder();
             List<UserDataVo> userDataVos = new ArrayList<>();
@@ -721,8 +721,8 @@ public class AccessServiceImpl implements AccessService {
                         List<Doors> doorNums = (List<Doors>) entry.getValue();
                         PersonInfo personInfo = optional.get();
 
-                        List<Integer>  doorsNum = new ArrayList<>();
-                        doorNums.stream().forEach(d->{
+                        List<Integer> doorsNum = new ArrayList<>();
+                        doorNums.stream().forEach(d -> {
                             doorsNum.add(d.getId());
                         });
 
@@ -730,6 +730,8 @@ public class AccessServiceImpl implements AccessService {
                                 doorsNum);
                         if (accessPerson1 != null)
                             return;
+
+
                         AccessPerson accessPerson = new AccessPerson();
 
                         accessPerson.setPid(personInfo.getId());
@@ -748,7 +750,7 @@ public class AccessServiceImpl implements AccessService {
                         for (Doors d : doorNums) {
                             doorIds += d.getId() + ",";
                         }
-                        String pin = String.valueOf(Long.valueOf(personInfo.getAccessId())&0x00FFFFFF);
+                        String pin = String.valueOf(Long.valueOf(personInfo.getAccessId()) & 0x00FFFFFF);
 
                         userDataVo.setCardNo(personInfo.getAccessId());
                         userDataVo.setPin(pin);
@@ -760,7 +762,7 @@ public class AccessServiceImpl implements AccessService {
 
                 }
             });
-            List<BatchMsg> list1 = new ArrayList<>();
+
             for (String ip : ips.toString().split(",")) {
                 String url = "http://" + SysConfigUtil.getIns().getProAccessServer() +
                         "/setDeviceData";
@@ -770,6 +772,11 @@ public class AccessServiceImpl implements AccessService {
                 deviceDataVo.setData(userDataVos);
                 log.info("批量门禁下发请求：{} ", JSON.toJSONString(deviceDataVo), url);
                 if (userDataVos == null || userDataVos.size() <= 0) {
+                    BatchMsg batchMsg1 = new BatchMsg();
+                    batchMsg1.setIp(ip);
+                    batchMsg1.setStatus(true);
+                    batchMsg1.setMsg("成功");
+                    list1.add(batchMsg1);
                     continue;
                 }
 
@@ -897,8 +904,8 @@ public class AccessServiceImpl implements AccessService {
                 PersonInfo personInfo = personRepository.findById((String) pid).get();
                 DeviceInfo deviceInfo = accessRespository.findById(accessPersonVo.getAdvId()).get();
                 ip = deviceInfo.getIp();
-                List<Integer>  doorsNum = new ArrayList<>();
-                accessPersonVo.getDoorsNum().stream().forEach(d->{
+                List<Integer> doorsNum = new ArrayList<>();
+                accessPersonVo.getDoorsNum().stream().forEach(d -> {
                     doorsNum.add(d.getId());
                 });
                 AccessPerson accessPerson1 = accessPersonResposity.findByPidEqualsAndAdvIdEqualsAndDoorsNum((String) pid, deviceInfo.getSn(),
@@ -907,7 +914,7 @@ public class AccessServiceImpl implements AccessService {
                     continue;
                 // return new ResultUtil(-1 ,"存在同一个人下发到了相同门："+accessPerson1.getName()+",请重新选择");
 
-                String pin = String.valueOf(Long.valueOf(personInfo.getAccessId())&0x00FFFFFF);
+                String pin = String.valueOf(Long.valueOf(personInfo.getAccessId()) & 0x00FFFFFF);
                 String doorIds = "";
                 for (Doors d : accessPersonVo.getDoorsNum()) {
                     doorIds += d.getId() + ",";
@@ -943,7 +950,7 @@ public class AccessServiceImpl implements AccessService {
             String json = JSON.toJSONString(deviceDataVo);
             log.info("门禁下发请求：{}, URL:{}", json, url);
             if (userDataVos == null || userDataVos.size() <= 0) {
-                return  ResultUtil.ok();
+                return ResultUtil.ok();
             }
             ResultUtil ru = httpUtil.post(url, json);
             // ResultUtil ru = ResultUtil.ok();
@@ -1064,16 +1071,16 @@ public class AccessServiceImpl implements AccessService {
 
 
     @Override
-    public ResultUtil openDoor(String ip , Integer id) {
+    public ResultUtil openDoor(String ip, Integer id) {
         try {
-            HttpUtil  httpUtil = new HttpUtil();
+            HttpUtil httpUtil = new HttpUtil();
             String url = "http://" + SysConfigUtil.getIns().getProAccessServer() +
-                    "/openDoor?ip="+ip +"&doorId="+id;
-            ResultUtil  res =  httpUtil.get(url);
-            return  res;
-        }catch (Exception e){
+                    "/openDoor?ip=" + ip + "&doorId=" + id;
+            ResultUtil res = httpUtil.get(url);
+            return res;
+        } catch (Exception e) {
             log.error(e);
-            return new ResultUtil(-1 ,e.getMessage());
+            return new ResultUtil(-1, e.getMessage());
         }
     }
 
@@ -1088,11 +1095,11 @@ public class AccessServiceImpl implements AccessService {
                     .withNullHandler(ExampleMatcher.NullHandler.IGNORE)
                     .withIgnoreNullValues();
             Example<DeviceInfo> example = Example.of(info, matcher);
-            long  count = accessRespository.count(example);
-            return  count;
-        }catch (Exception e){
+            long count = accessRespository.count(example);
+            return count;
+        } catch (Exception e) {
             log.error(e);
-            return  0l;
+            return 0l;
         }
     }
 }

@@ -117,6 +117,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
         try {
             if(parkingUserInfo.getCarId() == null || parkingUserInfo.getCarId().size() <=0 )
                 return new ResultUtil(-1,"车牌和人员下发二选一不能为空");
+
             if (parkingUserInfo.getPersonIds() != null && parkingUserInfo.getPersonIds().size() > 0) {
                 parkingUserInfo.getPersonIds().stream().forEach(id -> {
                     ParkingUserInfo parkingUserInfo1 = new ParkingUserInfo();
@@ -132,11 +133,22 @@ public class ParkingVoServiceImpl implements ParkingVoService {
                     parkingUserInfo1.setPersonIds(null);
                     parkingUserInfo1.setStatus(false);
                     parkingUserInfo1.setDepartment(personInfo.getDepartment());
+                    //排除已下发的
+                    Optional<ParkingUserInfo>  optional1 = parkingPersonResposity.findAllByCarIdEqualsAndSerialnoIsAndActionIsNot(personInfo.getCarId(),
+                            parkingUserInfo.getSerialno() ,1);
+                    if(optional1.isPresent())
+                        return;
+
                     parkingPersonResposity.save(parkingUserInfo1);
                     log.info(personInfo.getName());
 
                 });
             } else {
+                //排除已下发的
+                Optional<ParkingUserInfo>  optional1 = parkingPersonResposity.findAllByCarIdEqualsAndSerialnoIsAndActionIsNot(parkingUserInfo.getCarId(),
+                        parkingUserInfo.getSerialno() ,1);
+                if(optional1.isPresent())
+                    return  new ResultUtil(-1 ,"该临时车牌已经下发");
                 parkingUserInfo.setAction(0);
                 parkingUserInfo.setStatus(false);
                 parkingPersonResposity.save(parkingUserInfo);
@@ -329,10 +341,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
                 PersonInfo personInfo = optional.get();
                 if(personInfo.getCarId()== null ||personInfo.getCarId().size()<=0 || StringUtils.isEmpty(personInfo.getCarId().get(0)))
                     return;
-                //排除已下发的
-                Optional<ParkingUserInfo>  optional1 = parkingPersonResposity.findAllByPersonIdEqualsAndCarIdEquals(pid,personInfo.getCarId());
-                if(optional1.isPresent())
-                    return;
+
                 ParkingUserInfo parkingUserInfo = new ParkingUserInfo();
                 parkingUserInfo.setAction(0);
                 parkingUserInfo.setCarId(personInfo.getCarId());
@@ -348,6 +357,11 @@ public class ParkingVoServiceImpl implements ParkingVoService {
                 issueVo.getDvIds().forEach(dv ->{
                     Optional<ParkInfo> optional2 =parkingResposity.findById(dv);
                     if(!optional2.isPresent())
+                        return;
+                    //排除已下发的
+                    Optional<ParkingUserInfo>  optional1 = parkingPersonResposity.findAllByPersonIdEqualsAndCarIdEqualsAndSerialnoIsAndActionIsNot(pid,
+                            personInfo.getCarId(),optional2.get().getSerialno() ,1);
+                    if(optional1.isPresent())
                         return;
                     ParkInfo  parkInfo = optional2.get();
                     parkingUserInfo.setId(null);
@@ -384,11 +398,18 @@ public class ParkingVoServiceImpl implements ParkingVoService {
 
               //parkingUserInfo.setUserId(personInfo.getUserId());
               parkingUserInfo.setStatus(false);
-              parkingUserInfo.setOverdue_time(null);
+              parkingUserInfo.setOverdue_time(t.getEndTime());
               parkIds.forEach(dv ->{
                   Optional<ParkInfo> optional2 =parkingResposity.findById(dv);
                   if(!optional2.isPresent())
                       return;
+                  //排除已下发的
+                  Optional<ParkingUserInfo>  optional1 = parkingPersonResposity.findAllByCarIdEqualsAndSerialnoIsAndActionIsNot(carids ,dv ,1);
+                  if(optional1.isPresent()){
+
+                      return;
+                  }
+
                   ParkInfo  parkInfo = optional2.get();
                   parkingUserInfo.setId(null);
                   parkingUserInfo.setSerialno(parkInfo.getSerialno());

@@ -71,7 +71,7 @@ public class ParkingVoController {
     }
 
 
-    @SysLogInter("添加车牌信息")
+    @SysLogInter("车牌下发")
     @PostMapping("/saveParkPersonInfo")
     public ResultUtil saveParkPersonInfo(@RequestBody ParkingUserInfo parkingUserInfo) {
 

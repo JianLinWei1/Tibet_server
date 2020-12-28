@@ -54,7 +54,7 @@ public class Test {
         AccessPerson  accessPerson = personResposity.findByPidEqualsAndAdvIdEqualsAndDoorsNum("702605", "DGD0380010082100164",doors );
 
         System.out.println(accessPerson);*/
-
+       for(int i = 0 ; i < 20;i++)
          uploadRecoedService.getAddWihteList("4a3ebabc-b4e86491");
 
 

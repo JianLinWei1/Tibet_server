@@ -1,6 +1,7 @@
 package com.mj.mainservice.resposity.parking;
 
 
+import com.mj.mainservice.entitys.access.AccessPerson;
 import com.mj.mainservice.entitys.parking.ParkingUserInfo;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,10 @@ public interface ParkingPersonResposity   extends MongoRepository<ParkingUserInf
 
      List<ParkingUserInfo>    findAllByPersonIdEquals(String pid);
 
-     Optional<ParkingUserInfo>   findAllByPersonIdEqualsAndCarIdEquals(String personId, List<String> carId);
+     Optional<ParkingUserInfo>   findAllByPersonIdEqualsAndCarIdEqualsAndSerialnoIsAndActionIsNot(String personId, List<String> carId ,String  serNo ,Integer action);
+
+     Optional<ParkingUserInfo>   findAllByCarIdEqualsAndSerialnoIsAndActionIsNot(List<String> carId , String serNo,Integer action);
+
+
 
 }
