@@ -401,7 +401,7 @@ public class AccessServiceImpl implements AccessService {
 
                 translation.setPersonId(accessPerson.getPid());
                 translation.setName(accessPerson.getName());
-                translation.setDvName(accessPerson.getAdvName());
+                translation.setDvName(deviceInfo.getName());
                 translation.setUserId(accessPerson.getUserId());
                 translation.setDepartment(accessPerson.getDepartment());
                 translationResposity.save(translation);
