@@ -156,7 +156,7 @@ public class AccessServiceImpl implements AccessService {
                     .withNullHandler(ExampleMatcher.NullHandler.IGNORE)
                     .withIgnoreNullValues();
             Example<DeviceInfo> example = Example.of(info, matcher);
-            Page<DeviceInfo> page1 = accessRespository.findAll(example, PageRequest.of(info.getPage()-1, info.getLimit()));
+            Page<DeviceInfo> page1 = accessRespository.findAll(example, PageRequest.of(info.getPage() - 1, info.getLimit()));
             page1.getContent().stream().forEach(d -> {
                 if (mapCache.get(d.getSn()) != null)
                     d.setStatus(true);
@@ -726,10 +726,15 @@ public class AccessServiceImpl implements AccessService {
                             doorsNum.add(d.getId());
                         });
 
-                        AccessPerson accessPerson1 = accessPersonResposity.findByPidEqualsAndAdvIdEqualsAndDoorsNum((String) personInfo.getId(), deviceInfo.getSn(),
-                                doorsNum);
-                        if (accessPerson1 != null)
+                        try {
+                            AccessPerson accessPerson1 = accessPersonResposity.findByPidEqualsAndAdvIdEqualsAndDoorsNum(personInfo.getId(), deviceInfo.getSn(),
+                                    doorsNum);
+                            if (accessPerson1 != null)
+                                return;
+                        } catch (Exception e) {
+                            log.error(e);
                             return;
+                        }
 
 
                         AccessPerson accessPerson = new AccessPerson();
@@ -781,14 +786,12 @@ public class AccessServiceImpl implements AccessService {
                 }
 
                 ResultUtil ru = httpUtil.post(url, JSON.toJSONString(deviceDataVo));
-                // ResultUtil ru = ResultUtil.ok();
+                //ResultUtil ru = ResultUtil.ok();
                 log.info("门禁下发返回：{} , URL:{}", JSON.toJSONString(ru), url);
 
                 if (ru.getCode() == 0) {
                     /**下发成功 加入数据库**/
-                    accessPersons.stream().forEach(p -> {
-                        accessPersonResposity.save(p);
-                    });
+                    accessPersonResposity.saveAll(accessPersons);
                     BatchMsg batchMsg1 = new BatchMsg();
                     batchMsg1.setIp(ip);
                     batchMsg1.setStatus(true);
@@ -908,10 +911,15 @@ public class AccessServiceImpl implements AccessService {
                 accessPersonVo.getDoorsNum().stream().forEach(d -> {
                     doorsNum.add(d.getId());
                 });
-                AccessPerson accessPerson1 = accessPersonResposity.findByPidEqualsAndAdvIdEqualsAndDoorsNum((String) pid, deviceInfo.getSn(),
-                        doorsNum);
-                if (accessPerson1 != null)
+                try {
+                    AccessPerson accessPerson1 = accessPersonResposity.findByPidEqualsAndAdvIdEqualsAndDoorsNum((String) pid, deviceInfo.getSn(),
+                            doorsNum);
+                    if (accessPerson1 != null)
+                        continue;
+                } catch (Exception e) {
+                    log.error(e);
                     continue;
+                }
                 // return new ResultUtil(-1 ,"存在同一个人下发到了相同门："+accessPerson1.getName()+",请重新选择");
 
                 String pin = String.valueOf(Long.valueOf(personInfo.getAccessId()) & 0x00FFFFFF);

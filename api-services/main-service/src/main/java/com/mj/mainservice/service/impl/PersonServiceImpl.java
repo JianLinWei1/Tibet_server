@@ -167,6 +167,7 @@ public class PersonServiceImpl implements PersonService {
         try {
             PersonInfo personInfo = new PersonInfo();
             BeanUtils.copyProperties(info, personInfo);
+            personInfo.setCreateTime(LocalDateTime.now());
             if (StringUtils.isNotEmpty(info.getOid()))
                 personRepository.deleteById(info.getOid());
 
