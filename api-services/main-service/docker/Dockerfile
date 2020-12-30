@@ -1,4 +1,4 @@
-FROM  java:8
+FROM  frolvlad/alpine-java:jdk8-slim
 ADD main-service-1.0.1.jar app.jar
 VOLUME /tmp
 EXPOSE 8002

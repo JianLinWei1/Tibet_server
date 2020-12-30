@@ -360,7 +360,8 @@ public class AccessServiceImpl implements AccessService {
                 log.info("门禁删除权限请求：{} , URL:{}", JSON.toJSONString(deviceDataVo));
                 String url = "http://" + SysConfigUtil.getIns().getProAccessServer() + "/deleteDeviceData";
                 String json = JSON.toJSONString(deviceDataVo);
-                ResultUtil ru = httpUtil.post(url, json);
+                //ResultUtil ru = httpUtil.post(url, json);
+                ResultUtil ru = ResultUtil.ok(); //默认接口返回成功
                 log.info("门禁删除权限返回：{} , URL:{}", JSON.toJSONString(ru), url);
                 if (ru.getCode() != 0) {
                     resultUtil.setCode(-1);
@@ -703,7 +704,7 @@ public class AccessServiceImpl implements AccessService {
             List<AccessPerson> accessPersons = new ArrayList<>();
 
             //批量下发设备
-            list.stream().forEach(l -> {
+            for(Map<String, List<Doors>>  l: list ){
                 Iterator a = l.entrySet().iterator();
                 while (a.hasNext()) {
                     Map.Entry entry = (Map.Entry) a.next();
@@ -766,7 +767,7 @@ public class AccessServiceImpl implements AccessService {
 
 
                 }
-            });
+            }
 
             for (String ip : ips.toString().split(",")) {
                 String url = "http://" + SysConfigUtil.getIns().getProAccessServer() +
@@ -786,7 +787,8 @@ public class AccessServiceImpl implements AccessService {
                 }
 
                 ResultUtil ru = httpUtil.post(url, JSON.toJSONString(deviceDataVo));
-                //ResultUtil ru = ResultUtil.ok();
+                /*Thread.sleep(20000);
+                ResultUtil ru = ResultUtil.ok();*/
                 log.info("门禁下发返回：{} , URL:{}", JSON.toJSONString(ru), url);
 
                 if (ru.getCode() == 0) {
@@ -1002,7 +1004,7 @@ public class AccessServiceImpl implements AccessService {
             if (translation.getDates() != null)
                 query.addCriteria(Criteria.where("time").gte(translation.getDates().get(0))
                         .lte(translation.getDates().get(1)));
-            Page<Translation> page = translationResposity.findAll(example, query, PageRequest.of(0, 2000, Sort.by(Sort.Direction.DESC, "time")));
+            Page<Translation> page = translationResposity.findAll(example, query, PageRequest.of(0, 200000, Sort.by(Sort.Direction.DESC, "time")));
 
             String path = System.currentTimeMillis() + ".xlsx";
             EasyExcel.write("upload" + File.separator + path, Translation.class).sheet("sheet").doWrite(page.getContent());
@@ -1053,7 +1055,7 @@ public class AccessServiceImpl implements AccessService {
             if (translation.getDates() != null)
                 query.addCriteria(Criteria.where("time").gte(translation.getDates().get(0))
                         .lte(translation.getDates().get(1)));
-            Page<Translation> page = translationResposity.findAll(example, query, PageRequest.of(0, 2000, Sort.by(Sort.Direction.DESC, "time")));
+            Page<Translation> page = translationResposity.findAll(example, query, PageRequest.of(0, 200000, Sort.by(Sort.Direction.DESC, "time")));
             List<FormatExportVo> exportVos = new ArrayList<>();
             if (page.getContent() != null || page.getContent().size() > 0) {
                 page.getContent().stream().forEach(translation1 -> {
