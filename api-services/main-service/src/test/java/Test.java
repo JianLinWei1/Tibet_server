@@ -4,6 +4,7 @@ import com.mj.mainservice.entitys.access.AccessPerson;
 import com.mj.mainservice.entitys.access.DeviceInfo;
 import com.mj.mainservice.entitys.access.Doors;
 import com.mj.mainservice.entitys.access.Translation;
+import com.mj.mainservice.entitys.parking.ParkInfo;
 import com.mj.mainservice.resposity.access.AccessPersonResposity;
 import com.mj.mainservice.resposity.access.AccessRespository;
 import com.mj.mainservice.service.access.AccessService;
@@ -19,6 +20,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @auther JianLinWei
@@ -54,8 +57,7 @@ public class Test {
         AccessPerson  accessPerson = personResposity.findByPidEqualsAndAdvIdEqualsAndDoorsNum("702605", "DGD0380010082100164",doors );
 
         System.out.println(accessPerson);*/
-       for(int i = 0 ; i < 20;i++)
-         uploadRecoedService.getAddWihteList("4a3ebabc-b4e86491");
+
 
 
     }

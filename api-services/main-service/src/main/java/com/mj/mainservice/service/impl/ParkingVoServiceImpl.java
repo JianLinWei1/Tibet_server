@@ -14,6 +14,7 @@ import com.mj.mainservice.resposity.parking.ParkingResposity;
 import com.mj.mainservice.resposity.parking.ParkingResultResposity;
 import com.mj.mainservice.resposity.person.PersonRepository;
 import com.mj.mainservice.service.parking.ParkingVoService;
+import com.mj.mainservice.service.parking.UploadRecoedService;
 import com.mj.mainservice.service.person.PersonService;
 import com.mj.mainservice.vo.access.BatchIssueVo;
 import com.mj.mainservice.vo.parking.TmpPersonVo;
@@ -52,6 +53,8 @@ public class ParkingVoServiceImpl implements ParkingVoService {
     private ParkingResultResposity parkingResultResposity;
     @Resource
     private PersonRepository personRepository;
+    @Resource
+    private UploadRecoedService uploadRecoedService;
 
 
     @Override
@@ -72,6 +75,9 @@ public class ParkingVoServiceImpl implements ParkingVoService {
 //            Query query = new Query();
 //            query.addCriteria(Criteria.where("userId").in(childs));
             Page<ParkInfo> page = parkingResposity.findAll(example, pageable);
+            page.getContent().stream().forEach(obj->{
+                    obj.setStatus(uploadRecoedService.getStatus(obj.getSerialno()));
+            });
             ResultUtil resultUtil = new ResultUtil();
             resultUtil.setCode(0);
             resultUtil.setCount(page.getTotalElements());
@@ -115,7 +121,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
     @Transactional
     public ResultUtil saveParkPersonInfo(ParkingUserInfo parkingUserInfo) {
         try {
-            if(parkingUserInfo.getCarId() == null || parkingUserInfo.getCarId().size() <=0 )
+            if(parkingUserInfo.getCarId() == null && parkingUserInfo.getCarId().size() <=0 )
                 return new ResultUtil(-1,"车牌和人员下发二选一不能为空");
 
             if (parkingUserInfo.getPersonIds() != null && parkingUserInfo.getPersonIds().size() > 0) {
@@ -164,6 +170,16 @@ public class ParkingVoServiceImpl implements ParkingVoService {
 
     }
 
+    @Override
+    public ResultUtil updateParkPersonInfo(ParkingUserInfo parkingUserInfo) {
+        try {
+            parkingPersonResposity.save(parkingUserInfo);
+            return ResultUtil.ok();
+        }catch (Exception e){
+            log.error(e);
+            return  new ResultUtil(-1, e.getMessage());
+        }
+    }
 
     @Override
     public ResultUtil listParkingPerson(ParkingUserInfo parkingUserInfo) {

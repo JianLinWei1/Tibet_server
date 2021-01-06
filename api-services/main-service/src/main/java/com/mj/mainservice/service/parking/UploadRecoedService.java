@@ -13,5 +13,7 @@ public interface UploadRecoedService {
     ParkingResponse getAddWihteList(String serialno);
     ParkingResponse getDelWihteList(String serialno);
 
+    Boolean  getStatus(String sn);
+
     void   plateUpload(PlateUpload plateUpload);
 }

@@ -4,6 +4,7 @@ package com.mj.mainservice.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.jian.common.util.FileUtils;
 
+import com.jian.common.util.MapCache;
 import com.mj.mainservice.entitys.parking.*;
 import com.mj.mainservice.resposity.parking.ParkingPersonResposity;
 import com.mj.mainservice.resposity.parking.ParkingResposity;
@@ -31,6 +32,7 @@ import java.util.Optional;
 
 @Service
 @Log4j2
+@Transactional
 public class UploadRecordServiceImpl implements UploadRecoedService {
     @Resource
     private ParkingResposity parkingResposity;
@@ -38,6 +40,7 @@ public class UploadRecordServiceImpl implements UploadRecoedService {
     private ParkingPersonResposity parkingPersonResposity;
     @Resource
     private ParkingResultResposity parkingResultResposity;
+    private MapCache mapCache = new MapCache();
 
     @Override
     public ParkingResponse heartBeat(ParkInfo parkInfo) {
@@ -47,6 +50,8 @@ public class UploadRecordServiceImpl implements UploadRecoedService {
             parkInfo.setUserId("1");
           //  log.info("车辆道闸接收心跳：{}",parkInfo);
             ParkInfo parkInfo1 = parkingResposity.findBySerialnoEquals(parkInfo.getSerialno());
+            if (mapCache.get(parkInfo.getSerialno()) == null)
+                mapCache.add(parkInfo.getSerialno(), 2, 30 * 1000);
 
 
             if(parkInfo != null && parkInfo1 == null)
@@ -72,7 +77,6 @@ public class UploadRecordServiceImpl implements UploadRecoedService {
     }
 
     @Override
-    @Transactional
     public ParkingResponse getAddWihteList(String serialno) {
 
         WhiteListOperate operate=  new WhiteListOperate();
@@ -100,7 +104,7 @@ public class UploadRecordServiceImpl implements UploadRecoedService {
         responseAlarmInfoPlate.setWhite_list_operate(operate);
         ParkingResponse parkingResponse = new ParkingResponse();
         parkingResponse.setResponse_AlarmInfoPlate(responseAlarmInfoPlate);
-        log.info("白名单返回{}", JSON.toJSONString(parkingResponse));
+        //log.info("白名单返回{}", JSON.toJSONString(parkingResponse));
         return parkingResponse;
     }
 
@@ -170,5 +174,12 @@ public class UploadRecordServiceImpl implements UploadRecoedService {
         }
 
 
+    }
+
+    @Override
+    public Boolean getStatus(String sn) {
+        if (mapCache.get(sn) != null)
+            return  true;
+        return false;
     }
 }

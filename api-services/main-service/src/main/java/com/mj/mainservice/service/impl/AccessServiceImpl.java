@@ -360,8 +360,8 @@ public class AccessServiceImpl implements AccessService {
                 log.info("门禁删除权限请求：{} , URL:{}", JSON.toJSONString(deviceDataVo));
                 String url = "http://" + SysConfigUtil.getIns().getProAccessServer() + "/deleteDeviceData";
                 String json = JSON.toJSONString(deviceDataVo);
-                //ResultUtil ru = httpUtil.post(url, json);
-                ResultUtil ru = ResultUtil.ok(); //默认接口返回成功
+                ResultUtil ru = httpUtil.post(url, json);
+                //ResultUtil ru = ResultUtil.ok(); //默认接口返回成功
                 log.info("门禁删除权限返回：{} , URL:{}", JSON.toJSONString(ru), url);
                 if (ru.getCode() != 0) {
                     resultUtil.setCode(-1);
@@ -398,12 +398,14 @@ public class AccessServiceImpl implements AccessService {
                     return;
                 AccessPerson accessPerson = accessPersons.get(0);
                 DeviceInfo deviceInfo = accessRespository.findBySnEquals(sn);
+                if(deviceInfo == null)
+                    return;
                 translation.setDoorName(deviceInfo.getDoors().stream().filter(doors -> doors.getId() == translation.getDoorId()).collect(Collectors.toList()).get(0).getName());
 
                 translation.setPersonId(accessPerson.getPid());
                 translation.setName(accessPerson.getName());
                 translation.setDvName(deviceInfo.getName());
-                translation.setUserId(accessPerson.getUserId());
+                translation.setUserId(deviceInfo.getUserId());
                 translation.setDepartment(accessPerson.getDepartment());
                 translationResposity.save(translation);
             });

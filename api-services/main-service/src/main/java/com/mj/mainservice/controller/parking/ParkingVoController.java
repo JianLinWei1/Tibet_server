@@ -78,6 +78,13 @@ public class ParkingVoController {
         return parkingVoService.saveParkPersonInfo(parkingUserInfo);
     }
 
+    @SysLogInter("更新车牌下发")
+    @PostMapping("/updateParkPersonInfo")
+    public ResultUtil updateParkPersonInfo(@RequestBody ParkingUserInfo parkingUserInfo) {
+
+        return parkingVoService.updateParkPersonInfo(parkingUserInfo);
+    }
+
     /*@SysLogInter("获取车辆人员信息列表")*/
     @PostMapping("/listParkingPerson")
     public ResultUtil listParkingPerson(@RequestBody ParkingUserInfo parkingUserInfo, String userId) {

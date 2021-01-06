@@ -31,4 +31,6 @@ public class ParkInfo  extends PageHelper {
     private  Integer channel_num;
 
     private  String userId;
+
+    private  Boolean status;
 }

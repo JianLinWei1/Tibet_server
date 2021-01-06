@@ -21,10 +21,14 @@ public interface ParkingVoService {
 
     ResultUtil  saveParkPersonInfo(ParkingUserInfo parkingUserInfo);
 
+    ResultUtil  updateParkPersonInfo(ParkingUserInfo parkingUserInfo);
+
     ResultUtil  listParkingPerson(ParkingUserInfo parkingUserInfo);
 
 
     ResultUtil delParkingPerson(List<String> ids);
+
+
 
 
     ResultUtil listParkingResult(ParkingResult parkingResult );
