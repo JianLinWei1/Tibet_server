@@ -16,14 +16,17 @@ spring:
       default-filters:
         - StripPrefix=1
         - RemoveRequestHeader=Origin
-        - name: Hystrix
-          args:
-            name: fallbackcmd
-            fallbackUri: forward:/defaultHystrixFallback
+        #- name: Hystrix
+         # args:
+           # name: fallbackcmd
+           # fallbackUri: forward:/defaultHystrixFallback
+      httpclient:
+        pool:
+          max-idle-time: 1000
 
 
 
-hystrix.command.fallbackcmd.execution.isolation.thread.timeoutInMilliseconds: 300000
+#hystrix.command.fallbackcmd.execution.isolation.thread.timeoutInMilliseconds: 300000
 
 
 
@@ -32,7 +35,7 @@ eureka:
     service-url:
      defaultZone: http://localhost:8000/eureka/
     registry-fetch-interval-seconds: 3
-    initial-instance-info-replication-interval-seconds: 3
+    #initial-instance-info-replication-interval-seconds: 3
   instance:
     prefer-ip-address: true
     lease-renewal-interval-in-seconds: 3

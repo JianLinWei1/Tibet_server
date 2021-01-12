@@ -16,14 +16,19 @@ spring:
       default-filters:
         - StripPrefix=1
         - RemoveRequestHeader=Origin
-        - name: Hystrix
-          args:
-            name: fallbackcmd
-            fallbackUri: forward:/defaultHystrixFallback
+        #- name: Hystrix
+        #  args:
+           # name: fallbackcmd
+           # fallbackUri: forward:/defaultHystrixFallback
+      httpclient:
+        pool:
+          max-idle-time: 10000
+          max-connections: 10000
+          acquire-timeout: 15000
 
 
 
-hystrix.command.fallbackcmd.execution.isolation.thread.timeoutInMilliseconds: 3000000
+#hystrix.command.fallbackcmd.execution.isolation.thread.timeoutInMilliseconds: 3000000
 
 
 

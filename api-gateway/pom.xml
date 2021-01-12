@@ -15,7 +15,7 @@
         <jian.version>1.0.1</jian.version>
         <swagger.version>2.10.5</swagger.version>
         <feign.version>1.4.7.RELEASE</feign.version>
-        <main.version>1.1.1</main.version>
+        <main.version>1.1.6</main.version>
         <docker.repostory>registry.cn-beijing.aliyuncs.com</docker.repostory>
         <docker.repostory.name>ljserver</docker.repostory.name>
     </properties>
@@ -35,10 +35,10 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
         </dependency>
-        <dependency>
+       <!-- <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.cloud</groupId>
