@@ -19,7 +19,7 @@ spring:
 
   data:
     mongodb:
-      host: localhost
+      host: 192.168.31.208
       database: tibet
       #username: 'ant'
       #password: '123456'
