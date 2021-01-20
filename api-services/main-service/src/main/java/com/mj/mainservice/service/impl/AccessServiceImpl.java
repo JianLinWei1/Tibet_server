@@ -157,10 +157,28 @@ public class AccessServiceImpl implements AccessService {
                     .withIgnoreNullValues();
             Example<DeviceInfo> example = Example.of(info, matcher);
             Page<DeviceInfo> page1 = accessRespository.findAll(example, PageRequest.of(info.getPage() - 1, info.getLimit()));
+            List<String> ips = new ArrayList<>();
             page1.getContent().stream().forEach(d -> {
-                if (mapCache.get(d.getSn()) != null)
-                    d.setStatus(true);
+                ips.add(d.getIp());
+                d.setStatus(false);
             });
+            //获取心跳
+            List<JSONObject> data = AccessUtil.getStatus(ips);
+            if (data != null)
+                page1.getContent().stream().forEach(d -> {
+                    data.stream().forEach(s -> {
+                        String ip = s.getString("ip");
+                        if (StringUtils.equals(d.getIp(), ip)) {
+                            int status = s.getInteger("state");
+                            if (status > 0)
+                                d.setStatus(true);
+                            else
+                                d.setStatus(false);
+                        }
+
+                    });
+                });
+
             ResultUtil r = new ResultUtil();
             r.setCode(0);
             r.setData(page1.getContent());
@@ -398,7 +416,7 @@ public class AccessServiceImpl implements AccessService {
                     return;
                 AccessPerson accessPerson = accessPersons.get(0);
                 DeviceInfo deviceInfo = accessRespository.findBySnEquals(sn);
-                if(deviceInfo == null)
+                if (deviceInfo == null)
                     return;
                 translation.setDoorName(deviceInfo.getDoors().stream().filter(doors -> doors.getId() == translation.getDoorId()).collect(Collectors.toList()).get(0).getName());
 
@@ -706,7 +724,7 @@ public class AccessServiceImpl implements AccessService {
             List<AccessPerson> accessPersons = new ArrayList<>();
 
             //批量下发设备
-            for(Map<String, List<Doors>>  l: list ){
+            for (Map<String, List<Doors>> l : list) {
                 Iterator a = l.entrySet().iterator();
                 while (a.hasNext()) {
                     Map.Entry entry = (Map.Entry) a.next();

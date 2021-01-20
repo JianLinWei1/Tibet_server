@@ -1,9 +1,18 @@
 package com.mj.mainservice.util;
 
+import cn.hutool.core.lang.TypeReference;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.jian.common.util.HttpUtil;
+import com.jian.common.util.ResultUtil;
+import com.jian.common.util.SysConfigUtil;
 import com.mj.mainservice.entitys.access.Doors;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +21,7 @@ import java.util.Map;
  * @auther JianLinWei
  * @date 2020-12-05 23:54
  */
+@Log4j2
 public class AccessUtil {
 
     /**
@@ -80,4 +90,32 @@ public class AccessUtil {
         }
         return sum;
     }
+
+
+    public  static List<JSONObject> getStatus(List<String>  ips) throws IOException {
+        JSONArray array = new JSONArray();
+        ips.stream().forEach(ip ->{
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("ip",ip);
+            array.add(jsonObject);
+        });
+        JSONObject jsonObject1 = new JSONObject();
+        jsonObject1.put("ips",array);
+        log.info(jsonObject1.toString());
+        String url = "http://" + SysConfigUtil.getIns().getProAccessServer() +
+                "/getDoorsState";
+        HttpUtil httpUtil = new HttpUtil();
+        ResultUtil ru = httpUtil.post(url, jsonObject1.toString());
+
+
+        if(ru.getCode() == 0){
+            return (List<JSONObject>)ru.getData();
+
+        }
+
+
+        return null;
+    }
+
+
 }

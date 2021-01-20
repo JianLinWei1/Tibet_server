@@ -2,6 +2,7 @@ package com.mj.mainservice.entitys.access;
 
 import com.jian.common.util.PageHelper;
 import lombok.Data;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class DeviceInfo  extends PageHelper {
     private List<Doors> doors = Arrays.asList(new Doors(1,"1号门") ,new Doors(2,"2号门") ,
             new Doors(3,"3号门") ,new Doors(4,"4号门"));//初始化四个门
 
+    @Transient
     private  Boolean status;
 
 }

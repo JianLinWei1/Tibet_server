@@ -3,6 +3,7 @@ package com.mj.mainservice.entitys.parking;
 import com.jian.common.util.PageHelper;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -32,5 +33,6 @@ public class ParkInfo  extends PageHelper {
 
     private  String userId;
 
+    @Transient
     private  Boolean status;
 }
