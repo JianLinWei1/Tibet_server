@@ -373,7 +373,14 @@ public class AccessServiceImpl implements AccessService {
                 else
                     userDataVo.setFlag(true);
                 DeviceDataVo deviceDataVo = new DeviceDataVo();
-                deviceDataVo.setIp(accessPerson.getIp());
+                DeviceInfo deviceInfo = accessRespository.findBySnEquals(accessPerson.getAdvId());
+                if (deviceInfo != null) {
+                    deviceDataVo.setIp(deviceInfo.getIp());
+                }else {
+                    //如果在设备列表没查询到下发记录的SN 直接删除记录
+                    accessPersonResposity.delete(accessPerson);
+                    return  ResultUtil.ok();
+                }
                 deviceDataVo.setData(userDataVo);
                 log.info("门禁删除权限请求：{} , URL:{}", JSON.toJSONString(deviceDataVo));
                 String url = "http://" + SysConfigUtil.getIns().getProAccessServer() + "/deleteDeviceData";

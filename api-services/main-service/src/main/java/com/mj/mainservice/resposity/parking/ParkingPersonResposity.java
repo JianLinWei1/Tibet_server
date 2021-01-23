@@ -32,5 +32,8 @@ public interface ParkingPersonResposity   extends MongoRepository<ParkingUserInf
      Optional<ParkingUserInfo>   findAllByCarIdEqualsAndSerialnoIsAndActionIsNot(List<String> carId , String serNo,Integer action);
 
 
+     ParkingUserInfo  findFirstByStatusEquals(boolean status);
+
+
 
 }

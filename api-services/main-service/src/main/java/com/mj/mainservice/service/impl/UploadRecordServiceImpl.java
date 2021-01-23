@@ -57,7 +57,7 @@ public class UploadRecordServiceImpl implements UploadRecoedService {
             if(parkInfo != null && parkInfo1 == null)
                 parkingResposity.save(parkInfo);
 
-
+/*  去掉HTTP协议返回白名单
             ParkingResponse parkingResponse =  getAddWihteList(parkInfo.getSerialno());
             if(parkingResponse.getResponse_AlarmInfoPlate().getWhite_list_operate().getWhite_list_data().size()>0 ){
                 log.info("心跳白名单增加操作：{}", parkingResponse);
@@ -67,7 +67,7 @@ public class UploadRecordServiceImpl implements UploadRecoedService {
             if(parkingResponseDel.getResponse_AlarmInfoPlate().getWhite_list_operate().getWhite_list_data().size()>0 ){
                 log.info("心跳白名单删除操作：{}", parkingResponse);
                 return  parkingResponseDel;
-            }
+            }*/
            return null;
         }catch (Exception e){
             log.error(e);

@@ -2,6 +2,7 @@ package com.mj.mainservice.service.impl;
 
 import com.alibaba.excel.EasyExcel;
 
+import com.alibaba.fastjson.JSON;
 import com.jian.common.entity.AntdTree;
 import com.jian.common.util.ResultUtil;
 
@@ -16,6 +17,7 @@ import com.mj.mainservice.resposity.person.PersonRepository;
 import com.mj.mainservice.service.parking.ParkingVoService;
 import com.mj.mainservice.service.parking.UploadRecoedService;
 import com.mj.mainservice.service.person.PersonService;
+import com.mj.mainservice.util.parking.ParkingUtil;
 import com.mj.mainservice.vo.access.BatchIssueVo;
 import com.mj.mainservice.vo.parking.TmpPersonVo;
 import lombok.extern.log4j.Log4j2;
@@ -29,6 +31,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.io.IOException;
+import java.net.Socket;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -224,6 +228,37 @@ public class ParkingVoServiceImpl implements ParkingVoService {
         } catch (Exception e) {
             log.error(e);
             return new ResultUtil(-1, e.getMessage());
+        }
+    }
+
+    @Override
+    public ResultUtil delParkingPerson2(List<String> ids) {
+        try {
+            List<String>  errMsg  = new ArrayList<>();
+            ids.stream().forEach(id -> {
+                ParkingUserInfo userInfo = parkingPersonResposity.findById(id).get();
+                ParkInfo parkInfo = parkingResposity.findBySerialnoEquals(userInfo.getSerialno());
+                if(parkInfo != null){
+                    try {
+                        Socket socket = new Socket(parkInfo.getIpaddr() , 8131);
+                      boolean tag =  ParkingUtil.sendCmdPro(userInfo , socket , 0);
+                      if(tag){
+                          parkingPersonResposity.deleteById(id);
+                      }
+
+                    } catch (IOException e) {
+                        log.error(e);
+                        errMsg.add(parkInfo.getDevice_name()+"建立socket失败");
+                    }
+                }
+            });
+            if(errMsg.size() >0 )
+                return new ResultUtil(-1 ,"删除失败:"+ JSON.toJSONString(errMsg));
+            return  ResultUtil.ok();
+
+        }catch (Exception e){
+            log.error(e);
+            return new ResultUtil(-1, "删除失败"+e.getMessage());
         }
     }
 

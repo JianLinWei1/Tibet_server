@@ -27,7 +27,7 @@ public interface ParkingVoService {
 
 
     ResultUtil delParkingPerson(List<String> ids);
-
+    ResultUtil delParkingPerson2(List<String> ids);
 
 
 
