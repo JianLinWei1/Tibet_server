@@ -97,7 +97,7 @@ public class ParkingVoController {
     @SysLogInter("删除车辆人员信息列表")
     @PostMapping("/delParkingPerson")
     public ResultUtil delParkingPerson(@RequestBody List<String> ids) {
-        return parkingVoService.delParkingPerson(ids);
+        return parkingVoService.delParkingPerson2(ids);
     }
 
     /*@SysLogInter("获取车牌识别结果")*/

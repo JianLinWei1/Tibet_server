@@ -2,10 +2,12 @@ package com.mj.mainservice.util.parking;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.inject.internal.asm.$AnnotationVisitor;
 import com.mj.mainservice.entitys.parking.ParkInfo;
 import com.mj.mainservice.entitys.parking.ParkingUserInfo;
 import com.mj.mainservice.service.parking.ParkingDeviceService;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Component;
 import java.io.*;
 import java.net.Socket;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -71,10 +74,11 @@ public class ParkingUtil implements CommandLineRunner {
      */
     public static String generaCmd(ParkingUserInfo parkingUserInfo, String plate) {
         JSONObject dldb_rec = new JSONObject();
-        dldb_rec.put("create_time", LocalDateTime.now());
-        dldb_rec.put("enable_time", parkingUserInfo.getEnable_time());
-        dldb_rec.put("overdue_time", parkingUserInfo.getOverdue_time());
+        dldb_rec.put("create_time", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()));
+        dldb_rec.put("enable_time", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(parkingUserInfo.getEnable_time()));
+        dldb_rec.put("overdue_time", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(parkingUserInfo.getOverdue_time()));
         dldb_rec.put("plate", plate);
+        dldb_rec.put("enable", parkingUserInfo.getEnable());
         dldb_rec.put("need_alarm", parkingUserInfo.getNeed_alarm());
 
         JSONObject cmd = new JSONObject();
@@ -93,16 +97,10 @@ public class ParkingUtil implements CommandLineRunner {
      */
     public static String delCmd(ParkingUserInfo parkingUserInfo, String plate)  {
 
-        JSONObject dldb_rec = new JSONObject();
-        dldb_rec.put("create_time", LocalDateTime.now());
-        dldb_rec.put("enable_time", parkingUserInfo.getEnable_time());
-        dldb_rec.put("overdue_time", parkingUserInfo.getOverdue_time());
-        dldb_rec.put("plate", plate);
-        dldb_rec.put("need_alarm", parkingUserInfo.getNeed_alarm());
         JSONObject cmd = new JSONObject();
         cmd.put("cmd", "white_list_operator");
         cmd.put("operator_type", "delete");
-        cmd.put("dldb_rec", dldb_rec);
+        cmd.put("plate", plate);
         return cmd.toJSONString();
     }
 
@@ -163,24 +161,94 @@ public class ParkingUtil implements CommandLineRunner {
             out.write(header);
             out.write(cmd.getBytes());
             //接收消息
-            InputStream inputStream = socket.getInputStream();
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+            int sn_len = recvPacketSize(socket);
             String res = "";
-            String tmp = null;
-            while ((tmp = bufferedReader.readLine()) != null) {
-                res += tmp;
+            if(sn_len > 0)
+            {
+                //接收实际数据
+                byte[] data = new byte[sn_len];
+                int recvLen = recvBlock(socket, data, sn_len);
+
+                 res = new String(data, 0, recvLen);
             }
+
             log.info("tcp返回{}", res);
+            if(StringUtils.isEmpty(res))
+                return false;
             JSONObject resJson = JSON.parseObject(res);
             if (resJson.getInteger("state_code") == 200)
                 return true;
             else
                 return false;
         } catch (Exception e) {
-            log.error("Error:" + e.getMessage());
+            log.error("Error:" + e);
             return false;
         }
+    }
+
+    public static int recvPacketSize(Socket socket)
+    {
+        byte[] header = new byte[8];
+        int recvLen = recvBlock(socket, header, 8);
+        if(recvLen <=0)
+        {
+            return -1;
+        }
+
+        if(header[0] != 'V' ||header[1] != 'Z')
+        {
+            //格式不对
+            return -1;
+        }
+
+        if(header[2] == 1)
+        {
+            //心跳包
+            return 0;
+        }
+
+        return convBytesToInt(header,4);
+    }
+
+    //接收指定长度的数据，收完为止
+    public static int recvBlock(Socket socket,byte[] buff, int len)
+    {
+        try
+        {
+            InputStream in = socket.getInputStream();
+            int totleRecvLen = 0;
+            int recvLen;
+            while(totleRecvLen < len)
+            {
+                recvLen = in.read(buff, totleRecvLen, len - totleRecvLen);
+                totleRecvLen += recvLen;
+            }
+            return len;
+        }
+        catch(Exception e)
+        {
+            log.error("recvBlock timeout!" ,e);
+            // System.out.println("Error:"+e);
+            return -1;
+        }
+    }
+
+
+    public static int convBytesToInt(byte[] buff,int offset)
+    {
+        //4bytes 转为int，要考虑机器的大小端问题
+        int len,byteValue;
+        len = 0;
+        byteValue = (0x000000FF & ((int)buff[offset]));
+        len += byteValue<<24;
+        byteValue = (0x000000FF & ((int)buff[offset+1]));
+        len += byteValue<<16;
+        byteValue = (0x000000FF & ((int)buff[offset+2]));
+        len += byteValue<<8;
+        byteValue = (0x000000FF & ((int)buff[offset+3]));
+        len += byteValue;
+        return len;
     }
 
 
