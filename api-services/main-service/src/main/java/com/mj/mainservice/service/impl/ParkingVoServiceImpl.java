@@ -241,14 +241,18 @@ public class ParkingVoServiceImpl implements ParkingVoService {
                 if(parkInfo != null){
                     try {
                         Socket socket = new Socket(parkInfo.getIpaddr() , 8131);
+
                       boolean tag =  ParkingUtil.sendCmdPro(userInfo , socket , 0);
                       if(tag){
                           parkingPersonResposity.deleteById(id);
+                      }else{
+                          errMsg.add("连接设备删除失败");
                       }
 
                     } catch (IOException e) {
                         log.error(e);
                         errMsg.add(parkInfo.getDevice_name()+"建立socket失败");
+                        return;
                     }
                 }
             });

@@ -51,7 +51,7 @@ public class ParkingUtil implements CommandLineRunner {
                 Socket socket = new Socket(parkInfo.getIpaddr(), 8131);
 
                 System.out.println("***************获取到" + JSON.toJSONString(parkingUserInfo) + "*************");
-                boolean tag = sendCmdPro(parkingUserInfo, socket , 1);
+                boolean tag = sendCmdPro(parkingUserInfo, socket, 1);
                 if (tag) {
                     parkingUserInfo.setStatus(true);
                     parkingDeviceService.updateParkUserInfo(parkingUserInfo);
@@ -75,8 +75,10 @@ public class ParkingUtil implements CommandLineRunner {
     public static String generaCmd(ParkingUserInfo parkingUserInfo, String plate) {
         JSONObject dldb_rec = new JSONObject();
         dldb_rec.put("create_time", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()));
-        dldb_rec.put("enable_time", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(parkingUserInfo.getEnable_time()));
-        dldb_rec.put("overdue_time", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(parkingUserInfo.getOverdue_time()));
+        if (parkingUserInfo.getEnable_time() != null)
+            dldb_rec.put("enable_time", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(parkingUserInfo.getEnable_time()));
+        if (parkingUserInfo.getOverdue_time() != null)
+            dldb_rec.put("overdue_time", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(parkingUserInfo.getOverdue_time()));
         dldb_rec.put("plate", plate);
         dldb_rec.put("enable", parkingUserInfo.getEnable());
         dldb_rec.put("need_alarm", parkingUserInfo.getNeed_alarm());
@@ -95,7 +97,7 @@ public class ParkingUtil implements CommandLineRunner {
      * @param parkingUserInfo
      * @return
      */
-    public static String delCmd(ParkingUserInfo parkingUserInfo, String plate)  {
+    public static String delCmd(ParkingUserInfo parkingUserInfo, String plate) {
 
         JSONObject cmd = new JSONObject();
         cmd.put("cmd", "white_list_operator");
@@ -111,7 +113,7 @@ public class ParkingUtil implements CommandLineRunner {
      * @param parkingUserInfo action  1 增加 0 删除
      * @return
      */
-    public static boolean  sendCmdPro(ParkingUserInfo parkingUserInfo, Socket socket, int action) {
+    public static boolean sendCmdPro(ParkingUserInfo parkingUserInfo, Socket socket, int action) {
         //多个车牌
         List<String> cmds = new ArrayList<>();
 
@@ -119,9 +121,9 @@ public class ParkingUtil implements CommandLineRunner {
             parkingUserInfo.getCarId().stream().forEach(obj -> {
                 String cmd = null;
                 if (action == 1)
-                     cmd = generaCmd(parkingUserInfo, obj);
+                    cmd = generaCmd(parkingUserInfo, obj);
                 else
-                    cmd =delCmd(parkingUserInfo ,obj);
+                    cmd = delCmd(parkingUserInfo, obj);
                 cmds.add(cmd);
             });
         }
@@ -164,17 +166,16 @@ public class ParkingUtil implements CommandLineRunner {
 
             int sn_len = recvPacketSize(socket);
             String res = "";
-            if(sn_len > 0)
-            {
+            if (sn_len > 0) {
                 //接收实际数据
                 byte[] data = new byte[sn_len];
                 int recvLen = recvBlock(socket, data, sn_len);
 
-                 res = new String(data, 0, recvLen);
+                res = new String(data, 0, recvLen);
             }
 
             log.info("tcp返回{}", res);
-            if(StringUtils.isEmpty(res))
+            if (StringUtils.isEmpty(res))
                 return false;
             JSONObject resJson = JSON.parseObject(res);
             if (resJson.getInteger("state_code") == 200)
@@ -187,66 +188,56 @@ public class ParkingUtil implements CommandLineRunner {
         }
     }
 
-    public static int recvPacketSize(Socket socket)
-    {
+    public static int recvPacketSize(Socket socket) {
         byte[] header = new byte[8];
         int recvLen = recvBlock(socket, header, 8);
-        if(recvLen <=0)
-        {
+        if (recvLen <= 0) {
             return -1;
         }
 
-        if(header[0] != 'V' ||header[1] != 'Z')
-        {
+        if (header[0] != 'V' || header[1] != 'Z') {
             //格式不对
             return -1;
         }
 
-        if(header[2] == 1)
-        {
+        if (header[2] == 1) {
             //心跳包
             return 0;
         }
 
-        return convBytesToInt(header,4);
+        return convBytesToInt(header, 4);
     }
 
     //接收指定长度的数据，收完为止
-    public static int recvBlock(Socket socket,byte[] buff, int len)
-    {
-        try
-        {
+    public static int recvBlock(Socket socket, byte[] buff, int len) {
+        try {
             InputStream in = socket.getInputStream();
             int totleRecvLen = 0;
             int recvLen;
-            while(totleRecvLen < len)
-            {
+            while (totleRecvLen < len) {
                 recvLen = in.read(buff, totleRecvLen, len - totleRecvLen);
                 totleRecvLen += recvLen;
             }
             return len;
-        }
-        catch(Exception e)
-        {
-            log.error("recvBlock timeout!" ,e);
+        } catch (Exception e) {
+            log.error("recvBlock timeout!", e);
             // System.out.println("Error:"+e);
             return -1;
         }
     }
 
 
-    public static int convBytesToInt(byte[] buff,int offset)
-    {
+    public static int convBytesToInt(byte[] buff, int offset) {
         //4bytes 转为int，要考虑机器的大小端问题
-        int len,byteValue;
+        int len, byteValue;
         len = 0;
-        byteValue = (0x000000FF & ((int)buff[offset]));
-        len += byteValue<<24;
-        byteValue = (0x000000FF & ((int)buff[offset+1]));
-        len += byteValue<<16;
-        byteValue = (0x000000FF & ((int)buff[offset+2]));
-        len += byteValue<<8;
-        byteValue = (0x000000FF & ((int)buff[offset+3]));
+        byteValue = (0x000000FF & ((int) buff[offset]));
+        len += byteValue << 24;
+        byteValue = (0x000000FF & ((int) buff[offset + 1]));
+        len += byteValue << 16;
+        byteValue = (0x000000FF & ((int) buff[offset + 2]));
+        len += byteValue << 8;
+        byteValue = (0x000000FF & ((int) buff[offset + 3]));
         len += byteValue;
         return len;
     }
