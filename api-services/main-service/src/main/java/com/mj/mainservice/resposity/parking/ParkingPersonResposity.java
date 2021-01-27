@@ -34,6 +34,8 @@ public interface ParkingPersonResposity   extends MongoRepository<ParkingUserInf
 
      ParkingUserInfo  findFirstByStatusEquals(boolean status);
 
+     List<ParkingUserInfo>  findAllByActionIs(int action);
+
 
 
 }

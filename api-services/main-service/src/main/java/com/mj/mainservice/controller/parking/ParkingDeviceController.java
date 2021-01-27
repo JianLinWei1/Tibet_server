@@ -31,7 +31,12 @@ public class ParkingDeviceController {
 
     @GetMapping("/test")
     public ResultUtil  test(){
-        return ResultUtil.ok("测试");
+
+
+
+
+
+        return uploadRecoedService.repairTest();
     }
 
 
