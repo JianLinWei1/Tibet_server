@@ -125,10 +125,10 @@ public class ParkingVoServiceImpl implements ParkingVoService {
     @Transactional
     public ResultUtil saveParkPersonInfo(ParkingUserInfo parkingUserInfo) {
         try {
-            if(parkingUserInfo.getCarId() == null && parkingUserInfo.getCarId().size() <=0 )
-                return new ResultUtil(-1,"车牌和人员下发二选一不能为空");
+            if(parkingUserInfo.getPersonIds().size() > 0 && parkingUserInfo.getCarId().size() > 0 )
+                return new ResultUtil(-1,"车牌和人员下发二选一且不能为空");
 
-            if (parkingUserInfo.getPersonIds() != null && parkingUserInfo.getPersonIds().size() > 0) {
+            if (parkingUserInfo.getPersonIds() != null && parkingUserInfo.getPersonIds().size() > 0 ) {
                 parkingUserInfo.getPersonIds().stream().forEach(id -> {
                     ParkingUserInfo parkingUserInfo1 = new ParkingUserInfo();
                     parkingUserInfo.setId(null);
@@ -144,7 +144,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
                     parkingUserInfo1.setStatus(false);
                     parkingUserInfo1.setDepartment(personInfo.getDepartment());
                     //排除已下发的
-                    Optional<ParkingUserInfo>  optional1 = parkingPersonResposity.findAllByCarIdEqualsAndSerialnoIsAndActionIsNot(personInfo.getCarId(),
+                    Optional<ParkingUserInfo>  optional1 = parkingPersonResposity.findAllByCarIdInAndSerialnoIsAndActionIsNot(personInfo.getCarId(),
                             parkingUserInfo.getSerialno() ,1);
                     if(optional1.isPresent())
                         return;
@@ -155,7 +155,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
                 });
             } else {
                 //排除已下发的
-                Optional<ParkingUserInfo>  optional1 = parkingPersonResposity.findAllByCarIdEqualsAndSerialnoIsAndActionIsNot(parkingUserInfo.getCarId(),
+                Optional<ParkingUserInfo>  optional1 = parkingPersonResposity.findAllByCarIdInAndSerialnoIsAndActionIsNot(parkingUserInfo.getCarId(),
                         parkingUserInfo.getSerialno() ,1);
                 if(optional1.isPresent())
                     return  new ResultUtil(-1 ,"该临时车牌已经下发");
@@ -202,6 +202,11 @@ public class ParkingVoServiceImpl implements ParkingVoService {
             query.addCriteria(Criteria.where("carId").in(parkingUserInfo.getCarId()));
             //query.addCriteria(Criteria.where("userId").in(childs));
             Page<ParkingUserInfo> page = parkingPersonResposity.findAll(example, query, pageable);
+            page.getContent().stream().forEach(obj ->{
+                ParkInfo parkInfo = parkingResposity.findBySerialnoEquals(obj.getSerialno());
+                if(parkInfo != null)
+                obj.setDevice_name(parkInfo.getDevice_name());
+            });
             ResultUtil resultUtil = new ResultUtil();
             resultUtil.setCode(0);
             resultUtil.setData(page.getContent());
@@ -459,7 +464,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
                   if(!optional2.isPresent())
                       return;
                   //排除已下发的
-                  Optional<ParkingUserInfo>  optional1 = parkingPersonResposity.findAllByCarIdEqualsAndSerialnoIsAndActionIsNot(carids ,dv ,1);
+                  Optional<ParkingUserInfo>  optional1 = parkingPersonResposity.findAllByCarIdInAndSerialnoIsAndActionIsNot(carids ,dv ,1);
                   if(optional1.isPresent()){
 
                       return;
@@ -477,7 +482,7 @@ public class ParkingVoServiceImpl implements ParkingVoService {
           return  ResultUtil.ok();
         }catch (Exception e){
             log.error(e);
-            return  new ResultUtil(-1 ,"请检查Excel文件（注意日期格式)");
+            return  new ResultUtil(-1 ,"请检查Excel文件（注意日期格式)"+e.getMessage());
         }
     }
 }
